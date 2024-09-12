@@ -19,10 +19,18 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 }
 
 func (u *userRepo) CreateUser(ctx context.Context, user *biz.User) (*biz.User, error) {
-	return nil, nil
+	return &biz.User{
+		Id:       0,
+		Username: "nani",
+		Password: "bsdnaklj",
+	}, nil
 }
 func (u *userRepo) GetUser(ctx context.Context, id int64) (*biz.User, error) {
-	return nil, nil
+	return &biz.User{
+		Id:       0,
+		Username: "heheh",
+		Password: "andjka",
+	}, nil
 }
 func (u *userRepo) VerifyPassword(ctx context.Context, user *biz.User) (bool, error) {
 	return false, nil

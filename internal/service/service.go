@@ -12,9 +12,9 @@ var ProviderSet = wire.NewSet(NewUserService)
 type UserService struct {
 	v1.UnimplementedUserServer
 
-	uc *biz.UserUsecase
+	uc *biz.UserUseCase
 }
 
-func NewUserService(uc *biz.UserUsecase) *UserService {
+func NewUserService(uc *biz.UserUseCase) *UserService {
 	return &UserService{uc: uc}
 }
