@@ -1,12 +1,11 @@
 package data
 
 import (
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"waffle/internal/conf"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"waffle/app/user/service/internal/conf"
 )
 
 // ProviderSet is data providers.

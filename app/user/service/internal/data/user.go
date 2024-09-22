@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"waffle/internal/biz"
+	"waffle/app/user/service/internal/biz"
 )
 
 type userRepo struct {

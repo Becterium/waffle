@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	v1 "waffle/api/user/service/v1"
-	"waffle/internal/biz"
+	"waffle/app/user/service/internal/biz"
 )
 
 func (s *UserService) CreateUser(ctx context.Context, req *v1.CreateUserReq) (*v1.CreateUserReply, error) {

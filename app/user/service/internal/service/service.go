@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/google/wire"
 	v1 "waffle/api/user/service/v1"
-	"waffle/internal/biz"
+	"waffle/app/user/service/internal/biz"
 )
 
 // ProviderSet is service providers.
