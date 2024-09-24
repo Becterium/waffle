@@ -1,10 +1,9 @@
 pipeline {
     agent any
-
     stages {
-        stage('Hello') {
+        stage('Test SSH Connection') {
             steps {
-                echo 'Hello World'
+                sh 'ssh -T git@github.com'
             }
         }
     }
