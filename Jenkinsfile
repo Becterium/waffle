@@ -16,8 +16,8 @@ spec:
     image: 192.168.37.130:8009/library/jenkins/agent:jdk17
     args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
     imagePullPolicy: IfNotPresent
-    imagePullSecrets:
-      - name: harbor-credentials
+  imagePullSecrets:
+  - name: harbor-credentials
 """
         }
     }
