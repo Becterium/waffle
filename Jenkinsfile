@@ -2,7 +2,6 @@ pipeline {
     agent {
         kubernetes {
             cloud 'k8s-dev' // 与Jenkins配置中的Kubernetes Cloud名称一致
-            label 'k8s-agent'
             defaultContainer 'jnlp'
             yaml """
 apiVersion: v1
