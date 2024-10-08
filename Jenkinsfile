@@ -22,8 +22,6 @@ spec:
       requests:
         memory: "256Mi"          # 内存请求
         cpu: "250m"              # CPU请求
-  imagePullSecrets:
-  - name: HARBOR_ACCOUNT
 """
         }
     }
