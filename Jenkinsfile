@@ -13,8 +13,6 @@ metadata:
   name: jnlp
   namespace: waffle
 spec:
-  imagePullSecrets:
-    - name: myregistrykey
   containers:
     - name: jnlp
       image: 192.168.37.130:8009/library/jenkins/inbound-agent:jdk17
