@@ -17,11 +17,11 @@ spec:
     - name: myregistrykey
   containers:
     - name: jnlp
-      image: 192.168.37.130:8009/library/jenkins/agent:jdk17
+      image: 192.168.37.130:8009/library/jenkins/inbound-agent:jdk17
       imagePullPolicy: IfNotPresent
       resources:
         limits:
-          memory: "2Gi"
+          memory: "1Gi"
           cpu: "1000m"      
         requests:
           memory: "512Mi"
