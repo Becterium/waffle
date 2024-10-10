@@ -29,16 +29,11 @@ containers:
     }
     stages {
         stage('Checkout') {
-            steps {
-                // 检出代码
-                checkout scm
+            steps{
+                script{
+                  sh "sleep 30"
+                }
             }
-        }
-    }
-    post {
-        always {
-            // 清理工作，例如删除临时文件或发送通知
-            echo 'Cleaning up...'
         }
     }
 }
