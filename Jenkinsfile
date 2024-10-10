@@ -11,7 +11,7 @@ metadata:
   labels:
     k8s-app: jenkins-agent
   name: jnlp
-  namespqce: waffle
+  namespace: waffle
 spec:
 containers:
   - name: jnlp
