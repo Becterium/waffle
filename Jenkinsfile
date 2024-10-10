@@ -13,17 +13,19 @@ metadata:
   name: jnlp
   namespace: waffle
 spec:
-containers:
-  - name: jnlp
-    image: 192.168.37.130:8009/library/jenkins/agent:jdk17
-    imagePullPolicy: IfNotPresent
-    resources:
-      limits:
-        memory: "512Mi"
-        cpu: "500m"      
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
+  imagePullSecrets:
+    - name: myregistrykey
+  containers:
+    - name: jnlp
+      image: 192.168.37.130:8009/library/jenkins/agent:jdk17
+      imagePullPolicy: IfNotPresent
+      resources:
+        limits:
+          memory: "512Mi"
+          cpu: "500m"      
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
 '''
         }
     }
