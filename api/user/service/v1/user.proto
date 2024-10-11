@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package helloworld.v1;
+package waffle.v1;
 
 import "google/api/annotations.proto";
 

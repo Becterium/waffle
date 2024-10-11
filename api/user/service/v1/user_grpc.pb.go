@@ -19,19 +19,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_GetUser_FullMethodName           = "/helloworld.v1.User/GetUser"
-	User_GetUserByUsername_FullMethodName = "/helloworld.v1.User/GetUserByUsername"
-	User_Save_FullMethodName              = "/helloworld.v1.User/Save"
-	User_CreateUser_FullMethodName        = "/helloworld.v1.User/CreateUser"
-	User_ListUser_FullMethodName          = "/helloworld.v1.User/ListUser"
-	User_VerifyPassword_FullMethodName    = "/helloworld.v1.User/VerifyPassword"
-	User_ListAddress_FullMethodName       = "/helloworld.v1.User/ListAddress"
-	User_CreateAddress_FullMethodName     = "/helloworld.v1.User/CreateAddress"
-	User_GetAddress_FullMethodName        = "/helloworld.v1.User/GetAddress"
-	User_ListCard_FullMethodName          = "/helloworld.v1.User/ListCard"
-	User_CreateCard_FullMethodName        = "/helloworld.v1.User/CreateCard"
-	User_GetCard_FullMethodName           = "/helloworld.v1.User/GetCard"
-	User_DeleteCard_FullMethodName        = "/helloworld.v1.User/DeleteCard"
+	User_GetUser_FullMethodName           = "/waffle.v1.User/GetUser"
+	User_GetUserByUsername_FullMethodName = "/waffle.v1.User/GetUserByUsername"
+	User_Save_FullMethodName              = "/waffle.v1.User/Save"
+	User_CreateUser_FullMethodName        = "/waffle.v1.User/CreateUser"
+	User_ListUser_FullMethodName          = "/waffle.v1.User/ListUser"
+	User_VerifyPassword_FullMethodName    = "/waffle.v1.User/VerifyPassword"
+	User_ListAddress_FullMethodName       = "/waffle.v1.User/ListAddress"
+	User_CreateAddress_FullMethodName     = "/waffle.v1.User/CreateAddress"
+	User_GetAddress_FullMethodName        = "/waffle.v1.User/GetAddress"
+	User_ListCard_FullMethodName          = "/waffle.v1.User/ListCard"
+	User_CreateCard_FullMethodName        = "/waffle.v1.User/CreateCard"
+	User_GetCard_FullMethodName           = "/waffle.v1.User/GetCard"
+	User_DeleteCard_FullMethodName        = "/waffle.v1.User/DeleteCard"
 )
 
 // UserClient is the client API for User service.
@@ -516,7 +516,7 @@ func _User_DeleteCard_Handler(srv interface{}, ctx context.Context, dec func(int
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "helloworld.v1.User",
+	ServiceName: "waffle.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
