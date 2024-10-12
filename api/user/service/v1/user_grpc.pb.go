@@ -23,15 +23,10 @@ const (
 	User_GetUserByUsername_FullMethodName = "/waffle.v1.User/GetUserByUsername"
 	User_Save_FullMethodName              = "/waffle.v1.User/Save"
 	User_CreateUser_FullMethodName        = "/waffle.v1.User/CreateUser"
-	User_ListUser_FullMethodName          = "/waffle.v1.User/ListUser"
 	User_VerifyPassword_FullMethodName    = "/waffle.v1.User/VerifyPassword"
 	User_ListAddress_FullMethodName       = "/waffle.v1.User/ListAddress"
 	User_CreateAddress_FullMethodName     = "/waffle.v1.User/CreateAddress"
 	User_GetAddress_FullMethodName        = "/waffle.v1.User/GetAddress"
-	User_ListCard_FullMethodName          = "/waffle.v1.User/ListCard"
-	User_CreateCard_FullMethodName        = "/waffle.v1.User/CreateCard"
-	User_GetCard_FullMethodName           = "/waffle.v1.User/GetCard"
-	User_DeleteCard_FullMethodName        = "/waffle.v1.User/DeleteCard"
 )
 
 // UserClient is the client API for User service.
@@ -42,15 +37,10 @@ type UserClient interface {
 	GetUserByUsername(ctx context.Context, in *GetUserByUsernameReq, opts ...grpc.CallOption) (*GetUserByUsernameReply, error)
 	Save(ctx context.Context, in *SaveUserReq, opts ...grpc.CallOption) (*SaveUserReply, error)
 	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserReply, error)
-	ListUser(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserReply, error)
 	VerifyPassword(ctx context.Context, in *VerifyPasswordReq, opts ...grpc.CallOption) (*VerifyPasswordReply, error)
 	ListAddress(ctx context.Context, in *ListAddressReq, opts ...grpc.CallOption) (*ListAddressReply, error)
 	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*CreateAddressReply, error)
 	GetAddress(ctx context.Context, in *GetAddressReq, opts ...grpc.CallOption) (*GetAddressReply, error)
-	ListCard(ctx context.Context, in *ListCardReq, opts ...grpc.CallOption) (*ListCardReply, error)
-	CreateCard(ctx context.Context, in *CreateCardReq, opts ...grpc.CallOption) (*CreateCardReply, error)
-	GetCard(ctx context.Context, in *GetCardReq, opts ...grpc.CallOption) (*GetCardReply, error)
-	DeleteCard(ctx context.Context, in *DeleteCardReq, opts ...grpc.CallOption) (*DeleteCardReply, error)
 }
 
 type userClient struct {
@@ -101,16 +91,6 @@ func (c *userClient) CreateUser(ctx context.Context, in *CreateUserReq, opts ...
 	return out, nil
 }
 
-func (c *userClient) ListUser(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListUserReply)
-	err := c.cc.Invoke(ctx, User_ListUser_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userClient) VerifyPassword(ctx context.Context, in *VerifyPasswordReq, opts ...grpc.CallOption) (*VerifyPasswordReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VerifyPasswordReply)
@@ -151,46 +131,6 @@ func (c *userClient) GetAddress(ctx context.Context, in *GetAddressReq, opts ...
 	return out, nil
 }
 
-func (c *userClient) ListCard(ctx context.Context, in *ListCardReq, opts ...grpc.CallOption) (*ListCardReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListCardReply)
-	err := c.cc.Invoke(ctx, User_ListCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) CreateCard(ctx context.Context, in *CreateCardReq, opts ...grpc.CallOption) (*CreateCardReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateCardReply)
-	err := c.cc.Invoke(ctx, User_CreateCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) GetCard(ctx context.Context, in *GetCardReq, opts ...grpc.CallOption) (*GetCardReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCardReply)
-	err := c.cc.Invoke(ctx, User_GetCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) DeleteCard(ctx context.Context, in *DeleteCardReq, opts ...grpc.CallOption) (*DeleteCardReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteCardReply)
-	err := c.cc.Invoke(ctx, User_DeleteCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
@@ -199,15 +139,10 @@ type UserServer interface {
 	GetUserByUsername(context.Context, *GetUserByUsernameReq) (*GetUserByUsernameReply, error)
 	Save(context.Context, *SaveUserReq) (*SaveUserReply, error)
 	CreateUser(context.Context, *CreateUserReq) (*CreateUserReply, error)
-	ListUser(context.Context, *ListUserReq) (*ListUserReply, error)
 	VerifyPassword(context.Context, *VerifyPasswordReq) (*VerifyPasswordReply, error)
 	ListAddress(context.Context, *ListAddressReq) (*ListAddressReply, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*CreateAddressReply, error)
 	GetAddress(context.Context, *GetAddressReq) (*GetAddressReply, error)
-	ListCard(context.Context, *ListCardReq) (*ListCardReply, error)
-	CreateCard(context.Context, *CreateCardReq) (*CreateCardReply, error)
-	GetCard(context.Context, *GetCardReq) (*GetCardReply, error)
-	DeleteCard(context.Context, *DeleteCardReq) (*DeleteCardReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -230,9 +165,6 @@ func (UnimplementedUserServer) Save(context.Context, *SaveUserReq) (*SaveUserRep
 func (UnimplementedUserServer) CreateUser(context.Context, *CreateUserReq) (*CreateUserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
-func (UnimplementedUserServer) ListUser(context.Context, *ListUserReq) (*ListUserReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListUser not implemented")
-}
 func (UnimplementedUserServer) VerifyPassword(context.Context, *VerifyPasswordReq) (*VerifyPasswordReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyPassword not implemented")
 }
@@ -244,18 +176,6 @@ func (UnimplementedUserServer) CreateAddress(context.Context, *CreateAddressReq)
 }
 func (UnimplementedUserServer) GetAddress(context.Context, *GetAddressReq) (*GetAddressReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAddress not implemented")
-}
-func (UnimplementedUserServer) ListCard(context.Context, *ListCardReq) (*ListCardReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListCard not implemented")
-}
-func (UnimplementedUserServer) CreateCard(context.Context, *CreateCardReq) (*CreateCardReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCard not implemented")
-}
-func (UnimplementedUserServer) GetCard(context.Context, *GetCardReq) (*GetCardReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCard not implemented")
-}
-func (UnimplementedUserServer) DeleteCard(context.Context, *DeleteCardReq) (*DeleteCardReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteCard not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -350,24 +270,6 @@ func _User_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_ListUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListUserReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).ListUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_ListUser_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).ListUser(ctx, req.(*ListUserReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _User_VerifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerifyPasswordReq)
 	if err := dec(in); err != nil {
@@ -440,78 +342,6 @@ func _User_GetAddress_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_ListCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListCardReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).ListCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_ListCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).ListCard(ctx, req.(*ListCardReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_CreateCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCardReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).CreateCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_CreateCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).CreateCard(ctx, req.(*CreateCardReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_GetCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCardReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).GetCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_GetCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetCard(ctx, req.(*GetCardReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_DeleteCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteCardReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).DeleteCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_DeleteCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).DeleteCard(ctx, req.(*DeleteCardReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -536,10 +366,6 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_CreateUser_Handler,
 		},
 		{
-			MethodName: "ListUser",
-			Handler:    _User_ListUser_Handler,
-		},
-		{
 			MethodName: "VerifyPassword",
 			Handler:    _User_VerifyPassword_Handler,
 		},
@@ -554,22 +380,6 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAddress",
 			Handler:    _User_GetAddress_Handler,
-		},
-		{
-			MethodName: "ListCard",
-			Handler:    _User_ListCard_Handler,
-		},
-		{
-			MethodName: "CreateCard",
-			Handler:    _User_CreateCard_Handler,
-		},
-		{
-			MethodName: "GetCard",
-			Handler:    _User_GetCard_Handler,
-		},
-		{
-			MethodName: "DeleteCard",
-			Handler:    _User_DeleteCard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

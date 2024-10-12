@@ -11,7 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"waffle/app/user/service/internal/biz"
 	"waffle/app/user/service/internal/conf"
-	data2 "waffle/app/user/service/internal/data"
+	"waffle/app/user/service/internal/data"
 	"waffle/app/user/service/internal/server"
 	"waffle/app/user/service/internal/service"
 )
@@ -24,12 +24,12 @@ import (
 
 // wireApp init kratos application.
 func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	db := data2.NewDB(confData)
-	dataData, cleanup, err := data2.NewData(confData, logger, db)
+	db := data.NewMysqlClient(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, db)
 	if err != nil {
 		return nil, nil, err
 	}
-	userRepo := data2.NewUserRepo(dataData, logger)
+	userRepo := data.NewUserRepo(dataData, logger)
 	userUseCase := biz.NewUserUseCase(userRepo, logger)
 	userService := service.NewUserService(userUseCase)
 	grpcServer := server.NewGRPCServer(confServer, userService, logger)

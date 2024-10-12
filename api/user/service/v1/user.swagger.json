@@ -38,36 +38,6 @@
         }
       }
     },
-    "ListCardReplyCard": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "cardNo": {
-          "type": "string"
-        },
-        "ccv": {
-          "type": "string"
-        },
-        "expires": {
-          "type": "string"
-        }
-      }
-    },
-    "ListUserReplyUser": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -117,15 +87,6 @@
         }
       }
     },
-    "v1CreateCardReply": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "v1CreateUserReply": {
       "type": "object",
       "properties": {
@@ -135,14 +96,6 @@
         },
         "username": {
           "type": "string"
-        }
-      }
-    },
-    "v1DeleteCardReply": {
-      "type": "object",
-      "properties": {
-        "ok": {
-          "type": "boolean"
         }
       }
     },
@@ -163,24 +116,6 @@
           "type": "string"
         },
         "postCode": {
-          "type": "string"
-        }
-      }
-    },
-    "v1GetCardReply": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "cardNo": {
-          "type": "string"
-        },
-        "ccv": {
-          "type": "string"
-        },
-        "expires": {
           "type": "string"
         }
       }
@@ -217,30 +152,6 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/ListAddressReplyAddress"
-          }
-        }
-      }
-    },
-    "v1ListCardReply": {
-      "type": "object",
-      "properties": {
-        "results": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ListCardReplyCard"
-          }
-        }
-      }
-    },
-    "v1ListUserReply": {
-      "type": "object",
-      "properties": {
-        "results": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ListUserReplyUser"
           }
         }
       }

@@ -9,7 +9,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewUserRepo)
+var ProviderSet = wire.NewSet(NewData, NewMysqlClient, NewUserRepo, NewAddressRepo)
 
 // Data .
 type Data struct {
@@ -17,20 +17,28 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, d *gorm.DB) (*Data, func(), error) {
-	cleanup := func() {
-		log.NewHelper(logger).Info("closing the data resources")
+func NewData(c *conf.Data, logger log.Logger, mysqlClient *gorm.DB) (*Data, func(), error) {
+	log := log.NewHelper(log.With(logger, "module", "user-service/data"))
+	data := &Data{
+		db: mysqlClient,
 	}
-	return &Data{db: d}, cleanup, nil
+	db, _ := data.db.DB()
+	return data, func() {
+		if err := db.Close(); err != nil {
+			log.Error(err)
+		}
+	}, nil
 }
 
-func NewDB(c *conf.Data) *gorm.DB {
+func NewMysqlClient(c *conf.Data, logger log.Logger) *gorm.DB {
+	log := log.NewHelper(log.With(logger, "module", "user-service/data/db"))
+
 	db, err := gorm.Open(mysql.Open(c.Database.Source), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		log.Fatal("failed to connect database")
 	}
 	if err = db.AutoMigrate(); err != nil {
-		panic("failed to Database AutoMigrate")
+		log.Fatal("failed to Database AutoMigrate")
 	}
 	return db
 }

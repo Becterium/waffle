@@ -13,6 +13,7 @@ type UserService struct {
 	v1.UnimplementedUserServer
 
 	uc *biz.UserUseCase
+	ac *biz.AddressUseCase
 }
 
 func NewUserService(uc *biz.UserUseCase) *UserService {
