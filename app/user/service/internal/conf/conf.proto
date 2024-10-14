@@ -39,3 +39,7 @@ message Data {
   Database database = 1;
   Redis redis = 2;
 }
+
+message Auth {
+  string key = 1;
+}
