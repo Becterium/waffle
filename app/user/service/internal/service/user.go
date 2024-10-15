@@ -8,14 +8,9 @@ import (
 )
 
 func (s *UserService) CreateUser(ctx context.Context, req *v1.CreateUserReq) (*v1.CreateUserReply, error) {
-	hashPassword, err2 := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err2 != nil {
-		return nil, err2
-	}
-
 	rv, err := s.uc.Create(ctx, &biz.User{
 		Username: req.Username,
-		Password: string(hashPassword),
+		Password: req.Password,
 	})
 	if err != nil {
 		return nil, err
@@ -63,7 +58,12 @@ func (s *UserService) Save(ctx context.Context, req *v1.SaveUserReq) (*v1.SaveUs
 }
 
 func (s *UserService) VerifyPassword(ctx context.Context, req *v1.VerifyPasswordReq) (*v1.VerifyPasswordReply, error) {
-	rv, err := s.uc.VerifyPassword(ctx, &biz.User{Username: req.Username, Password: req.Password})
+	hashPassword, err2 := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err2 != nil {
+		return nil, err2
+	}
+
+	rv, err := s.uc.VerifyPassword(ctx, &biz.User{Username: req.Username, Password: string(hashPassword)})
 	if err != nil {
 		return nil, err
 	}
