@@ -3,9 +3,12 @@ package data
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	errors2 "errors"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
+	"net/http"
 	"time"
 	"waffle/app/user/service/internal/biz"
 	"waffle/app/user/service/internal/pkg/util"
@@ -15,6 +18,12 @@ var _ biz.UserRepo = (*userRepo)(nil)
 
 var userCacheKey = func(username string) string {
 	return "user_cache_key_" + username
+}
+
+type User struct {
+	gorm.Model
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type userRepo struct {
@@ -35,64 +44,80 @@ func (u *userRepo) CreateUser(ctx context.Context, user *biz.User) (*biz.User, e
 		return nil, err
 	}
 
-	user.Password = string(hashPassword)
+	po := &User{
+		Username: user.Username,
+		Password: hashPassword,
+	}
 
-	result := u.data.db.Create(user)
+	result := u.data.db.Create(po)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return user, nil
+	return &biz.User{Id: int64(po.ID), Username: po.Username}, nil
 }
 
 func (u *userRepo) GetUser(ctx context.Context, id int64) (*biz.User, error) {
 	cacheKey := userCacheKey(fmt.Sprintf("%d", id))
 	target, err := u.getUserFromCache(ctx, cacheKey)
 	if err != nil {
-		//Todo handle error And get target from mysql
+		user := &User{
+			Model: gorm.Model{
+				ID: uint(id),
+			},
+		}
+		result := u.data.db.Find(user)
+		if result.RowsAffected == 0 {
+			return nil, errors2.New("user not found")
+		}
+		if result.Error != nil {
+			return nil, result.Error
+		}
+
+		u.setUserCache(ctx, user, cacheKey)
 		return nil, err
 	}
-	user := &biz.User{
-		Id: id,
-	}
-	result := u.data.db.Find(user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &biz.User{Id: target.Id, Username: target.Username}, nil
+
+	return &biz.User{Id: int64(target.Model.ID), Username: target.Username}, nil
 }
 
 func (u *userRepo) VerifyPassword(ctx context.Context, user *biz.User) (bool, error) {
-	usertar := &biz.User{
+	usertar := &User{
 		Username: user.Username,
 	}
+
 	result := u.data.db.First(usertar)
 	if result.Error != nil {
 		return false, result.Error
 	}
-	if usertar.Password != user.Password {
-		return false, errors.New("mistake password")
+	if pass := util.CheckPasswordHash(usertar.Password, user.Password); pass == true {
+		return pass, nil
+	} else {
+		return false, errors.New(http.StatusUnauthorized, "REGISTER_FAILED", "wrong password")
 	}
-	return true, nil
+
 }
 
 func (u *userRepo) FindByUsername(ctx context.Context, username string) (*biz.User, error) {
-	user := &biz.User{
+	user := &User{
 		Username: username,
 	}
 	result := u.data.db.Last(user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return user, nil
+	return &biz.User{
+		Id:       int64(user.ID),
+		Username: user.Username,
+	}, nil
 }
 
-func (u *userRepo) getUserFromCache(ctx context.Context, key string) (*biz.User, error) {
+func (u *userRepo) getUserFromCache(ctx context.Context, key string) (*User, error) {
 	result, err := u.data.rc.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
-	var cacheUser = &biz.User{}
+	var cacheUser = &User{}
 	err = json.Unmarshal([]byte(result), cacheUser)
 	if err != nil {
 		return nil, err
@@ -100,7 +125,7 @@ func (u *userRepo) getUserFromCache(ctx context.Context, key string) (*biz.User,
 	return cacheUser, nil
 }
 
-func (u *userRepo) serUserCache(ctx context.Context, user *biz.User, key string) {
+func (u *userRepo) setUserCache(ctx context.Context, user *User, key string) {
 	marshal, err := json.Marshal(user)
 	if err != nil {
 		u.log.Errorf("fail to set user cache:json.Marshal(%v) error(%v)", user, err)

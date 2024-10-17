@@ -15,9 +15,9 @@ var (
 )
 
 type User struct {
-	Id       int64
-	Username string
-	Password string
+	Id       int64  `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 // GreeterRepo is a Greater repo.

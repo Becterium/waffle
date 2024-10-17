@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package waffle.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/media/service/v1;v1";
+option java_multiple_files = true;
+option java_package = "dev.waffle.api.media.v1";
+option java_outer_classname = "MediaProtoV1";
+
+service Media{
+  rpc UploadImage(UploadImageReq)returns(UploadImageReply){
+  }
+}
+
+message UploadImageReq {
+  string imagename = 1;
+}
+
+message UploadImageReply{
+  string url = 1;
+}

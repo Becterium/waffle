@@ -42,7 +42,7 @@ func NewMysqlClient(c *conf.Data, logger log.Logger) *gorm.DB {
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}
-	if err = db.AutoMigrate(); err != nil {
+	if err = db.AutoMigrate(&User{}); err != nil {
 		log.Fatal("failed to Database AutoMigrate")
 	}
 	return db
