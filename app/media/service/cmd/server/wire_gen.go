@@ -16,13 +16,20 @@ import (
 	"waffle/app/media/service/internal/service"
 )
 
-import (
-	_ "go.uber.org/automaxprocs"
-)
-
 // Injectors from wire.go:
 
 // wireApp init kratos application.
 func initApp(confServer *conf.Server, logger log.Logger) (*kratos.App, func(), error) {
-
+	dataData, cleanup, err := data.NewData(logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	mediaRepo := data.NewMediaRepo(dataData, logger)
+	mediaUseCase := biz.NewMediaUseCase(mediaRepo, logger)
+	mediaService := service.NewMediaService(mediaUseCase, logger)
+	grpcServer := server.NewGRPCServer(confServer, logger, mediaService)
+	app := newApp(logger, grpcServer)
+	return app, func() {
+		cleanup()
+	}, nil
 }
