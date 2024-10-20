@@ -50,13 +50,6 @@ spec:
         }
     }
     stages {
-      stage('Docker') {
-            steps{
-                script{
-                  sh "docker images"
-                }
-            }
-        }
       stage('Kubernetes') {
           steps{
               script{
@@ -64,5 +57,12 @@ spec:
               }
           }
       }
+      stage('Docker') {
+            steps{
+                script{
+                  sh "docker images"
+                }
+            }
+        }
     }
 }
