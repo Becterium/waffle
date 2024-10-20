@@ -50,12 +50,19 @@ spec:
         }
     }
     stages {
-        stage('Kubernetes') {
+      stage('Docker') {
             steps{
                 script{
-                  sh "echo $KUBECONFIG"
+                  sh "docker images"
                 }
             }
         }
+      stage('Kubernetes') {
+          steps{
+              script{
+                sh "kubectl get node"
+              }
+          }
+      }
     }
 }
