@@ -16,7 +16,7 @@ spec:
   containers:
     - name: jnlp
       image: 192.168.37.130:8009/library/jenkins/inbound-agent-kubectl:jdk17
-      imagePullPolicy: Always
+      imagePullPolicy: IfNotPresent
       resources:
         limits:
           memory: "1Gi"
@@ -58,11 +58,18 @@ spec:
           }
       }
       stage('Docker') {
-            steps{
-                script{
-                  sh "docker images"
-                }
-            }
-        }
+          steps{
+              script{
+                sh "docker images"
+              }
+          }
+      }
+      stage('Code') {
+          steps{
+              script{
+                sh "cat /home/jenkins/agent/workspace/waffle/deploy/kubernetes/minio.yaml"
+              }
+          }
+      }
     }
 }
