@@ -16,7 +16,7 @@ spec:
   containers:
     - name: jnlp
       image: 192.168.37.130:8009/library/jenkins/inbound-agent-kubectl:jdk17
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       resources:
         limits:
           memory: "1Gi"
@@ -36,6 +36,7 @@ spec:
           value: /root/.kube/config
   volumes:
     - name: kube-config
+#k8s集群的kubeconfig
       hostPath:
         path: /etc/kubernetes/admin.conf
         type: File
