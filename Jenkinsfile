@@ -33,7 +33,7 @@ spec:
           mountPath: /usr/bin/docker
       env:
         - name: KUBECONFIG
-          value: /home/jenkins/.kube/config
+          value: /home/jenkins/.kube/admin.conf
   volumes:
     - name: kube-config
 #k8s集群的kubeconfig,需要你手动复制到各个节点,如有更好的解决方法,希望指出
