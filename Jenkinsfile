@@ -53,14 +53,7 @@ spec:
         stage('Kubernetes') {
             steps{
                 script{
-                  sh "kubectl get node"
-                }
-            }
-        }
-        stage('Docker') {
-            steps{
-                script{
-                  sh "docker images"
+                  sh "echo $KUBECONFIG"
                 }
             }
         }
