@@ -12,12 +12,34 @@ option java_outer_classname = "MediaProtoV1";
 service Media{
   rpc UploadImage(UploadImageReq)returns(UploadImageReply){
   }
+  rpc GetImage(GetImageReq)returns(GetImageReply){
+  }
+  rpc UploadVideo(UpLoadVideoReq)returns(UpLoadVideoReply){
+  }
+  rpc GetVideo(GetVideoReq)returns(GetVideoReply){
+  }
 }
 
 message UploadImageReq {
-  string imagename = 1;
+  string image_name = 1;
+  bytes image_data = 2;
+  string image_type = 3;
 }
 
 message UploadImageReply{
   string url = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message UpLoadVideoReq{
+  string video_name = 1;
+  bytes video_data = 2;
+  string video_type = 3;
+}
+
+message UpLoadVideoReply{
+  string url = 1;
+  bool success = 2;
+  string message = 3;
 }

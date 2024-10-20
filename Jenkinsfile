@@ -15,7 +15,7 @@ metadata:
 spec:
   containers:
     - name: jnlp
-      image: 192.168.37.130:8009/library/jenkins/inbound-agent:jdk17
+      image: 192.168.37.130:8009/library/jenkins/inbound-agent-kubectl:jdk17
       imagePullPolicy: IfNotPresent
       resources:
         limits:
@@ -24,14 +24,45 @@ spec:
         requests:
           memory: "512Mi"
           cpu: "500m"
+      volumeMounts:
+        - name: kube-config
+          mountPath: /root/.kube
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+        - name: docker-bin
+        mountPath: /usr/bin/docker
+      env:
+        - name: KUBECONFIG
+          value: /root/.kube/config
+  volumes:
+    - name: kube-config
+      hostPath:
+        path: /etc/kubernetes/admin.conf
+        type: File
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+    - name: docker-bin
+      hostPath:
+        path: /usr/bin/docker
+
 '''
         }
     }
     stages {
-        stage('Checkout') {
+        stage('Kubernetes') {
             steps{
                 script{
-                  sh "sleep 30"
+                  sh "kubectl get node"
+                }
+            }
+        }
+    }
+    stages {
+        stage('Docker') {
+            steps{
+                script{
+                  sh "docker images"
                 }
             }
         }
