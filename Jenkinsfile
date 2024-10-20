@@ -57,8 +57,6 @@ spec:
                 }
             }
         }
-    }
-    stages {
         stage('Docker') {
             steps{
                 script{
