@@ -30,7 +30,7 @@ spec:
         - name: docker-sock
           mountPath: /var/run/docker.sock
         - name: docker-bin
-        mountPath: /usr/bin/docker
+          mountPath: /usr/bin/docker
       env:
         - name: KUBECONFIG
           value: /root/.kube/config
@@ -45,7 +45,6 @@ spec:
     - name: docker-bin
       hostPath:
         path: /usr/bin/docker
-
 '''
         }
     }
