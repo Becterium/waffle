@@ -26,17 +26,17 @@ spec:
           cpu: "500m"
       volumeMounts:
         - name: kube-config
-          mountPath: /root/.kube
+          mountPath: /home/jenkins/.kube
         - name: docker-sock
           mountPath: /var/run/docker.sock
         - name: docker-bin
           mountPath: /usr/bin/docker
       env:
         - name: KUBECONFIG
-          value: /root/.kube/config
+          value: /home/jenkins/.kube/config
   volumes:
     - name: kube-config
-#k8s集群的kubeconfig
+#k8s集群的kubeconfig,需要你手动复制到各个节点,如有更好的解决方法,希望指出
       hostPath:
         path: /etc/kubernetes/admin.conf
         type: File
