@@ -26,7 +26,7 @@ spec:
           cpu: "500m"
       volumeMounts:
         - name: kube-config
-          mountPath: /home/jenkins/.kube
+          mountPath: /home/jenkins/.kube/admin.conf
         - name: docker-sock
           mountPath: /var/run/docker.sock
         - name: docker-bin
