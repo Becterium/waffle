@@ -1,10 +1,17 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devops
+  labels:
+    name: devops
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: minio
   name: minio
-  namespace: moonfdd
+  namespace: devops
 spec:
   replicas: 1
   selector:
@@ -15,22 +22,36 @@ spec:
       labels:
         app: minio
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node01
       containers:
-        - args:
-            - server
-            - /data
-            - '--console-address'
-            - ':9000'
-            - '--address'
-            - ':9090'
+        - name: minio
+          securityContext:
+            runAsUser: 0
+          ports:
+            - containerPort: 9000 
+            - containerPort: 9001 
           env:
-            - name: MINIO_ACCESS_KEY
-              value: admin
-            - name: MINIO_SECRET_KEY
-              value: moonfdd123
-          image: minio/minio
+          - name: MINIO_ROOT_USER
+            value: admin
+          - name: MINIO_ROOT_PASSWORD
+            value: minio12345
+          image: 192.168.37.130:8009/library/bitnami/minio:2024.9.13-debian-12-r0
           imagePullPolicy: IfNotPresent
-          name: minio
+          volumeMounts:
+            - name: minio-data
+              mountPath: /bitnami/minio/data
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"      
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: minio-data
+          hostPath:
+            path: /data/minio
 ---
 apiVersion: v1
 kind: Service
@@ -38,13 +59,17 @@ metadata:
   labels:
     app: minio
   name: minio
-  namespace: moonfdd
+  namespace: devops
 spec:
+  type: NodePort
   ports:
-    - name: 9000-9000
+    - name: minio-web
+      port: 9001
+      targetPort: 9001
+      nodePort: 30001
+    - name: minio-api
       port: 9000
-      protocol: TCP
       targetPort: 9000
+      nodePort: 30000
   selector:
     app: minio
-  type: NodePort

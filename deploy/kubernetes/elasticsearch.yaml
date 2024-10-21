@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: elasticsearch
+  name: elasticsearch
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node02
+      containers:
+        - name: elasticsearch
+          securityContext:
+            runAsUser: 0
+          env:
+            - name: "ELASTICSEARCH_NODE_NAME"
+              value: "elasticsearch-node"
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: transport
+          image: 192.168.37.130:8009/library/bitnami/elasticsearch:8.15.1-debian-12-r2
+          volumeMounts:
+            - name: elasticsearch-data
+              mountPath: /bitnami/elasticsearch/data
+          resources:
+            limits:
+              memory: "1.5Gi"
+              cpu: "1000m"
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: elasticsearch-data
+          hostPath:
+            path: /data/elasticsearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elasticsearch
+  name: elasticsearch
+  namespace: devops
+spec:
+  type: NodePort
+  ports:
+    - name: elasticsearch-web
+      port: 9200
+      targetPort: 9200
+      nodePort: 30002
+    - name: elasticsearch-api
+      port: 9300
+      targetPort: 9300
+      nodePort: 30003
+  selector:
+    app: elasticsearch
