@@ -45,10 +45,82 @@
         }
       }
     },
-    "v1UploadImageReply": {
+    "v1GetImageReply": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uploader": {
+          "type": "string",
+          "title": "user URL"
+        },
+        "category": {
+          "type": "string"
+        },
+        "purity": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "views": {
+          "type": "string",
+          "format": "int64"
+        },
+        "favorites": {
+          "type": "string",
+          "format": "int64"
+        },
+        "link": {
+          "type": "string",
+          "title": "image_URL"
+        },
+        "Thumbnail": {
+          "type": "string",
+          "title": "image_UUID"
+        }
+      }
+    },
+    "v1GetVideoReply": {
+      "type": "object"
+    },
+    "v1UpLoadVideoReply": {
       "type": "object",
       "properties": {
         "url": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1UploadImageReply": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1VerifyUploadImageReply": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
           "type": "string"
         }
       }

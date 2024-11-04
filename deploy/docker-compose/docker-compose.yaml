@@ -9,4 +9,3 @@ services:
     volumes:
       - /data/redis/conf/redis.conf:/etc/redis/redis.conf
       - /data/redis/data:/data
-    command: ["redis-server", "/etc/redis/redis.conf"]

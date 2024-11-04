@@ -19,7 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Media_UploadImage_FullMethodName = "/waffle.v1.Media/UploadImage"
+	Media_UploadImage_FullMethodName       = "/waffle.v1.Media/UploadImage"
+	Media_VerifyUploadImage_FullMethodName = "/waffle.v1.Media/VerifyUploadImage"
+	Media_GetImage_FullMethodName          = "/waffle.v1.Media/GetImage"
+	Media_UploadVideo_FullMethodName       = "/waffle.v1.Media/UploadVideo"
+	Media_GetVideo_FullMethodName          = "/waffle.v1.Media/GetVideo"
 )
 
 // MediaClient is the client API for Media service.
@@ -27,6 +31,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MediaClient interface {
 	UploadImage(ctx context.Context, in *UploadImageReq, opts ...grpc.CallOption) (*UploadImageReply, error)
+	VerifyUploadImage(ctx context.Context, in *VerifyUploadImageReq, opts ...grpc.CallOption) (*VerifyUploadImageReply, error)
+	GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error)
+	UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error)
+	GetVideo(ctx context.Context, in *GetVideoReq, opts ...grpc.CallOption) (*GetVideoReply, error)
 }
 
 type mediaClient struct {
@@ -47,11 +55,55 @@ func (c *mediaClient) UploadImage(ctx context.Context, in *UploadImageReq, opts 
 	return out, nil
 }
 
+func (c *mediaClient) VerifyUploadImage(ctx context.Context, in *VerifyUploadImageReq, opts ...grpc.CallOption) (*VerifyUploadImageReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyUploadImageReply)
+	err := c.cc.Invoke(ctx, Media_VerifyUploadImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetImageReply)
+	err := c.cc.Invoke(ctx, Media_GetImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpLoadVideoReply)
+	err := c.cc.Invoke(ctx, Media_UploadVideo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) GetVideo(ctx context.Context, in *GetVideoReq, opts ...grpc.CallOption) (*GetVideoReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetVideoReply)
+	err := c.cc.Invoke(ctx, Media_GetVideo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MediaServer is the server API for Media service.
 // All implementations must embed UnimplementedMediaServer
 // for forward compatibility.
 type MediaServer interface {
 	UploadImage(context.Context, *UploadImageReq) (*UploadImageReply, error)
+	VerifyUploadImage(context.Context, *VerifyUploadImageReq) (*VerifyUploadImageReply, error)
+	GetImage(context.Context, *GetImageReq) (*GetImageReply, error)
+	UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error)
+	GetVideo(context.Context, *GetVideoReq) (*GetVideoReply, error)
 	mustEmbedUnimplementedMediaServer()
 }
 
@@ -64,6 +116,18 @@ type UnimplementedMediaServer struct{}
 
 func (UnimplementedMediaServer) UploadImage(context.Context, *UploadImageReq) (*UploadImageReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadImage not implemented")
+}
+func (UnimplementedMediaServer) VerifyUploadImage(context.Context, *VerifyUploadImageReq) (*VerifyUploadImageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyUploadImage not implemented")
+}
+func (UnimplementedMediaServer) GetImage(context.Context, *GetImageReq) (*GetImageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
+}
+func (UnimplementedMediaServer) UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadVideo not implemented")
+}
+func (UnimplementedMediaServer) GetVideo(context.Context, *GetVideoReq) (*GetVideoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVideo not implemented")
 }
 func (UnimplementedMediaServer) mustEmbedUnimplementedMediaServer() {}
 func (UnimplementedMediaServer) testEmbeddedByValue()               {}
@@ -104,6 +168,78 @@ func _Media_UploadImage_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Media_VerifyUploadImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyUploadImageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).VerifyUploadImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_VerifyUploadImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).VerifyUploadImage(ctx, req.(*VerifyUploadImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_GetImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetImageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).GetImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_GetImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).GetImage(ctx, req.(*GetImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_UploadVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpLoadVideoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).UploadVideo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_UploadVideo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).UploadVideo(ctx, req.(*UpLoadVideoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_GetVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVideoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).GetVideo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_GetVideo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).GetVideo(ctx, req.(*GetVideoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Media_ServiceDesc is the grpc.ServiceDesc for Media service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +250,22 @@ var Media_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadImage",
 			Handler:    _Media_UploadImage_Handler,
+		},
+		{
+			MethodName: "VerifyUploadImage",
+			Handler:    _Media_VerifyUploadImage_Handler,
+		},
+		{
+			MethodName: "GetImage",
+			Handler:    _Media_GetImage_Handler,
+		},
+		{
+			MethodName: "UploadVideo",
+			Handler:    _Media_UploadVideo_Handler,
+		},
+		{
+			MethodName: "GetVideo",
+			Handler:    _Media_GetVideo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -7,6 +7,7 @@ import "google/protobuf/duration.proto";
 
 message Bootstrap {
   Server server = 1;
+  Minio minio = 2;
 }
 
 message Server {
@@ -22,4 +23,13 @@ message Server {
   }
   HTTP http = 1;
   GRPC grpc = 2;
+}
+
+message Minio{
+  message Client{
+    string endpoint = 1;
+    string key_id = 2;
+    string access_key = 3;
+  }
+  Client client = 1;
 }

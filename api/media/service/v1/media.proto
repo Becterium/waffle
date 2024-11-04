@@ -12,6 +12,8 @@ option java_outer_classname = "MediaProtoV1";
 service Media{
   rpc UploadImage(UploadImageReq)returns(UploadImageReply){
   }
+  rpc VerifyUploadImage(VerifyUploadImageReq)returns(VerifyUploadImageReply){
+  }
   rpc GetImage(GetImageReq)returns(GetImageReply){
   }
   rpc UploadVideo(UpLoadVideoReq)returns(UpLoadVideoReply){
@@ -21,15 +23,39 @@ service Media{
 }
 
 message UploadImageReq {
-  string image_name = 1;
-  bytes image_data = 2;
-  string image_type = 3;
+  string category = 1;
+  string purity = 2;
+  repeated int64 tags = 3;
 }
 
 message UploadImageReply{
-  string url = 1;
-  bool success = 2;
-  string message = 3;
+  string upload_url = 1;
+  string image_url = 2;
+}
+
+message VerifyUploadImageReq{
+  string image_url = 1;
+}
+
+message VerifyUploadImageReply{
+  bool success = 1;
+  string message = 2;
+}
+
+message GetImageReq{
+  string image_url = 1;
+}
+
+message GetImageReply{
+  repeated string tags = 1;
+  string uploader = 2;//user URL
+  string category = 3;
+  string purity = 4;
+  int64 size = 5;
+  int64 views = 6;
+  int64 favorites = 7;
+  string link = 8;//image_URL
+  string Thumbnail = 9;//image_UUID
 }
 
 message UpLoadVideoReq{
@@ -43,3 +69,7 @@ message UpLoadVideoReply{
   bool success = 2;
   string message = 3;
 }
+//todo: Need to define
+message GetVideoReq{}
+
+message GetVideoReply{}

@@ -19,14 +19,17 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func initApp(confServer *conf.Server, logger log.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(logger)
+func initApp(confServer *conf.Server, minio *conf.Minio, logger log.Logger) (*kratos.App, func(), error) {
+	client := data.NewMinioClient(minio, logger)
+	dataData, cleanup, err := data.NewData(client, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	mediaRepo := data.NewMediaRepo(dataData, logger)
 	mediaUseCase := biz.NewMediaUseCase(mediaRepo, logger)
-	mediaService := service.NewMediaService(mediaUseCase, logger)
+	imageRepo := data.NewImageRepo(dataData, logger)
+	imageUseCase := biz.NewImageUseCase(imageRepo, logger)
+	mediaService := service.NewMediaService(mediaUseCase, imageUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, logger, mediaService)
 	app := newApp(logger, grpcServer)
 	return app, func() {

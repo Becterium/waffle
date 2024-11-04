@@ -57,7 +57,6 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
 
 	if err := c.Load(); err != nil {
 		panic(err)
@@ -68,7 +67,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := initApp(bc.Server, logger)
+	app, cleanup, err := initApp(bc.Server, bc.Minio, logger)
 	if err != nil {
 		panic(err)
 	}

@@ -1,8 +1,14 @@
 package biz
 
-import "github.com/go-kratos/kratos/v2/log"
+import (
+	"context"
+	"github.com/go-kratos/kratos/v2/log"
+	v1 "waffle/api/media/service/v1"
+)
 
 type MediaRepo interface {
+	UploadVideo(ctx context.Context) (*v1.UploadImageReply, error)
+	GetVideo(ctx context.Context) (*v1.GetVideoReply, error)
 }
 
 type MediaUseCase struct {
