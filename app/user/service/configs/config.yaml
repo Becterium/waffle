@@ -10,7 +10,7 @@ data:
     driver: mysql
     source: root:Becterium@3@tcp(127.0.0.1:3306)/waffle?charset=utf8mb4&parseTime=True&loc=Local
   redis:
-    addr: 192.168.37.130:6379
+    addr: 192.168.37.134:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
 auth:

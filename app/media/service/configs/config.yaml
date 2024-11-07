@@ -5,8 +5,10 @@ server:
   grpc:
     addr: 0.0.0.0:9000
     timeout: 1s
-Minio:
-  client:
-    endpoint : "192.168.37.100:30000"
-    key_id : "rkcle3LXkm80SWdK2Rni"
-    access_key : "v4Glp37kR3tJGDKTsPUCdzxAmGURgXwY3GkFASth"
+minio:
+    client:
+      endpoint : "192.168.37.100:30000"
+      key_id : "rkcle3LXkm80SWdK2Rni"
+      access_key : "v4Glp37kR3tJGDKTsPUCdzxAmGURgXwY3GkFASth"
+auth:
+  key: some-secret-key

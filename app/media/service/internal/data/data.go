@@ -46,7 +46,7 @@ func NewMinioClient(conf *conf.Minio, logger log.Logger) *minio.Client {
 		Secure: useSSL,
 	})
 	if err != nil {
-		log.Fatalf("minio connect fail :%v", err)
+		log.Fatalf("minio connect fail :%v", err.Error())
 	}
 	return minioClient
 }

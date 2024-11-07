@@ -3,23 +3,9 @@ package data
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"gorm.io/gorm"
 	v1 "waffle/api/media/service/v1"
 	"waffle/app/media/service/internal/biz"
 )
-
-type Images struct {
-	gorm.Model
-	ImageUuid string
-	Category  string
-	Purity    string
-	UserId    int64
-}
-
-type Tags struct {
-	gorm.Model
-	TagName string
-}
 
 type imageRepo struct {
 	data *Data
@@ -33,13 +19,16 @@ func NewImageRepo(data *Data, logger log.Logger) biz.ImageRepo {
 	}
 }
 
-func (m *imageRepo) UploadImage(ctx context.Context, images *Images) (*v1.UploadImageReply, error) {
-	return &v1.UploadImageReply{
-		UploadUrl: "1",
-		ImageUrl:  "2",
-	}, nil
+func (m *imageRepo) UploadImage(ctx context.Context, images *biz.Images) (*v1.UploadImageReply, error) {
+	//todo: 在user实现jwt发布令牌
+	//token, ok := jwt.FromContext(ctx)
+	//if !ok {
+	//	return nil, errors.New("jwt.Parse fail, can`t get auth info")
+	//}
+	//subject, _ := token.GetSubject()
+	//return nil, errors.New(subject)
+	return nil, nil
 }
-
 func (m *imageRepo) VerifyUploadImage(ctx context.Context, imageUrl string) (*v1.VerifyUploadImageReply, error) {
 	return &v1.VerifyUploadImageReply{
 		Success: false,

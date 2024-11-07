@@ -5,15 +5,15 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-
 	"waffle/app/user/service/internal/conf"
 	"waffle/app/user/service/internal/service"
 
+	//jwt5 "github.com/golang-jwt/jwt/v5"
 	v1 "waffle/api/user/service/v1"
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, userService *service.UserService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, ac *conf.Auth, userService *service.UserService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),

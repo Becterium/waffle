@@ -5,17 +5,21 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	v1 "waffle/api/media/service/v1"
+	"waffle/api/media/service/v1"
 	"waffle/app/media/service/internal/conf"
 	"waffle/app/media/service/internal/service"
+	//jwt5 "github.com/golang-jwt/jwt/v5"
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, logger log.Logger, s *service.MediaService) *grpc.Server {
+func NewGRPCServer(c *conf.Server, ac *conf.Auth, logger log.Logger, s *service.MediaService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
+			//jwt.Server(func(token *jwt5.Token) (interface{}, error) {
+			//	return []byte(ac.Key), nil
+			//}, jwt.WithSigningMethod(jwt5.SigningMethodHS256)),
 		),
 	}
 	if c.Grpc.Network != "" {

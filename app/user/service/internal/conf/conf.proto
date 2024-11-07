@@ -1,5 +1,5 @@
 syntax = "proto3";
-package kratos.api;
+package waffle.api;
 
 option go_package = "waffle/internal/conf;conf";
 
@@ -38,6 +38,14 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message Registry {
+  message Consul {
+    string address = 1;
+    string scheme = 2;
+  }
+  Consul consul = 1;
 }
 
 message Auth {

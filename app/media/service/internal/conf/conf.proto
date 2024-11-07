@@ -1,5 +1,5 @@
 syntax = "proto3";
-package kratos.api;
+package waffle.api;
 
 option go_package = "waffle/internal/conf;conf";
 
@@ -8,6 +8,7 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Minio minio = 2;
+  Auth auth = 3;
 }
 
 message Server {
@@ -32,4 +33,16 @@ message Minio{
     string access_key = 3;
   }
   Client client = 1;
+}
+
+message Registry {
+  message Consul {
+    string address = 1;
+    string scheme = 2;
+  }
+  Consul consul = 1;
+}
+
+message Auth {
+  string key = 1;
 }

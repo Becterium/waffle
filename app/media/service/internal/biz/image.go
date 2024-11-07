@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"math/rand"
 	"time"
 	v1 "waffle/api/media/service/v1"
-	"waffle/app/media/service/internal/data"
 )
 
 const (
@@ -15,8 +15,21 @@ const (
 	ClusterNode = 1
 )
 
+type Images struct {
+	gorm.Model
+	ImageUuid string
+	Category  string
+	Purity    string
+	UserId    int64
+}
+
+type Tags struct {
+	gorm.Model
+	TagName string
+}
+
 type ImageRepo interface {
-	UploadImage(ctx context.Context, images *data.Images) (*v1.UploadImageReply, error)
+	UploadImage(ctx context.Context, images *Images) (*v1.UploadImageReply, error)
 	VerifyUploadImage(ctx context.Context, imageUrl string) (*v1.VerifyUploadImageReply, error)
 	GetImage(ctx context.Context, imageUrl string) (*v1.GetImageReply, error)
 }
@@ -54,7 +67,7 @@ func (c *ImageUseCase) Upload(ctx context.Context, req *v1.UploadImageReq) (*v1.
 	if err != nil {
 		return nil, err
 	}
-	return c.ip.UploadImage(ctx, &data.Images{
+	return c.ip.UploadImage(ctx, &Images{
 		ImageUuid: imageUrl,
 		Category:  req.Category,
 		Purity:    req.Purity,
