@@ -25,11 +25,12 @@ type Data struct {
 	uc  userv1.UserClient
 }
 
-func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
-	cleanup := func() {
-		log.NewHelper(logger).Info("closing the data resources")
-	}
-	return &Data{}, cleanup, nil
+func NewData(c *conf.Data, uc userv1.UserClient, logger log.Logger) (*Data, error) {
+	l := log.NewHelper(log.With(logger, "module", "data"))
+	return &Data{
+		log: l,
+		uc:  uc,
+	}, nil
 }
 
 func NewDiscovery(conf *conf.Registry) registry.Discovery {
@@ -57,7 +58,6 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 }
 
 func NewUserServiceClient(ac *conf.Auth, r registry.Discovery) userv1.UserClient {
-
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint("discovery:///waffle.user.service"),

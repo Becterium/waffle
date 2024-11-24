@@ -10,5 +10,13 @@ minio:
       endpoint : "192.168.37.100:30000"
       key_id : "rkcle3LXkm80SWdK2Rni"
       access_key : "v4Glp37kR3tJGDKTsPUCdzxAmGURgXwY3GkFASth"
+data:
+  database:
+    driver: mysql
+    source: root:Becterium@3@tcp(127.0.0.1:3306)/waffle?charset=utf8mb4&parseTime=True&loc=Local
+  redis:
+    addr: 192.168.37.134:6379
+    read_timeout: 0.2s
+    write_timeout: 0.2s
 auth:
   key: some-secret-key

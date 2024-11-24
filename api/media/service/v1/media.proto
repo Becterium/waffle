@@ -10,9 +10,13 @@ option java_package = "dev.waffle.api.media.v1";
 option java_outer_classname = "MediaProtoV1";
 
 service Media{
-  rpc UploadImage(UploadImageReq)returns(UploadImageReply){
+  rpc UploadImages(UploadImagesReq)returns(UploadImagesReply){
   }
-  rpc VerifyUploadImage(VerifyUploadImageReq)returns(VerifyUploadImageReply){
+  rpc UploadUserImage(UploadUserImageReq)returns(UploadUserImageReply){
+  }
+  rpc VerifyUserImageUpload(VerifyUserImageUploadReq)returns(VerifyUserImageUploadReply){
+  }
+  rpc VerifyImagesUpload(VerifyImagesUploadReq)returns(VerifyImagesUploadReply){
   }
   rpc GetImage(GetImageReq)returns(GetImageReply){
   }
@@ -22,22 +26,51 @@ service Media{
   }
 }
 
-message UploadImageReq {
-  string category = 1;
-  string purity = 2;
-  repeated int64 tags = 3;
+message UploadImagesReq {
+  repeated string image_name = 1;
 }
 
-message UploadImageReply{
-  string upload_url = 1;
-  string image_url = 2;
+message UploadImagesReply{
+  message Image {
+    string upload_url = 1;
+    string image_name = 2;
+    string image_uuid = 3;
+  }
+  repeated Image result = 1;
 }
 
-message VerifyUploadImageReq{
-  string image_url = 1;
+message UploadUserImageReq{
+  string image_name = 1;
 }
 
-message VerifyUploadImageReply{
+message UploadUserImageReply{
+  string avatar_url = 1;
+  string avatar_name = 2;
+  string avatar_uuid = 3;
+}
+
+message VerifyUserImageUploadReq{
+  string image_name = 1;
+}
+
+message VerifyUserImageUploadReply{
+  bool success = 1;
+  string message = 2;
+  string avatar_url = 3;
+}
+
+message VerifyImagesUploadReq{
+  message Info {
+    string image_name = 1;
+    string image_uuid = 2;
+    string category = 3;
+    string purity = 4;
+    repeated uint64 tags = 5;
+  }
+  repeated Info image_info = 1;
+}
+
+message VerifyImagesUploadReply{
   bool success = 1;
   string message = 2;
 }

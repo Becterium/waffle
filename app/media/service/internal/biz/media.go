@@ -7,7 +7,7 @@ import (
 )
 
 type MediaRepo interface {
-	UploadVideo(ctx context.Context) (*v1.UploadImageReply, error)
+	UploadVideo(ctx context.Context) (*v1.UpLoadVideoReply, error)
 	GetVideo(ctx context.Context) (*v1.GetVideoReply, error)
 }
 

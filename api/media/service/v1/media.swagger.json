@@ -17,6 +17,44 @@
   ],
   "paths": {},
   "definitions": {
+    "UploadImagesReplyImage": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "string"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "imageUuid": {
+          "type": "string"
+        }
+      }
+    },
+    "VerifyImagesUploadReqInfo": {
+      "type": "object",
+      "properties": {
+        "imageName": {
+          "type": "string"
+        },
+        "imageUuid": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "purity": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          }
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -103,24 +141,53 @@
         }
       }
     },
-    "v1UploadImageReply": {
+    "v1UploadImagesReply": {
       "type": "object",
       "properties": {
-        "uploadUrl": {
+        "result": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/UploadImagesReplyImage"
+          }
+        }
+      }
+    },
+    "v1UploadUserImageReply": {
+      "type": "object",
+      "properties": {
+        "avatarUrl": {
           "type": "string"
         },
-        "imageUrl": {
+        "avatarName": {
+          "type": "string"
+        },
+        "avatarUuid": {
           "type": "string"
         }
       }
     },
-    "v1VerifyUploadImageReply": {
+    "v1VerifyImagesUploadReply": {
       "type": "object",
       "properties": {
         "success": {
           "type": "boolean"
         },
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1VerifyUserImageUploadReply": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        },
+        "avatarUrl": {
           "type": "string"
         }
       }

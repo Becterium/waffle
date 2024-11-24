@@ -19,9 +19,11 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func initApp(confServer *conf.Server, minio *conf.Minio, auth *conf.Auth, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+func initApp(confServer *conf.Server, minio *conf.Minio, auth *conf.Auth, confData *conf.Data, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
 	client := data.NewMinioClient(minio, logger)
-	dataData, cleanup, err := data.NewData(client, logger)
+	db := data.NewMysqlClient(confData, logger)
+	redisClient := data.NewRedisClient(confData, logger)
+	dataData, cleanup, err := data.NewData(client, logger, db, redisClient)
 	if err != nil {
 		return nil, nil, err
 	}

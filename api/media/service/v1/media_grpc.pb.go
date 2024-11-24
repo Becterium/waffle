@@ -19,19 +19,23 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Media_UploadImage_FullMethodName       = "/waffle.v1.Media/UploadImage"
-	Media_VerifyUploadImage_FullMethodName = "/waffle.v1.Media/VerifyUploadImage"
-	Media_GetImage_FullMethodName          = "/waffle.v1.Media/GetImage"
-	Media_UploadVideo_FullMethodName       = "/waffle.v1.Media/UploadVideo"
-	Media_GetVideo_FullMethodName          = "/waffle.v1.Media/GetVideo"
+	Media_UploadImages_FullMethodName          = "/waffle.v1.Media/UploadImages"
+	Media_UploadUserImage_FullMethodName       = "/waffle.v1.Media/UploadUserImage"
+	Media_VerifyUserImageUpload_FullMethodName = "/waffle.v1.Media/VerifyUserImageUpload"
+	Media_VerifyImagesUpload_FullMethodName    = "/waffle.v1.Media/VerifyImagesUpload"
+	Media_GetImage_FullMethodName              = "/waffle.v1.Media/GetImage"
+	Media_UploadVideo_FullMethodName           = "/waffle.v1.Media/UploadVideo"
+	Media_GetVideo_FullMethodName              = "/waffle.v1.Media/GetVideo"
 )
 
 // MediaClient is the client API for Media service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MediaClient interface {
-	UploadImage(ctx context.Context, in *UploadImageReq, opts ...grpc.CallOption) (*UploadImageReply, error)
-	VerifyUploadImage(ctx context.Context, in *VerifyUploadImageReq, opts ...grpc.CallOption) (*VerifyUploadImageReply, error)
+	UploadImages(ctx context.Context, in *UploadImagesReq, opts ...grpc.CallOption) (*UploadImagesReply, error)
+	UploadUserImage(ctx context.Context, in *UploadUserImageReq, opts ...grpc.CallOption) (*UploadUserImageReply, error)
+	VerifyUserImageUpload(ctx context.Context, in *VerifyUserImageUploadReq, opts ...grpc.CallOption) (*VerifyUserImageUploadReply, error)
+	VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error)
 	GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error)
 	UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error)
 	GetVideo(ctx context.Context, in *GetVideoReq, opts ...grpc.CallOption) (*GetVideoReply, error)
@@ -45,20 +49,40 @@ func NewMediaClient(cc grpc.ClientConnInterface) MediaClient {
 	return &mediaClient{cc}
 }
 
-func (c *mediaClient) UploadImage(ctx context.Context, in *UploadImageReq, opts ...grpc.CallOption) (*UploadImageReply, error) {
+func (c *mediaClient) UploadImages(ctx context.Context, in *UploadImagesReq, opts ...grpc.CallOption) (*UploadImagesReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UploadImageReply)
-	err := c.cc.Invoke(ctx, Media_UploadImage_FullMethodName, in, out, cOpts...)
+	out := new(UploadImagesReply)
+	err := c.cc.Invoke(ctx, Media_UploadImages_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *mediaClient) VerifyUploadImage(ctx context.Context, in *VerifyUploadImageReq, opts ...grpc.CallOption) (*VerifyUploadImageReply, error) {
+func (c *mediaClient) UploadUserImage(ctx context.Context, in *UploadUserImageReq, opts ...grpc.CallOption) (*UploadUserImageReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifyUploadImageReply)
-	err := c.cc.Invoke(ctx, Media_VerifyUploadImage_FullMethodName, in, out, cOpts...)
+	out := new(UploadUserImageReply)
+	err := c.cc.Invoke(ctx, Media_UploadUserImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) VerifyUserImageUpload(ctx context.Context, in *VerifyUserImageUploadReq, opts ...grpc.CallOption) (*VerifyUserImageUploadReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyUserImageUploadReply)
+	err := c.cc.Invoke(ctx, Media_VerifyUserImageUpload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyImagesUploadReply)
+	err := c.cc.Invoke(ctx, Media_VerifyImagesUpload_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +123,10 @@ func (c *mediaClient) GetVideo(ctx context.Context, in *GetVideoReq, opts ...grp
 // All implementations must embed UnimplementedMediaServer
 // for forward compatibility.
 type MediaServer interface {
-	UploadImage(context.Context, *UploadImageReq) (*UploadImageReply, error)
-	VerifyUploadImage(context.Context, *VerifyUploadImageReq) (*VerifyUploadImageReply, error)
+	UploadImages(context.Context, *UploadImagesReq) (*UploadImagesReply, error)
+	UploadUserImage(context.Context, *UploadUserImageReq) (*UploadUserImageReply, error)
+	VerifyUserImageUpload(context.Context, *VerifyUserImageUploadReq) (*VerifyUserImageUploadReply, error)
+	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 	GetImage(context.Context, *GetImageReq) (*GetImageReply, error)
 	UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error)
 	GetVideo(context.Context, *GetVideoReq) (*GetVideoReply, error)
@@ -114,11 +140,17 @@ type MediaServer interface {
 // pointer dereference when methods are called.
 type UnimplementedMediaServer struct{}
 
-func (UnimplementedMediaServer) UploadImage(context.Context, *UploadImageReq) (*UploadImageReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UploadImage not implemented")
+func (UnimplementedMediaServer) UploadImages(context.Context, *UploadImagesReq) (*UploadImagesReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadImages not implemented")
 }
-func (UnimplementedMediaServer) VerifyUploadImage(context.Context, *VerifyUploadImageReq) (*VerifyUploadImageReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyUploadImage not implemented")
+func (UnimplementedMediaServer) UploadUserImage(context.Context, *UploadUserImageReq) (*UploadUserImageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadUserImage not implemented")
+}
+func (UnimplementedMediaServer) VerifyUserImageUpload(context.Context, *VerifyUserImageUploadReq) (*VerifyUserImageUploadReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyUserImageUpload not implemented")
+}
+func (UnimplementedMediaServer) VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyImagesUpload not implemented")
 }
 func (UnimplementedMediaServer) GetImage(context.Context, *GetImageReq) (*GetImageReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
@@ -150,38 +182,74 @@ func RegisterMediaServer(s grpc.ServiceRegistrar, srv MediaServer) {
 	s.RegisterService(&Media_ServiceDesc, srv)
 }
 
-func _Media_UploadImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UploadImageReq)
+func _Media_UploadImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadImagesReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MediaServer).UploadImage(ctx, in)
+		return srv.(MediaServer).UploadImages(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Media_UploadImage_FullMethodName,
+		FullMethod: Media_UploadImages_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MediaServer).UploadImage(ctx, req.(*UploadImageReq))
+		return srv.(MediaServer).UploadImages(ctx, req.(*UploadImagesReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Media_VerifyUploadImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyUploadImageReq)
+func _Media_UploadUserImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadUserImageReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MediaServer).VerifyUploadImage(ctx, in)
+		return srv.(MediaServer).UploadUserImage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Media_VerifyUploadImage_FullMethodName,
+		FullMethod: Media_UploadUserImage_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MediaServer).VerifyUploadImage(ctx, req.(*VerifyUploadImageReq))
+		return srv.(MediaServer).UploadUserImage(ctx, req.(*UploadUserImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_VerifyUserImageUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyUserImageUploadReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).VerifyUserImageUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_VerifyUserImageUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).VerifyUserImageUpload(ctx, req.(*VerifyUserImageUploadReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_VerifyImagesUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyImagesUploadReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).VerifyImagesUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_VerifyImagesUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).VerifyImagesUpload(ctx, req.(*VerifyImagesUploadReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,12 +316,20 @@ var Media_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MediaServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UploadImage",
-			Handler:    _Media_UploadImage_Handler,
+			MethodName: "UploadImages",
+			Handler:    _Media_UploadImages_Handler,
 		},
 		{
-			MethodName: "VerifyUploadImage",
-			Handler:    _Media_VerifyUploadImage_Handler,
+			MethodName: "UploadUserImage",
+			Handler:    _Media_UploadUserImage_Handler,
+		},
+		{
+			MethodName: "VerifyUserImageUpload",
+			Handler:    _Media_VerifyUserImageUpload_Handler,
+		},
+		{
+			MethodName: "VerifyImagesUpload",
+			Handler:    _Media_VerifyImagesUpload_Handler,
 		},
 		{
 			MethodName: "GetImage",

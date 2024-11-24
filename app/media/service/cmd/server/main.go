@@ -74,7 +74,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := initApp(bc.Server, bc.Minio, bc.Auth, &rc, logger)
+	app, cleanup, err := initApp(bc.Server, bc.Minio, bc.Auth, bc.Data, &rc, logger)
 	if err != nil {
 		panic(err)
 	}

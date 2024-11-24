@@ -21,7 +21,7 @@ func NewMediaRepo(data *Data, logger log.Logger) biz.MediaRepo {
 	}
 }
 
-func (m *mediaRepo) UploadVideo(ctx context.Context) (*v1.UploadImageReply, error) {
+func (m *mediaRepo) UploadVideo(ctx context.Context) (*v1.UpLoadVideoReply, error) {
 	return nil, nil
 }
 
