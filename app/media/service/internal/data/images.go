@@ -2,12 +2,17 @@ package data
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/minio/minio-go/v7"
+	"github.com/segmentio/kafka-go"
+	"github.com/tx7do/kratos-transport/broker"
 	"gorm.io/gorm"
 	"time"
 	v1 "waffle/api/media/service/v1"
 	"waffle/app/media/service/internal/biz"
+	"waffle/utils/mq_kafka"
 )
 
 type image struct {
@@ -132,7 +137,37 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 				return errF
 			}
 		}
+
+		//向异步处理服务发送消息:向 elasticsearch 存储image信息，要求根据tag可以查到image
+		ImageData := mq_kafka.Image{
+			ImageUuid: storgeImgs[index].ImageUuid,
+			ImageName: storgeImgs[index].ImageName,
+			ImageUrl:  storgeImgs[index].ImageName,
+			Category:  storgeImgs[index].Category,
+			Purity:    storgeImgs[index].Purity,
+			Uploader:  storgeImgs[index].Uploader,
+			Size:      storgeImgs[index].Size,
+			Views:     storgeImgs[index].Views,
+			Tags:      val.Tags,
+		}
+		msgContent, marshalErr := json.Marshal(ImageData)
+		if marshalErr != nil {
+			fmt.Println(fmt.Sprintf("json marshal image err :%s", marshalErr))
+		}
+		msg := kafka.Message{
+			Key:   []byte(val.ImageUuid),
+			Value: msgContent,
+			Time:  time.Time{},
+		}
+		err = m.data.kw.WriteMessages(ctx, msg)
+		if err != nil {
+			fmt.Println(fmt.Sprintf("写入kafka失败，image:%v,err:%v", ImageData, err))
+		}
 	}
+	return nil
+}
+
+func (m *imageRepo) KafkaSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
 	return nil
 }
 

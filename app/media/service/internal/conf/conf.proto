@@ -23,8 +23,16 @@ message Server {
     string addr = 2;
     google.protobuf.Duration timeout = 3;
   }
+  message KAFKA {
+    message Broker {
+      string addr = 1;
+    }
+    Broker broker = 1;
+    string topic = 2;
+  }
   HTTP http = 1;
   GRPC grpc = 2;
+  KAFKA kafka = 3;
 }
 
 message Data {

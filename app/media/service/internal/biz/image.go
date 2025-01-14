@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/kratos-transport/broker"
 	"math/rand"
 	"strings"
 	"time"
 	v1 "waffle/api/media/service/v1"
+	"waffle/utils/mq_kafka"
 )
 
 const (
@@ -40,6 +42,7 @@ type ImageRepo interface {
 	GeneratePutImageURL(ctx context.Context, bucket string, imageName string, limitTime time.Duration) (string, error)
 	SaveImagesInfo(ctx context.Context, images *Images) error
 	SaveAvatarInfo(ctx context.Context, avatarName string) error
+	KafkaSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
 }
 
 type ImageUseCase struct {
@@ -190,4 +193,8 @@ func (c *ImageUseCase) VerifyUserImageUpload(ctx context.Context, req *v1.Verify
 
 func (c *ImageUseCase) Get(ctx context.Context, req *v1.GetImageReq) (*v1.GetImageReply, error) {
 	return c.ip.GetImage(ctx, req.ImageUrl)
+}
+
+func (c *ImageUseCase) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
+	return c.ip.KafkaSaveToElasticsearch(ctx, topic, headers, msg)
 }

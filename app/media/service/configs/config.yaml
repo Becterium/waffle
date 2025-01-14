@@ -5,6 +5,11 @@ server:
   grpc:
     addr: 0.0.0.0:9000
     timeout: 1s
+  kafka:
+    broker:
+      addr: 192.168.37.134:9094
+    topic: "image"
+
 minio:
     client:
       endpoint : "192.168.37.100:30000"

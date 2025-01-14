@@ -7,6 +7,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/redis/go-redis/v9"
+	"github.com/segmentio/kafka-go"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
@@ -18,16 +19,17 @@ const (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewMediaRepo, NewImageRepo, NewMinioClient, NewMysqlClient, NewRedisClient)
+var ProviderSet = wire.NewSet(NewData, NewMediaRepo, NewImageRepo, NewMinioClient, NewMysqlClient, NewRedisClient, NewKafkaWriter)
 
 type Data struct {
 	mc  *minio.Client
 	log *log.Helper
 	db  *gorm.DB
 	rc  *redis.Client
+	kw  *kafka.Writer
 }
 
-func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB, redisClient *redis.Client) (*Data, func(), error) {
+func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB, redisClient *redis.Client, kafkaWriter *kafka.Writer) (*Data, func(), error) {
 
 	log := log.NewHelper(log.With(logger, "module", "media-service/data"))
 
@@ -36,9 +38,12 @@ func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB,
 		log: log,
 		db:  mysqlClient,
 		rc:  redisClient,
+		kw:  kafkaWriter,
 	}
 
 	return d, func() {
+		// todo: 优雅close
+		d.kw.Close()
 	}, nil
 }
 
@@ -92,4 +97,29 @@ func NewMinioClient(conf *conf.Minio, logger log.Logger) *minio.Client {
 		log.Fatalf("minio connect fail :%v", err.Error())
 	}
 	return minioClient
+}
+
+func NewKafkaWriter(conf *conf.Server) *kafka.Writer {
+	writer := kafka.Writer{
+		Addr:                   kafka.TCP(conf.Kafka.Broker.Addr),
+		Topic:                  conf.Kafka.Topic,
+		Balancer:               nil,
+		MaxAttempts:            0,
+		WriteBackoffMin:        0,
+		WriteBackoffMax:        0,
+		BatchSize:              0,
+		BatchBytes:             0,
+		BatchTimeout:           0,
+		ReadTimeout:            0,
+		WriteTimeout:           time.Second,
+		RequiredAcks:           kafka.RequireNone,
+		Async:                  false,
+		Completion:             nil,
+		Compression:            0,
+		Logger:                 nil,
+		ErrorLogger:            nil,
+		Transport:              nil,
+		AllowAutoTopicCreation: false,
+	}
+	return &writer
 }
