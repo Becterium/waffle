@@ -71,5 +71,14 @@ spec:
               }
           }
       }
+      stage('Build'){
+        steps{
+          script{
+            sh "cd /home/jenkins/agent/workspace/waffle"
+            sh "docker build --build-arg APP_RELATIVE_PATH=user/service -t 192.168.37.130:8009/library/user-kartos:latest ."
+            sh "docker push 192.168.37.130:8009/library/user-kartos:latest"
+          }
+        }
+      }
     }
 }

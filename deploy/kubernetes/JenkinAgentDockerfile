@@ -1,0 +1,12 @@
+FROM 192.168.37.130:8009/library/jenkins/inbound-agent:jdk17
+## 源镜像：jenkins/inbound-agent:jdk17
+
+USER root
+
+RUN mkdir -p /usr/local/bin
+
+RUN mkdir -p /home/jenkins/.kube
+
+COPY ./kubectl /usr/local/bin/kubectl
+
+RUN chmod +x /usr/local/bin/kubectl

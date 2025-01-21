@@ -72,3 +72,7 @@ func (s *UserService) VerifyPassword(ctx context.Context, req *v1.VerifyPassword
 		Ok: rv,
 	}, nil
 }
+
+func (s *UserService) InitCache(ctx context.Context, req *v1.InitCacheReq) (*v1.InitCacheReply, error) {
+	return s.uc.InitCache(ctx)
+}

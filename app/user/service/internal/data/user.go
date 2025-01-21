@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 	"time"
 	"waffle/app/user/service/internal/biz"
 	"waffle/app/user/service/internal/pkg/util"
@@ -75,7 +76,7 @@ func (u *userRepo) GetUser(ctx context.Context, id int64) (*biz.User, error) {
 		}
 
 		u.setUserCache(ctx, user, cacheKey)
-		return nil, err
+		return &biz.User{Id: int64(user.ID), Username: user.Username}, err
 	}
 
 	return &biz.User{Id: int64(target.Model.ID), Username: target.Username}, nil
@@ -134,4 +135,21 @@ func (u *userRepo) setUserCache(ctx context.Context, user *User, key string) {
 	if err != nil {
 		u.log.Errorf("fail to set user cache:redis.Set(%v) error(%v)", user, err)
 	}
+}
+
+func (u *userRepo) InitCache(ctx context.Context) (string, error) {
+	users := make([]User, 0)
+	result := u.data.db.Find(&users)
+	// todo: handle users if users is nil
+	for _, val := range users {
+		key := userCacheKey(strconv.Itoa(int(val.ID)))
+		u.setUserCache(ctx, &val, key)
+	}
+	if result.RowsAffected == 0 {
+		return "", errors2.New("")
+	}
+	if result.Error != nil {
+		return "", result.Error
+	}
+	return "", nil
 }

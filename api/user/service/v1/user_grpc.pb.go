@@ -27,6 +27,7 @@ const (
 	User_ListAddress_FullMethodName       = "/waffle.v1.User/ListAddress"
 	User_CreateAddress_FullMethodName     = "/waffle.v1.User/CreateAddress"
 	User_GetAddress_FullMethodName        = "/waffle.v1.User/GetAddress"
+	User_InitCache_FullMethodName         = "/waffle.v1.User/InitCache"
 )
 
 // UserClient is the client API for User service.
@@ -41,6 +42,7 @@ type UserClient interface {
 	ListAddress(ctx context.Context, in *ListAddressReq, opts ...grpc.CallOption) (*ListAddressReply, error)
 	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*CreateAddressReply, error)
 	GetAddress(ctx context.Context, in *GetAddressReq, opts ...grpc.CallOption) (*GetAddressReply, error)
+	InitCache(ctx context.Context, in *InitCacheReq, opts ...grpc.CallOption) (*InitCacheReply, error)
 }
 
 type userClient struct {
@@ -131,6 +133,16 @@ func (c *userClient) GetAddress(ctx context.Context, in *GetAddressReq, opts ...
 	return out, nil
 }
 
+func (c *userClient) InitCache(ctx context.Context, in *InitCacheReq, opts ...grpc.CallOption) (*InitCacheReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InitCacheReply)
+	err := c.cc.Invoke(ctx, User_InitCache_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
@@ -143,6 +155,7 @@ type UserServer interface {
 	ListAddress(context.Context, *ListAddressReq) (*ListAddressReply, error)
 	CreateAddress(context.Context, *CreateAddressReq) (*CreateAddressReply, error)
 	GetAddress(context.Context, *GetAddressReq) (*GetAddressReply, error)
+	InitCache(context.Context, *InitCacheReq) (*InitCacheReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -176,6 +189,9 @@ func (UnimplementedUserServer) CreateAddress(context.Context, *CreateAddressReq)
 }
 func (UnimplementedUserServer) GetAddress(context.Context, *GetAddressReq) (*GetAddressReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAddress not implemented")
+}
+func (UnimplementedUserServer) InitCache(context.Context, *InitCacheReq) (*InitCacheReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitCache not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -342,6 +358,24 @@ func _User_GetAddress_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_InitCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitCacheReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).InitCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_InitCache_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).InitCache(ctx, req.(*InitCacheReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -380,6 +414,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAddress",
 			Handler:    _User_GetAddress_Handler,
+		},
+		{
+			MethodName: "InitCache",
+			Handler:    _User_InitCache_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

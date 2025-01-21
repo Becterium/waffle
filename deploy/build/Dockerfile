@@ -1,4 +1,4 @@
-FROM golang:1.16 AS builder
+FROM 192.168.37.130:8009/library/golang:1.22.7 AS builder
 
 ARG APP_RELATIVE_PATH
 
@@ -7,7 +7,14 @@ WORKDIR /src/app/${APP_RELATIVE_PATH}
 
 RUN GOPROXY=https://goproxy.cn make build
 
-FROM debian:stable-slim
+FROM 192.168.37.130:8009/library/debian:stable-20250113-slim
+
+# 确保 /etc/apt 目录存在
+RUN mkdir -p /etc/apt
+
+# 创建 sources.list 文件并写入内容
+RUN echo "deb http://mirrors.ustc.edu.cn/debian/ stable main" > /etc/apt/sources.list && \
+    echo "deb-src http://mirrors.ustc.edu.cn/debian/ stable main" >> /etc/apt/sources.list
 
 ARG APP_RELATIVE_PATH
 

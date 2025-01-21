@@ -33,6 +33,9 @@ service User {
 
   rpc GetAddress(GetAddressReq) returns (GetAddressReply) {
   }
+
+  rpc InitCache(InitCacheReq) returns (InitCacheReply){
+  }
 }
 
 message GetUserReq {
@@ -124,4 +127,11 @@ message SaveUserReq {
 
 message SaveUserReply {
   int64 id = 1;
+}
+
+message InitCacheReq{
+}
+
+message InitCacheReply{
+  string message = 1;
 }

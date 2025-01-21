@@ -144,6 +144,14 @@
         }
       }
     },
+    "v1InitCacheReply": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1ListAddressReply": {
       "type": "object",
       "properties": {

@@ -1,3 +1,12 @@
+## Docker启动MySQL
+docker run -d --name mysql-server \
+    -e MYSQL_ROOT_USER=root \
+    -e MYSQL_ROOT_PASSWORD=Becterium@3 \
+    -p 3306:3306 \
+    -v /data/mysql/persistence:/bitnami/mysql/data \
+    192.168.37.130:8009/library/mysql:8.4.2
+
+
 ## Docker启动Consul
 docker run -id --name=consul \
   -p 8300:8300 \

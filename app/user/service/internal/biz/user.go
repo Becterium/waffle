@@ -26,6 +26,7 @@ type UserRepo interface {
 	GetUser(ctx context.Context, id int64) (*User, error)
 	VerifyPassword(ctx context.Context, user *User) (bool, error)
 	FindByUsername(ctx context.Context, username string) (*User, error)
+	InitCache(ctx context.Context) (string, error)
 }
 
 type UserUseCase struct {
@@ -71,4 +72,11 @@ func (uc *UserUseCase) Save(ctx context.Context, u *User) (*v1.SaveUserReply, er
 
 func (uc *UserUseCase) VerifyPassword(ctx context.Context, u *User) (bool, error) {
 	return uc.repo.VerifyPassword(ctx, u)
+}
+
+func (uc *UserUseCase) InitCache(ctx context.Context) (*v1.InitCacheReply, error) {
+	message, err := uc.repo.InitCache(ctx)
+	return &v1.InitCacheReply{
+		Message: message,
+	}, err
 }
