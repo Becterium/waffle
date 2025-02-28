@@ -1,0 +1,48 @@
+GET /images/_search
+
+POST /images/_search
+{
+  "query":{
+    "term":{
+      "tags": 2
+    }
+  }
+}
+
+POST /images/_search
+{
+  "query":{
+    "terms":{
+      "tags":[101,203]
+    }
+  }
+}
+
+POST /images/_search
+{
+  "query":{
+    "bool":{
+      "must":[
+        {"term":{"tags":101}},
+        {"term":{"tags":203}}
+      ]
+    }
+  }
+}
+
+
+PUT /images/_doc/uuid-321
+{
+    "imageUuid":"uuid-321",
+    "imageName":"Badew gvvxz",
+    "imageUrl":"https://example.com/galja.jpg",
+    "category":"wallpaper",
+    "purity":"mvp",
+    "uploader":4444,
+    "size":5341000,
+    "views":200,
+    "tags":[
+        505,
+        204
+    ]
+}

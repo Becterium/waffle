@@ -5,7 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
-	jwt5 "github.com/golang-jwt/jwt/v5"
+	jwtv5 "github.com/golang-jwt/jwt/v5"
 	v1 "waffle/api/waffle/interface/v1"
 	"waffle/app/waffle/interface/internal/service"
 
@@ -13,7 +13,6 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"waffle/app/waffle/interface/internal/conf"
-	//jwt5 "github.com/golang-jwt/jwt/v5"
 )
 
 func NewWhiteListMatcher() selector.MatchFunc {
@@ -36,10 +35,10 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, waffle *service.WaffleInterfac
 			recovery.Recovery(),
 			logging.Server(logger),
 			selector.Server(
-				jwt.Server(func(token *jwt5.Token) (interface{}, error) {
-					return []byte(ac.ApiKey), nil
-				}, jwt.WithSigningMethod(jwt5.SigningMethodHS256), jwt.WithClaims(func() jwt5.Claims {
-					return &jwt5.MapClaims{}
+				jwt.Server(func(token *jwtv5.Token) (interface{}, error) {
+					return []byte(ac.JwtKey), nil
+				}, jwt.WithSigningMethod(jwtv5.SigningMethodHS256), jwt.WithClaims(func() jwtv5.Claims {
+					return jwtv5.MapClaims{}
 				})),
 			).
 				Match(NewWhiteListMatcher()).

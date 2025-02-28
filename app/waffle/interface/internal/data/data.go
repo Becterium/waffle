@@ -4,32 +4,33 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
+	mediav1 "waffle/api/media/service/v1"
 	userv1 "waffle/api/user/service/v1"
 	"waffle/app/waffle/interface/internal/conf"
-
-	jwt5 "github.com/golang-jwt/jwt/v5"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewUserRepo, NewDiscovery, NewUserServiceClient, NewRegistrar)
+var ProviderSet = wire.NewSet(NewData, NewUserRepo, NewMediaRepo, NewDiscovery, NewUserServiceClient, NewMediaServiceClient, NewRegistrar)
 
 // Data .
 type Data struct {
 	log *log.Helper
 	uc  userv1.UserClient
+	mc  mediav1.MediaClient
 }
 
-func NewData(c *conf.Data, uc userv1.UserClient, logger log.Logger) (*Data, error) {
+func NewData(uc userv1.UserClient, mc mediav1.MediaClient, logger log.Logger) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
 		log: l,
 		uc:  uc,
+		mc:  mc,
 	}, nil
 }
 
@@ -57,21 +58,36 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	return r
 }
 
-func NewUserServiceClient(ac *conf.Auth, r registry.Discovery) userv1.UserClient {
+func NewUserServiceClient(r registry.Discovery) userv1.UserClient {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint("discovery:///waffle.user.service"),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
-			jwt.Client(func(token *jwt5.Token) (interface{}, error) {
-				return []byte(ac.ServiceKey), nil
-			}, jwt.WithSigningMethod(jwt5.SigningMethodHS256)),
+			metadata.Client(),
 		),
 	)
 	if err != nil {
 		panic(err)
 	}
 	c := userv1.NewUserClient(conn)
+	return c
+}
+
+func NewMediaServiceClient(r registry.Discovery) mediav1.MediaClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint("discovery:///waffle.media.service"),
+		grpc.WithDiscovery(r),
+		grpc.WithMiddleware(
+			recovery.Recovery(),
+			metadata.Client(),
+		),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := mediav1.NewMediaClient(conn)
 	return c
 }

@@ -19,14 +19,24 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationWaffleInterfaceGenerateUploadImgUrl = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
 const OperationWaffleInterfaceLogin = "/waffle.interface.v1.WaffleInterface/Login"
 const OperationWaffleInterfaceLogout = "/waffle.interface.v1.WaffleInterface/Logout"
+const OperationWaffleInterfacePing = "/waffle.interface.v1.WaffleInterface/Ping"
+const OperationWaffleInterfacePingRPC = "/waffle.interface.v1.WaffleInterface/PingRPC"
 const OperationWaffleInterfaceRegister = "/waffle.interface.v1.WaffleInterface/Register"
+const OperationWaffleInterfaceVerifyImagesUpload = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
 
 type WaffleInterfaceHTTPServer interface {
+	// GenerateUploadImgUrl media
+	GenerateUploadImgUrl(context.Context, *GenerateUploadImgUrlReq) (*GenerateUploadImgUrlReply, error)
 	Login(context.Context, *LoginReq) (*LoginReply, error)
 	Logout(context.Context, *LogoutReq) (*LogoutReply, error)
+	Ping(context.Context, *PingReq) (*PingReply, error)
+	PingRPC(context.Context, *PingRPCReq) (*PingRPCReply, error)
+	// Registeruser
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
+	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 }
 
 func RegisterWaffleInterfaceHTTPServer(s *http.Server, srv WaffleInterfaceHTTPServer) {
@@ -34,6 +44,10 @@ func RegisterWaffleInterfaceHTTPServer(s *http.Server, srv WaffleInterfaceHTTPSe
 	r.POST("/v1/register", _WaffleInterface_Register0_HTTP_Handler(srv))
 	r.POST("/v1/login", _WaffleInterface_Login0_HTTP_Handler(srv))
 	r.POST("/v1/logout", _WaffleInterface_Logout0_HTTP_Handler(srv))
+	r.POST("/v1/Ping", _WaffleInterface_Ping0_HTTP_Handler(srv))
+	r.POST("/v1/PingRPC", _WaffleInterface_PingRPC0_HTTP_Handler(srv))
+	r.POST("/v1/GenerateUploadImgUrl", _WaffleInterface_GenerateUploadImgUrl0_HTTP_Handler(srv))
+	r.POST("/v1/VerifyImagesUpload", _WaffleInterface_VerifyImagesUpload0_HTTP_Handler(srv))
 }
 
 func _WaffleInterface_Register0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
@@ -102,10 +116,102 @@ func _WaffleInterface_Logout0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(c
 	}
 }
 
+func _WaffleInterface_Ping0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in PingReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfacePing)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.Ping(ctx, req.(*PingReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*PingReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WaffleInterface_PingRPC0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in PingRPCReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfacePingRPC)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.PingRPC(ctx, req.(*PingRPCReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*PingRPCReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WaffleInterface_GenerateUploadImgUrl0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GenerateUploadImgUrlReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfaceGenerateUploadImgUrl)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GenerateUploadImgUrl(ctx, req.(*GenerateUploadImgUrlReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GenerateUploadImgUrlReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WaffleInterface_VerifyImagesUpload0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in VerifyImagesUploadReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfaceVerifyImagesUpload)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.VerifyImagesUpload(ctx, req.(*VerifyImagesUploadReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*VerifyImagesUploadReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type WaffleInterfaceHTTPClient interface {
+	GenerateUploadImgUrl(ctx context.Context, req *GenerateUploadImgUrlReq, opts ...http.CallOption) (rsp *GenerateUploadImgUrlReply, err error)
 	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *LoginReply, err error)
 	Logout(ctx context.Context, req *LogoutReq, opts ...http.CallOption) (rsp *LogoutReply, err error)
+	Ping(ctx context.Context, req *PingReq, opts ...http.CallOption) (rsp *PingReply, err error)
+	PingRPC(ctx context.Context, req *PingRPCReq, opts ...http.CallOption) (rsp *PingRPCReply, err error)
 	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+	VerifyImagesUpload(ctx context.Context, req *VerifyImagesUploadReq, opts ...http.CallOption) (rsp *VerifyImagesUploadReply, err error)
 }
 
 type WaffleInterfaceHTTPClientImpl struct {
@@ -114,6 +220,19 @@ type WaffleInterfaceHTTPClientImpl struct {
 
 func NewWaffleInterfaceHTTPClient(client *http.Client) WaffleInterfaceHTTPClient {
 	return &WaffleInterfaceHTTPClientImpl{client}
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) GenerateUploadImgUrl(ctx context.Context, in *GenerateUploadImgUrlReq, opts ...http.CallOption) (*GenerateUploadImgUrlReply, error) {
+	var out GenerateUploadImgUrlReply
+	pattern := "/v1/GenerateUploadImgUrl"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfaceGenerateUploadImgUrl))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *WaffleInterfaceHTTPClientImpl) Login(ctx context.Context, in *LoginReq, opts ...http.CallOption) (*LoginReply, error) {
@@ -142,11 +261,50 @@ func (c *WaffleInterfaceHTTPClientImpl) Logout(ctx context.Context, in *LogoutRe
 	return &out, nil
 }
 
+func (c *WaffleInterfaceHTTPClientImpl) Ping(ctx context.Context, in *PingReq, opts ...http.CallOption) (*PingReply, error) {
+	var out PingReply
+	pattern := "/v1/Ping"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfacePing))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) PingRPC(ctx context.Context, in *PingRPCReq, opts ...http.CallOption) (*PingRPCReply, error) {
+	var out PingRPCReply
+	pattern := "/v1/PingRPC"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfacePingRPC))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *WaffleInterfaceHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, opts ...http.CallOption) (*RegisterReply, error) {
 	var out RegisterReply
 	pattern := "/v1/register"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWaffleInterfaceRegister))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...http.CallOption) (*VerifyImagesUploadReply, error) {
+	var out VerifyImagesUploadReply
+	pattern := "/v1/VerifyImagesUpload"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfaceVerifyImagesUpload))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

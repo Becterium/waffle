@@ -8,7 +8,7 @@ docker run -d --name mysql-server \
 
 
 ## Docker启动Consul
-docker run -id --name=consul \
+docker run -id --name=my_consul \
   -p 8300:8300 \
   -p 8301:8301 \
   -p 8302:8302 \

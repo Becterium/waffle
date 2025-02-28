@@ -15,11 +15,13 @@ type WaffleInterface struct {
 
 	log *log.Helper
 	uc  *biz.UserUseCase
+	mc  *biz.MediaUseCase
 }
 
-func NewWaffleInterface(logger log.Logger, uc *biz.UserUseCase) *WaffleInterface {
+func NewWaffleInterface(logger log.Logger, uc *biz.UserUseCase, mc *biz.MediaUseCase) *WaffleInterface {
 	return &WaffleInterface{
 		log: log.NewHelper(log.With(logger, "module", "service/interface")),
 		uc:  uc,
+		mc:  mc,
 	}
 }

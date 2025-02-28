@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package waffle.v1;
+package waffle.user.v1;
 import "errors/errors.proto";
 
 option go_package = "api/user/service/v1;v1";

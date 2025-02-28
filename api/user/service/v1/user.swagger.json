@@ -92,7 +92,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "int64"
+          "format": "uint64"
         },
         "username": {
           "type": "string"
@@ -125,7 +125,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "int64"
+          "format": "uint64"
         },
         "username": {
           "type": "string"
@@ -137,7 +137,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "int64"
+          "format": "uint64"
         },
         "username": {
           "type": "string"
@@ -164,26 +164,25 @@
         }
       }
     },
+    "v1PingReply": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1SaveUserReply": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string",
-          "format": "int64"
+          "format": "uint64"
         }
       }
     },
     "v1VerifyPasswordReply": {
-      "type": "object",
-      "properties": {
-        "ok": {
-          "type": "boolean"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
+      "type": "object"
     }
   }
 }

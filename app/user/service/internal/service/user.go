@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"golang.org/x/crypto/bcrypt"
+	"errors"
+	"github.com/go-kratos/kratos/v2/metadata"
 	v1 "waffle/api/user/service/v1"
 	"waffle/app/user/service/internal/biz"
 )
@@ -16,7 +17,7 @@ func (s *UserService) CreateUser(ctx context.Context, req *v1.CreateUserReq) (*v
 		return nil, err
 	}
 	return &v1.CreateUserReply{
-		Id:       rv.Id,
+		Id:       uint64(rv.Id),
 		Username: rv.Username,
 	}, nil
 }
@@ -27,7 +28,7 @@ func (s *UserService) GetUser(ctx context.Context, req *v1.GetUserReq) (*v1.GetU
 		return nil, err
 	}
 	return &v1.GetUserReply{
-		Id:       rv.Id,
+		Id:       uint64(rv.Id),
 		Username: rv.Username,
 	}, nil
 }
@@ -38,14 +39,13 @@ func (s *UserService) GetUserByUsername(ctx context.Context, req *v1.GetUserByUs
 		return nil, err
 	}
 	return &v1.GetUserByUsernameReply{
-		Id:       rv.Id,
+		Id:       uint64(rv.Id),
 		Username: rv.Username,
 	}, nil
 }
 
 func (s *UserService) Save(ctx context.Context, req *v1.SaveUserReq) (*v1.SaveUserReply, error) {
 	rv, err := s.uc.Save(ctx, &biz.User{
-		Id:       req.GetId(),
 		Username: req.GetUsername(),
 		Password: req.GetPassword(),
 	})
@@ -58,21 +58,22 @@ func (s *UserService) Save(ctx context.Context, req *v1.SaveUserReq) (*v1.SaveUs
 }
 
 func (s *UserService) VerifyPassword(ctx context.Context, req *v1.VerifyPasswordReq) (*v1.VerifyPasswordReply, error) {
-	hashPassword, err2 := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err2 != nil {
-		return nil, err2
-	}
-
-	rv, err := s.uc.VerifyPassword(ctx, &biz.User{Username: req.Username, Password: string(hashPassword)})
+	err := s.uc.VerifyPassword(ctx, &biz.User{Username: req.Username, Password: req.Password})
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.VerifyPasswordReply{
-		Ok: rv,
-	}, nil
+	return &v1.VerifyPasswordReply{}, nil
 }
 
 func (s *UserService) InitCache(ctx context.Context, req *v1.InitCacheReq) (*v1.InitCacheReply, error) {
 	return s.uc.InitCache(ctx)
+}
+
+func (s *UserService) Ping(ctx context.Context, req *v1.PingReq) (*v1.PingReply, error) {
+	if md, ok := metadata.FromServerContext(ctx); ok {
+		userId := md.Get("x-md-local-userId")
+		return &v1.PingReply{Message: userId}, nil
+	}
+	return nil, errors.New("metadata can't get message from server context")
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/tx7do/kratos-transport/broker"
 	v1 "waffle/api/media/service/v1"
-	"waffle/utils/mq_kafka"
+	"waffle/model/mq_kafka"
 )
 
 func (m *MediaService) UploadImages(ctx context.Context, req *v1.UploadImagesReq) (*v1.UploadImagesReply, error) {

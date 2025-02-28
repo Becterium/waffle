@@ -9,5 +9,5 @@ type Image struct {
 	Uploader  int64    `json:"uploader"`
 	Size      int64    `json:"size"`
 	Views     int64    `json:"views"`
-	Tags      []uint64 `json:"tagsx"`
+	Tags      []uint64 `json:"tags"`
 }

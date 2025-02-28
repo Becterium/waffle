@@ -16,6 +16,135 @@
     "application/json"
   ],
   "paths": {
+    "/v1/GenerateUploadImgUrl": {
+      "post": {
+        "summary": "media",
+        "operationId": "WaffleInterface_GenerateUploadImgUrl",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GenerateUploadImgUrlReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1GenerateUploadImgUrlReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
+    "/v1/Ping": {
+      "post": {
+        "operationId": "WaffleInterface_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PingReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1PingReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
+    "/v1/PingRPC": {
+      "post": {
+        "operationId": "WaffleInterface_PingRPC",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PingRPCReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1PingRPCReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
+    "/v1/VerifyImagesUpload": {
+      "post": {
+        "operationId": "WaffleInterface_VerifyImagesUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1VerifyImagesUploadReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1VerifyImagesUploadReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
     "/v1/login": {
       "post": {
         "operationId": "WaffleInterface_Login",
@@ -82,6 +211,7 @@
     },
     "/v1/register": {
       "post": {
+        "summary": "user",
         "operationId": "WaffleInterface_Register",
         "responses": {
           "200": {
@@ -114,6 +244,44 @@
     }
   },
   "definitions": {
+    "GenerateUploadImgUrlReplyImage": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "string"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "imageUuid": {
+          "type": "string"
+        }
+      }
+    },
+    "VerifyImagesUploadReqInfo": {
+      "type": "object",
+      "properties": {
+        "imageName": {
+          "type": "string"
+        },
+        "imageUuid": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "purity": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          }
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -138,6 +306,29 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1GenerateUploadImgUrlReply": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/GenerateUploadImgUrlReplyImage"
+          }
+        }
+      }
+    },
+    "v1GenerateUploadImgUrlReq": {
+      "type": "object",
+      "properties": {
+        "imageName": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -167,12 +358,34 @@
     "v1LogoutReq": {
       "type": "object"
     },
+    "v1PingRPCReply": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1PingRPCReq": {
+      "type": "object"
+    },
+    "v1PingReply": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1PingReq": {
+      "type": "object"
+    },
     "v1RegisterReply": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string",
-          "format": "int64"
+          "format": "uint64"
         }
       }
     },
@@ -184,6 +397,26 @@
         },
         "password": {
           "type": "string"
+        }
+      }
+    },
+    "v1VerifyImagesUploadReply": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1VerifyImagesUploadReq": {
+      "type": "object",
+      "properties": {
+        "imageInfo": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/VerifyImagesUploadReqInfo"
+          }
         }
       }
     }

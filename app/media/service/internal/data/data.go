@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/minio/minio-go/v7"
@@ -19,7 +20,7 @@ const (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewMediaRepo, NewImageRepo, NewMinioClient, NewMysqlClient, NewRedisClient, NewKafkaWriter)
+var ProviderSet = wire.NewSet(NewData, NewMediaRepo, NewImageRepo, NewMinioClient, NewMysqlClient, NewRedisClient, NewKafkaWriter, NewElasticsearchClient)
 
 type Data struct {
 	mc  *minio.Client
@@ -27,6 +28,7 @@ type Data struct {
 	db  *gorm.DB
 	rc  *redis.Client
 	kw  *kafka.Writer
+	es  *elasticsearch.Client
 }
 
 func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB, redisClient *redis.Client, kafkaWriter *kafka.Writer) (*Data, func(), error) {
@@ -61,7 +63,7 @@ func NewMysqlClient(c *conf.Data, logger log.Logger) *gorm.DB {
 }
 
 func NewRedisClient(c *conf.Data, logger log.Logger) *redis.Client {
-	log := log.NewHelper(log.With(logger, "module", "user-service/data/rc"))
+	log := log.NewHelper(log.With(logger, "module", "media-service/data/redis"))
 
 	client := redis.NewClient(&redis.Options{
 		Addr:         c.Redis.Addr,
@@ -82,7 +84,7 @@ func NewRedisClient(c *conf.Data, logger log.Logger) *redis.Client {
 }
 
 func NewMinioClient(conf *conf.Minio, logger log.Logger) *minio.Client {
-	log := log.NewHelper(log.With(logger, "module", "user-service/data/ent"))
+	log := log.NewHelper(log.With(logger, "module", "media-service/data/minio"))
 	endpoint := conf.Client.GetEndpoint()
 	accessKeyID := conf.Client.GetKeyId()
 	secretAccessKey := conf.Client.GetAccessKey()
@@ -99,7 +101,7 @@ func NewMinioClient(conf *conf.Minio, logger log.Logger) *minio.Client {
 	return minioClient
 }
 
-func NewKafkaWriter(conf *conf.Server) *kafka.Writer {
+func NewKafkaWriter(conf *conf.Server, logger log.Logger) *kafka.Writer {
 	writer := kafka.Writer{
 		Addr:                   kafka.TCP(conf.Kafka.Broker.Addr),
 		Topic:                  conf.Kafka.Topic,
@@ -122,4 +124,15 @@ func NewKafkaWriter(conf *conf.Server) *kafka.Writer {
 		AllowAutoTopicCreation: false,
 	}
 	return &writer
+}
+
+func NewElasticsearchClient(conf *conf.Data, logger log.Logger) *elasticsearch.Client {
+	log := log.NewHelper(log.With(logger, "module", "media-service/data/elasticsearch"))
+	client, err := elasticsearch.NewClient(elasticsearch.Config{
+		Addresses: []string{conf.Elasticsearch.Addr},
+	})
+	if err != nil {
+		log.Fatalf("Elasticsearch connect fail :%v", err.Error())
+	}
+	return client
 }

@@ -13,15 +13,18 @@ server:
 minio:
     client:
       endpoint : "192.168.37.100:30000"
-      key_id : "rkcle3LXkm80SWdK2Rni"
-      access_key : "v4Glp37kR3tJGDKTsPUCdzxAmGURgXwY3GkFASth"
+      key_id : "Ecr5leJ27JhQTPgsXFV1"
+      access_key : "OuScJDks4d16FYUjBg5NzsM0UCCnwtsjrNAeUjxc"
 data:
   database:
     driver: mysql
-    source: root:Becterium@3@tcp(127.0.0.1:3306)/waffle?charset=utf8mb4&parseTime=True&loc=Local
+    source: root:Becterium@3@tcp(192.168.37.134:3306)/waffle?charset=utf8mb4&parseTime=True&loc=Local
   redis:
     addr: 192.168.37.134:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+  elasticsearch:
+    addr: http://192.168.37.100:30002
+
 auth:
   key: some-secret-key

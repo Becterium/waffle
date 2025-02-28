@@ -55,10 +55,10 @@ func (u *userRepo) CreateUser(ctx context.Context, user *biz.User) (*biz.User, e
 		return nil, result.Error
 	}
 
-	return &biz.User{Id: int64(po.ID), Username: po.Username}, nil
+	return &biz.User{Id: po.ID, Username: po.Username}, nil
 }
 
-func (u *userRepo) GetUser(ctx context.Context, id int64) (*biz.User, error) {
+func (u *userRepo) GetUser(ctx context.Context, id uint64) (*biz.User, error) {
 	cacheKey := userCacheKey(fmt.Sprintf("%d", id))
 	target, err := u.getUserFromCache(ctx, cacheKey)
 	if err != nil {
@@ -76,25 +76,25 @@ func (u *userRepo) GetUser(ctx context.Context, id int64) (*biz.User, error) {
 		}
 
 		u.setUserCache(ctx, user, cacheKey)
-		return &biz.User{Id: int64(user.ID), Username: user.Username}, err
+		return &biz.User{Id: user.ID, Username: user.Username}, err
 	}
 
-	return &biz.User{Id: int64(target.Model.ID), Username: target.Username}, nil
+	return &biz.User{Id: target.Model.ID, Username: target.Username}, nil
 }
 
-func (u *userRepo) VerifyPassword(ctx context.Context, user *biz.User) (bool, error) {
-	usertar := &User{
+func (u *userRepo) VerifyPassword(ctx context.Context, user *biz.User) error {
+	findUser := &User{
 		Username: user.Username,
 	}
 
-	result := u.data.db.First(usertar)
+	result := u.data.db.First(&findUser)
 	if result.Error != nil {
-		return false, result.Error
+		return result.Error
 	}
-	if pass := util.CheckPasswordHash(usertar.Password, user.Password); pass == true {
-		return pass, nil
+	if pass := util.CheckPasswordHash(findUser.Password, user.Password); pass == true {
+		return nil
 	} else {
-		return false, errors.New(http.StatusUnauthorized, "REGISTER_FAILED", "wrong password")
+		return errors.New(http.StatusUnauthorized, "REGISTER_FAILED", "wrong password")
 	}
 
 }
@@ -108,7 +108,7 @@ func (u *userRepo) FindByUsername(ctx context.Context, username string) (*biz.Us
 		return nil, result.Error
 	}
 	return &biz.User{
-		Id:       int64(user.ID),
+		Id:       user.ID,
 		Username: user.Username,
 	}, nil
 }

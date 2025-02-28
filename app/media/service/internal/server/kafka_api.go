@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"waffle/utils/mq_kafka"
+	"waffle/model/mq_kafka"
 
 	"github.com/tx7do/kratos-transport/broker"
 )

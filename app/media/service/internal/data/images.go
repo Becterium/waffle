@@ -1,8 +1,10 @@
 package data
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/minio/minio-go/v7"
@@ -12,9 +14,20 @@ import (
 	"time"
 	v1 "waffle/api/media/service/v1"
 	"waffle/app/media/service/internal/biz"
-	"waffle/utils/mq_kafka"
+	"waffle/model/mq_kafka"
 )
 
+//	img := image{
+//		Model:     gorm.Model{},
+//		ImageUuid: "N1IT4IN",
+//		ImageName: "wallpaper-N1IT4IN.png",
+//		ImageUrl:  "http://192.168.37.100:30000/images/wallpaper-N1IT4IN.png",
+//		Category:  "General",
+//		Purity:    "SFW",
+//		Uploader:  210,
+//		Size:      15,
+//		Views:     9582,
+//	}
 type image struct {
 	gorm.Model
 	ImageUuid string
@@ -113,7 +126,7 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 		img := image{
 			ImageUuid: val.ImageUuid,
 			ImageName: val.ImageName,
-			ImageUrl:  "http://192.168.37.100:30001/image/" + val.ImageName,
+			ImageUrl:  "http://192.168.37.100:30000/image/" + val.ImageName,
 			Category:  val.Category,
 			Purity:    val.Purity,
 			Uploader:  int64(index), // todo: 如果有设置token的话，要从token中获得userID,参考/TODO/aim.md
@@ -168,6 +181,30 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 }
 
 func (m *imageRepo) KafkaSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
+	data, _ := json.Marshal(msg)
+
+	res, err := m.data.es.Index(
+		"images",
+		bytes.NewReader(data),
+		m.data.es.Index.WithDocumentID(msg.ImageUuid),
+	)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("media/data/KafkaSaveToElasticsearch fail to save image to ES, error: %v", err))
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		return errors.New(fmt.Sprintf("Error response: %s", res.String()))
+	} else {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			log.Fatalf("Error parsing the response body: %s", err)
+		} else {
+			fmt.Printf("Document indexed with ID: %s\n", r["_id"])
+		}
+	}
 	return nil
 }
 

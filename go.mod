@@ -4,6 +4,7 @@ go 1.22.7
 
 require (
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/elastic/go-elasticsearch/v8 v8.17.0
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20241105072421-f8b97f675b32
 	github.com/go-kratos/kratos/v2 v2.8.2
 	github.com/golang-jwt/jwt/v5 v5.1.0
@@ -11,6 +12,8 @@ require (
 	github.com/hashicorp/consul/api v1.30.0
 	github.com/minio/minio-go/v7 v7.0.80
 	github.com/redis/go-redis/v9 v9.6.2
+	github.com/segmentio/kafka-go v0.4.47
+	github.com/tx7do/kratos-transport v1.1.12
 	github.com/tx7do/kratos-transport/transport/kafka v1.2.18
 	go.uber.org/automaxprocs v1.5.1
 	golang.org/x/crypto v0.29.0
@@ -30,6 +33,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.6.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
@@ -62,8 +66,6 @@ require (
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/rs/xid v1.6.0 // indirect
-	github.com/segmentio/kafka-go v0.4.47 // indirect
-	github.com/tx7do/kratos-transport v1.1.12 // indirect
 	github.com/tx7do/kratos-transport/broker/kafka v1.2.17 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect

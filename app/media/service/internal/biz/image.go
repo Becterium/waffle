@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 	v1 "waffle/api/media/service/v1"
-	"waffle/utils/mq_kafka"
+	"waffle/model/mq_kafka"
 )
 
 const (
@@ -18,9 +18,9 @@ const (
 	ClusterNode        = 1
 	LibImageRedisKey   = "LibImage"
 	AvatarRedisKey     = "Avatar"
-	LibImageBucketName = "Image"
-	AvatarBucketName   = "Avatar"
-	TimeToPresignedPut = time.Hour * 24
+	LibImageBucketName = "images"
+	AvatarBucketName   = "avatar"
+	TimeToPresignedPut = time.Minute * 10
 )
 
 type Image struct {
@@ -57,6 +57,7 @@ func NewImageUseCase(repo ImageRepo, logger log.Logger) *ImageUseCase {
 	}
 }
 
+// generate uuid like this "zkgz5yy"
 func generateShortUUID() (string, error) {
 	// Create a new Node with a Node number of 1
 	node, err := snowflake.NewNode(int64(ClusterNode))
@@ -88,7 +89,7 @@ func (c *ImageUseCase) ImagesUpload(ctx context.Context, req *v1.UploadImagesReq
 			}
 		}
 		split := strings.Split(name, ".")
-		imageName := "wallpaper-" + uid + split[len(split)-1]
+		imageName := "wallpaper-" + uid + "." + split[len(split)-1]
 		url, err := c.ip.GeneratePutImageURL(ctx, LibImageBucketName, imageName, TimeToPresignedPut)
 		if err != nil {
 			return nil, err
@@ -115,7 +116,7 @@ func (c *ImageUseCase) UserImageUpload(ctx context.Context, req *v1.UploadUserIm
 		}
 	}
 	split := strings.Split(req.ImageName, ".")
-	name := "avatar-" + uid + split[len(split)-1]
+	name := "avatar-" + uid + "." + split[len(split)-1]
 	url, err := c.ip.GeneratePutImageURL(ctx, AvatarBucketName, name, TimeToPresignedPut)
 	if err != nil {
 		return nil, err

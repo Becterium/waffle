@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package waffle.v1;
+package waffle.user.v1;
 
 import "google/api/annotations.proto";
 
@@ -34,16 +34,20 @@ service User {
   rpc GetAddress(GetAddressReq) returns (GetAddressReply) {
   }
 
-  rpc InitCache(InitCacheReq) returns (InitCacheReply){
+  rpc InitCache(InitCacheReq) returns (InitCacheReply) {
+  }
+
+  rpc Ping(PingReq) returns (PingReply) {
+
   }
 }
 
 message GetUserReq {
-  int64 id = 1;
+  uint64 id = 1;
 }
 
 message GetUserReply {
-  int64 id = 1;
+  uint64 id = 1;
   string username = 2;
 }
 
@@ -52,7 +56,7 @@ message GetUserByUsernameReq {
 }
 
 message GetUserByUsernameReply {
-  int64 id = 1;
+  uint64 id = 1;
   string username = 2;
 }
 
@@ -62,7 +66,7 @@ message CreateUserReq {
 }
 
 message CreateUserReply {
-  int64 id = 1;
+  uint64 id = 1;
   string username = 2;
 }
 
@@ -72,8 +76,6 @@ message VerifyPasswordReq {
 }
 
 message VerifyPasswordReply {
-  bool ok = 1;
-  int64 id = 2;
 }
 
 message ListAddressReq {
@@ -126,12 +128,20 @@ message SaveUserReq {
 }
 
 message SaveUserReply {
-  int64 id = 1;
+  uint64 id = 1;
 }
 
-message InitCacheReq{
+message InitCacheReq {
 }
 
-message InitCacheReply{
+message InitCacheReply {
+  string message = 1;
+}
+
+message PingReq {
+
+}
+
+message PingReply {
   string message = 1;
 }

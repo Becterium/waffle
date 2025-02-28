@@ -19,15 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_GetUser_FullMethodName           = "/waffle.v1.User/GetUser"
-	User_GetUserByUsername_FullMethodName = "/waffle.v1.User/GetUserByUsername"
-	User_Save_FullMethodName              = "/waffle.v1.User/Save"
-	User_CreateUser_FullMethodName        = "/waffle.v1.User/CreateUser"
-	User_VerifyPassword_FullMethodName    = "/waffle.v1.User/VerifyPassword"
-	User_ListAddress_FullMethodName       = "/waffle.v1.User/ListAddress"
-	User_CreateAddress_FullMethodName     = "/waffle.v1.User/CreateAddress"
-	User_GetAddress_FullMethodName        = "/waffle.v1.User/GetAddress"
-	User_InitCache_FullMethodName         = "/waffle.v1.User/InitCache"
+	User_GetUser_FullMethodName           = "/waffle.user.v1.User/GetUser"
+	User_GetUserByUsername_FullMethodName = "/waffle.user.v1.User/GetUserByUsername"
+	User_Save_FullMethodName              = "/waffle.user.v1.User/Save"
+	User_CreateUser_FullMethodName        = "/waffle.user.v1.User/CreateUser"
+	User_VerifyPassword_FullMethodName    = "/waffle.user.v1.User/VerifyPassword"
+	User_ListAddress_FullMethodName       = "/waffle.user.v1.User/ListAddress"
+	User_CreateAddress_FullMethodName     = "/waffle.user.v1.User/CreateAddress"
+	User_GetAddress_FullMethodName        = "/waffle.user.v1.User/GetAddress"
+	User_InitCache_FullMethodName         = "/waffle.user.v1.User/InitCache"
+	User_Ping_FullMethodName              = "/waffle.user.v1.User/Ping"
 )
 
 // UserClient is the client API for User service.
@@ -43,6 +44,7 @@ type UserClient interface {
 	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*CreateAddressReply, error)
 	GetAddress(ctx context.Context, in *GetAddressReq, opts ...grpc.CallOption) (*GetAddressReply, error)
 	InitCache(ctx context.Context, in *InitCacheReq, opts ...grpc.CallOption) (*InitCacheReply, error)
+	Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingReply, error)
 }
 
 type userClient struct {
@@ -143,6 +145,16 @@ func (c *userClient) InitCache(ctx context.Context, in *InitCacheReq, opts ...gr
 	return out, nil
 }
 
+func (c *userClient) Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingReply)
+	err := c.cc.Invoke(ctx, User_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
@@ -156,6 +168,7 @@ type UserServer interface {
 	CreateAddress(context.Context, *CreateAddressReq) (*CreateAddressReply, error)
 	GetAddress(context.Context, *GetAddressReq) (*GetAddressReply, error)
 	InitCache(context.Context, *InitCacheReq) (*InitCacheReply, error)
+	Ping(context.Context, *PingReq) (*PingReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -192,6 +205,9 @@ func (UnimplementedUserServer) GetAddress(context.Context, *GetAddressReq) (*Get
 }
 func (UnimplementedUserServer) InitCache(context.Context, *InitCacheReq) (*InitCacheReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitCache not implemented")
+}
+func (UnimplementedUserServer) Ping(context.Context, *PingReq) (*PingReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -376,11 +392,29 @@ func _User_InitCache_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_Ping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Ping(ctx, req.(*PingReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "waffle.v1.User",
+	ServiceName: "waffle.user.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -418,6 +452,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InitCache",
 			Handler:    _User_InitCache_Handler,
+		},
+		{
+			MethodName: "Ping",
+			Handler:    _User_Ping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

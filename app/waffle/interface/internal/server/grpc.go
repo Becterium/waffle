@@ -19,7 +19,7 @@ func NewGRPCServer(c *conf.Server, ac *conf.Auth, waffle *service.WaffleInterfac
 			recovery.Recovery(),
 			logging.Server(logger),
 			jwt.Server(func(token *jwt5.Token) (interface{}, error) {
-				return []byte(ac.ApiKey), nil
+				return []byte(ac.JwtKey), nil
 			}, jwt.WithSigningMethod(jwt5.SigningMethodHS256)),
 		),
 	}

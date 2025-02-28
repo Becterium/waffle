@@ -8,6 +8,8 @@ option go_package = "api/waffle/interface/v1;v1";
 
 
 service WaffleInterface {
+
+  //user
   rpc Register (RegisterReq) returns (RegisterReply) {
     option (google.api.http) = {
       post: "/v1/register"
@@ -28,6 +30,35 @@ service WaffleInterface {
       body: "*"
     };
   }
+
+  rpc Ping (PingReq) returns (PingReply) {
+    option (google.api.http) = {
+      post: "/v1/Ping"
+      body: "*"
+    };
+  }
+
+  rpc PingRPC(PingRPCReq) returns (PingRPCReply){
+    option (google.api.http) = {
+      post: "/v1/PingRPC"
+      body: "*"
+    };
+  }
+
+  // media
+  rpc GenerateUploadImgUrl(GenerateUploadImgUrlReq) returns (GenerateUploadImgUrlReply){
+    option (google.api.http) = {
+      post: "/v1/GenerateUploadImgUrl"
+      body: "*"
+    };
+  }
+
+  rpc VerifyImagesUpload(VerifyImagesUploadReq)returns(VerifyImagesUploadReply){
+    option (google.api.http) = {
+      post: "/v1/VerifyImagesUpload"
+      body: "*"
+    };
+  }
 }
 
 message RegisterReq {
@@ -36,7 +67,7 @@ message RegisterReq {
 }
 
 message RegisterReply {
-  int64 id = 1;
+  uint64 id = 1;
 }
 
 message LoginReq {
@@ -54,4 +85,48 @@ message LogoutReq {
 
 message LogoutReply {
 
+}
+
+message PingReq {
+
+}
+
+message PingReply {
+  string message = 1;
+}
+
+message PingRPCReq {
+
+}
+
+message PingRPCReply {
+  string message = 1;
+}
+
+message GenerateUploadImgUrlReq {
+  repeated string image_name = 1;
+}
+
+message GenerateUploadImgUrlReply {
+  message Image {
+    string upload_url = 1;
+    string image_name = 2;
+    string image_uuid = 3;
+  }
+  repeated Image result = 1;
+}
+
+message VerifyImagesUploadReq {
+  message Info {
+    string image_name = 1;
+    string image_uuid = 2;
+    string category = 3;
+    string purity = 4;
+    repeated uint64 tags = 5;
+  }
+  repeated Info image_info = 1;
+}
+
+message VerifyImagesUploadReply {
+  string message = 1;
 }

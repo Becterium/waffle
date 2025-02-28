@@ -23,7 +23,7 @@ func initApp(confServer *conf.Server, minio *conf.Minio, auth *conf.Auth, confDa
 	client := data.NewMinioClient(minio, logger)
 	db := data.NewMysqlClient(confData, logger)
 	redisClient := data.NewRedisClient(confData, logger)
-	writer := data.NewKafkaWriter(confServer)
+	writer := data.NewKafkaWriter(confServer, logger)
 	dataData, cleanup, err := data.NewData(client, logger, db, redisClient, writer)
 	if err != nil {
 		return nil, nil, err

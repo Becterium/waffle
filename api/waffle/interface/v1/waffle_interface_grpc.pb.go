@@ -19,18 +19,28 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WaffleInterface_Register_FullMethodName = "/waffle.interface.v1.WaffleInterface/Register"
-	WaffleInterface_Login_FullMethodName    = "/waffle.interface.v1.WaffleInterface/Login"
-	WaffleInterface_Logout_FullMethodName   = "/waffle.interface.v1.WaffleInterface/Logout"
+	WaffleInterface_Register_FullMethodName             = "/waffle.interface.v1.WaffleInterface/Register"
+	WaffleInterface_Login_FullMethodName                = "/waffle.interface.v1.WaffleInterface/Login"
+	WaffleInterface_Logout_FullMethodName               = "/waffle.interface.v1.WaffleInterface/Logout"
+	WaffleInterface_Ping_FullMethodName                 = "/waffle.interface.v1.WaffleInterface/Ping"
+	WaffleInterface_PingRPC_FullMethodName              = "/waffle.interface.v1.WaffleInterface/PingRPC"
+	WaffleInterface_GenerateUploadImgUrl_FullMethodName = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
+	WaffleInterface_VerifyImagesUpload_FullMethodName   = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
 )
 
 // WaffleInterfaceClient is the client API for WaffleInterface service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WaffleInterfaceClient interface {
+	//user
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterReply, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginReply, error)
 	Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*LogoutReply, error)
+	Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingReply, error)
+	PingRPC(ctx context.Context, in *PingRPCReq, opts ...grpc.CallOption) (*PingRPCReply, error)
+	// media
+	GenerateUploadImgUrl(ctx context.Context, in *GenerateUploadImgUrlReq, opts ...grpc.CallOption) (*GenerateUploadImgUrlReply, error)
+	VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error)
 }
 
 type waffleInterfaceClient struct {
@@ -71,13 +81,59 @@ func (c *waffleInterfaceClient) Logout(ctx context.Context, in *LogoutReq, opts 
 	return out, nil
 }
 
+func (c *waffleInterfaceClient) Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *waffleInterfaceClient) PingRPC(ctx context.Context, in *PingRPCReq, opts ...grpc.CallOption) (*PingRPCReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingRPCReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_PingRPC_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *waffleInterfaceClient) GenerateUploadImgUrl(ctx context.Context, in *GenerateUploadImgUrlReq, opts ...grpc.CallOption) (*GenerateUploadImgUrlReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenerateUploadImgUrlReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_GenerateUploadImgUrl_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *waffleInterfaceClient) VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyImagesUploadReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_VerifyImagesUpload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WaffleInterfaceServer is the server API for WaffleInterface service.
 // All implementations must embed UnimplementedWaffleInterfaceServer
 // for forward compatibility.
 type WaffleInterfaceServer interface {
+	//user
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
 	Login(context.Context, *LoginReq) (*LoginReply, error)
 	Logout(context.Context, *LogoutReq) (*LogoutReply, error)
+	Ping(context.Context, *PingReq) (*PingReply, error)
+	PingRPC(context.Context, *PingRPCReq) (*PingRPCReply, error)
+	// media
+	GenerateUploadImgUrl(context.Context, *GenerateUploadImgUrlReq) (*GenerateUploadImgUrlReply, error)
+	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 	mustEmbedUnimplementedWaffleInterfaceServer()
 }
 
@@ -96,6 +152,18 @@ func (UnimplementedWaffleInterfaceServer) Login(context.Context, *LoginReq) (*Lo
 }
 func (UnimplementedWaffleInterfaceServer) Logout(context.Context, *LogoutReq) (*LogoutReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) Ping(context.Context, *PingReq) (*PingReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) PingRPC(context.Context, *PingRPCReq) (*PingRPCReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PingRPC not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) GenerateUploadImgUrl(context.Context, *GenerateUploadImgUrlReq) (*GenerateUploadImgUrlReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateUploadImgUrl not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyImagesUpload not implemented")
 }
 func (UnimplementedWaffleInterfaceServer) mustEmbedUnimplementedWaffleInterfaceServer() {}
 func (UnimplementedWaffleInterfaceServer) testEmbeddedByValue()                         {}
@@ -172,6 +240,78 @@ func _WaffleInterface_Logout_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WaffleInterface_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_Ping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).Ping(ctx, req.(*PingReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WaffleInterface_PingRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingRPCReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).PingRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_PingRPC_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).PingRPC(ctx, req.(*PingRPCReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WaffleInterface_GenerateUploadImgUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateUploadImgUrlReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).GenerateUploadImgUrl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_GenerateUploadImgUrl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).GenerateUploadImgUrl(ctx, req.(*GenerateUploadImgUrlReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WaffleInterface_VerifyImagesUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyImagesUploadReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).VerifyImagesUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_VerifyImagesUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).VerifyImagesUpload(ctx, req.(*VerifyImagesUploadReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WaffleInterface_ServiceDesc is the grpc.ServiceDesc for WaffleInterface service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +330,22 @@ var WaffleInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _WaffleInterface_Logout_Handler,
+		},
+		{
+			MethodName: "Ping",
+			Handler:    _WaffleInterface_Ping_Handler,
+		},
+		{
+			MethodName: "PingRPC",
+			Handler:    _WaffleInterface_PingRPC_Handler,
+		},
+		{
+			MethodName: "GenerateUploadImgUrl",
+			Handler:    _WaffleInterface_GenerateUploadImgUrl_Handler,
+		},
+		{
+			MethodName: "VerifyImagesUpload",
+			Handler:    _WaffleInterface_VerifyImagesUpload_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

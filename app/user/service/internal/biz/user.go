@@ -3,7 +3,6 @@ package biz
 import (
 	"context"
 	"errors"
-	"math/rand"
 	v1 "waffle/api/user/service/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -15,7 +14,7 @@ var (
 )
 
 type User struct {
-	Id       int64  `json:"id"`
+	Id       uint   `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -23,8 +22,8 @@ type User struct {
 // GreeterRepo is a Greater repo.
 type UserRepo interface {
 	CreateUser(ctx context.Context, user *User) (*User, error)
-	GetUser(ctx context.Context, id int64) (*User, error)
-	VerifyPassword(ctx context.Context, user *User) (bool, error)
+	GetUser(ctx context.Context, id uint64) (*User, error)
+	VerifyPassword(ctx context.Context, user *User) error
 	FindByUsername(ctx context.Context, username string) (*User, error)
 	InitCache(ctx context.Context) (string, error)
 }
@@ -46,7 +45,7 @@ func (uc *UserUseCase) Create(ctx context.Context, u *User) (*User, error) {
 	return out, nil
 }
 
-func (uc *UserUseCase) Get(ctx context.Context, id int64) (*User, error) {
+func (uc *UserUseCase) Get(ctx context.Context, id uint64) (*User, error) {
 	return uc.repo.GetUser(ctx, id)
 }
 
@@ -55,22 +54,21 @@ func (uc *UserUseCase) FindByUsername(ctx context.Context, username string) (*Us
 }
 
 func (uc *UserUseCase) Save(ctx context.Context, u *User) (*v1.SaveUserReply, error) {
-	user := &User{
-		Id:       rand.Int63(),
+	in := &User{
 		Username: u.Username,
 		Password: u.Password,
 	}
-	_, err := uc.repo.CreateUser(ctx, user)
+	user, err := uc.repo.CreateUser(ctx, in)
 	if err != nil {
 		// todo: handle error
 		return nil, err
 	}
 	return &v1.SaveUserReply{
-		Id: user.Id,
+		Id: uint64(user.Id),
 	}, nil
 }
 
-func (uc *UserUseCase) VerifyPassword(ctx context.Context, u *User) (bool, error) {
+func (uc *UserUseCase) VerifyPassword(ctx context.Context, u *User) error {
 	return uc.repo.VerifyPassword(ctx, u)
 }
 

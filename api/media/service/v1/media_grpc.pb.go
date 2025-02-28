@@ -19,13 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Media_UploadImages_FullMethodName          = "/waffle.v1.Media/UploadImages"
-	Media_UploadUserImage_FullMethodName       = "/waffle.v1.Media/UploadUserImage"
-	Media_VerifyUserImageUpload_FullMethodName = "/waffle.v1.Media/VerifyUserImageUpload"
-	Media_VerifyImagesUpload_FullMethodName    = "/waffle.v1.Media/VerifyImagesUpload"
-	Media_GetImage_FullMethodName              = "/waffle.v1.Media/GetImage"
-	Media_UploadVideo_FullMethodName           = "/waffle.v1.Media/UploadVideo"
-	Media_GetVideo_FullMethodName              = "/waffle.v1.Media/GetVideo"
+	Media_UploadImages_FullMethodName          = "/waffle.media.v1.Media/UploadImages"
+	Media_UploadUserImage_FullMethodName       = "/waffle.media.v1.Media/UploadUserImage"
+	Media_VerifyUserImageUpload_FullMethodName = "/waffle.media.v1.Media/VerifyUserImageUpload"
+	Media_VerifyImagesUpload_FullMethodName    = "/waffle.media.v1.Media/VerifyImagesUpload"
+	Media_GetImage_FullMethodName              = "/waffle.media.v1.Media/GetImage"
+	Media_UploadVideo_FullMethodName           = "/waffle.media.v1.Media/UploadVideo"
+	Media_GetVideo_FullMethodName              = "/waffle.media.v1.Media/GetVideo"
 )
 
 // MediaClient is the client API for Media service.
@@ -312,7 +312,7 @@ func _Media_GetVideo_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Media_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "waffle.v1.Media",
+	ServiceName: "waffle.media.v1.Media",
 	HandlerType: (*MediaServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

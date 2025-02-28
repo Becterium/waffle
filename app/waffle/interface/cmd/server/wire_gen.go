@@ -23,16 +23,19 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
+func initApp(confServer *conf.Server, registry *conf.Registry, auth *conf.Auth, logger log.Logger) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
-	userClient := data.NewUserServiceClient(auth, discovery)
-	dataData, err := data.NewData(confData, userClient, logger)
+	userClient := data.NewUserServiceClient(discovery)
+	mediaClient := data.NewMediaServiceClient(discovery)
+	dataData, err := data.NewData(userClient, mediaClient, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	userRepo := data.NewUserRepo(dataData, logger)
 	userUseCase := biz.NewUserUseCase(auth, userRepo, logger)
-	waffleInterface := service.NewWaffleInterface(logger, userUseCase)
+	mediaRepo := data.NewMediaRepo(dataData, logger)
+	mediaUseCase := biz.NewMediaUseCase(mediaRepo, logger)
+	waffleInterface := service.NewWaffleInterface(logger, userUseCase, mediaUseCase)
 	grpcServer := server.NewGRPCServer(confServer, auth, waffleInterface, logger)
 	httpServer := server.NewHTTPServer(confServer, auth, waffleInterface, logger)
 	registrar := data.NewRegistrar(registry)
