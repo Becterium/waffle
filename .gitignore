@@ -26,4 +26,5 @@ go.work.sum
 
 .idea
 
-**/bin/
+# 忽略bin目录
+bin/

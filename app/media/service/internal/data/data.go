@@ -31,7 +31,7 @@ type Data struct {
 	es  *elasticsearch.Client
 }
 
-func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB, redisClient *redis.Client, kafkaWriter *kafka.Writer) (*Data, func(), error) {
+func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB, redisClient *redis.Client, kafkaWriter *kafka.Writer, ESClient *elasticsearch.Client) (*Data, func(), error) {
 
 	log := log.NewHelper(log.With(logger, "module", "media-service/data"))
 
@@ -41,6 +41,7 @@ func NewData(minioClient *minio.Client, logger log.Logger, mysqlClient *gorm.DB,
 		db:  mysqlClient,
 		rc:  redisClient,
 		kw:  kafkaWriter,
+		es:  ESClient,
 	}
 
 	return d, func() {
@@ -56,7 +57,8 @@ func NewMysqlClient(c *conf.Data, logger log.Logger) *gorm.DB {
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}
-	if err = db.AutoMigrate(&image{}, &tag{}, &imageTag{}, &avatar{}); err != nil {
+
+	if err = db.AutoMigrate(&image{}, &imageTag{}, &avatar{}, &tag{}); err != nil {
 		log.Fatal("failed to Database AutoMigrate")
 	}
 	return db
@@ -103,17 +105,17 @@ func NewMinioClient(conf *conf.Minio, logger log.Logger) *minio.Client {
 
 func NewKafkaWriter(conf *conf.Server, logger log.Logger) *kafka.Writer {
 	writer := kafka.Writer{
-		Addr:                   kafka.TCP(conf.Kafka.Broker.Addr),
-		Topic:                  conf.Kafka.Topic,
-		Balancer:               nil,
-		MaxAttempts:            0,
+		Addr:                   kafka.TCP(conf.Kafka.Addrs...),
+		Topic:                  "image",
+		Balancer:               &kafka.Hash{},
+		MaxAttempts:            3,
 		WriteBackoffMin:        0,
 		WriteBackoffMax:        0,
 		BatchSize:              0,
 		BatchBytes:             0,
 		BatchTimeout:           0,
 		ReadTimeout:            0,
-		WriteTimeout:           time.Second,
+		WriteTimeout:           3 * time.Second,
 		RequiredAcks:           kafka.RequireNone,
 		Async:                  false,
 		Completion:             nil,

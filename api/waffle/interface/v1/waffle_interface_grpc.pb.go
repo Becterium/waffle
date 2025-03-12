@@ -19,13 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WaffleInterface_Register_FullMethodName             = "/waffle.interface.v1.WaffleInterface/Register"
-	WaffleInterface_Login_FullMethodName                = "/waffle.interface.v1.WaffleInterface/Login"
-	WaffleInterface_Logout_FullMethodName               = "/waffle.interface.v1.WaffleInterface/Logout"
-	WaffleInterface_Ping_FullMethodName                 = "/waffle.interface.v1.WaffleInterface/Ping"
-	WaffleInterface_PingRPC_FullMethodName              = "/waffle.interface.v1.WaffleInterface/PingRPC"
-	WaffleInterface_GenerateUploadImgUrl_FullMethodName = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
-	WaffleInterface_VerifyImagesUpload_FullMethodName   = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
+	WaffleInterface_Register_FullMethodName                    = "/waffle.interface.v1.WaffleInterface/Register"
+	WaffleInterface_Login_FullMethodName                       = "/waffle.interface.v1.WaffleInterface/Login"
+	WaffleInterface_Logout_FullMethodName                      = "/waffle.interface.v1.WaffleInterface/Logout"
+	WaffleInterface_Ping_FullMethodName                        = "/waffle.interface.v1.WaffleInterface/Ping"
+	WaffleInterface_PingRPC_FullMethodName                     = "/waffle.interface.v1.WaffleInterface/PingRPC"
+	WaffleInterface_GenerateUploadImgUrl_FullMethodName        = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
+	WaffleInterface_VerifyImagesUpload_FullMethodName          = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
+	WaffleInterface_AddImageTag_FullMethodName                 = "/waffle.interface.v1.WaffleInterface/AddImageTag"
+	WaffleInterface_SearchImageTagByNameLike_FullMethodName    = "/waffle.interface.v1.WaffleInterface/SearchImageTagByNameLike"
+	WaffleInterface_ReloadCategoryRedisImageTag_FullMethodName = "/waffle.interface.v1.WaffleInterface/ReloadCategoryRedisImageTag"
 )
 
 // WaffleInterfaceClient is the client API for WaffleInterface service.
@@ -41,6 +44,10 @@ type WaffleInterfaceClient interface {
 	// media
 	GenerateUploadImgUrl(ctx context.Context, in *GenerateUploadImgUrlReq, opts ...grpc.CallOption) (*GenerateUploadImgUrlReply, error)
 	VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error)
+	// image - tag
+	AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error)
+	SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error)
+	ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...grpc.CallOption) (*ReloadCategoryRedisImageTagReply, error)
 }
 
 type waffleInterfaceClient struct {
@@ -121,6 +128,36 @@ func (c *waffleInterfaceClient) VerifyImagesUpload(ctx context.Context, in *Veri
 	return out, nil
 }
 
+func (c *waffleInterfaceClient) AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddImageTagReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_AddImageTag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *waffleInterfaceClient) SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchImageTagByNameLikeReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_SearchImageTagByNameLike_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *waffleInterfaceClient) ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...grpc.CallOption) (*ReloadCategoryRedisImageTagReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReloadCategoryRedisImageTagReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_ReloadCategoryRedisImageTag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WaffleInterfaceServer is the server API for WaffleInterface service.
 // All implementations must embed UnimplementedWaffleInterfaceServer
 // for forward compatibility.
@@ -134,6 +171,10 @@ type WaffleInterfaceServer interface {
 	// media
 	GenerateUploadImgUrl(context.Context, *GenerateUploadImgUrlReq) (*GenerateUploadImgUrlReply, error)
 	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
+	// image - tag
+	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
+	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
+	ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error)
 	mustEmbedUnimplementedWaffleInterfaceServer()
 }
 
@@ -164,6 +205,15 @@ func (UnimplementedWaffleInterfaceServer) GenerateUploadImgUrl(context.Context, 
 }
 func (UnimplementedWaffleInterfaceServer) VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyImagesUpload not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddImageTag not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchImageTagByNameLike not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReloadCategoryRedisImageTag not implemented")
 }
 func (UnimplementedWaffleInterfaceServer) mustEmbedUnimplementedWaffleInterfaceServer() {}
 func (UnimplementedWaffleInterfaceServer) testEmbeddedByValue()                         {}
@@ -312,6 +362,60 @@ func _WaffleInterface_VerifyImagesUpload_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WaffleInterface_AddImageTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddImageTagReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).AddImageTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_AddImageTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).AddImageTag(ctx, req.(*AddImageTagReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WaffleInterface_SearchImageTagByNameLike_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchImageTagByNameLikeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).SearchImageTagByNameLike(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_SearchImageTagByNameLike_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).SearchImageTagByNameLike(ctx, req.(*SearchImageTagByNameLikeReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WaffleInterface_ReloadCategoryRedisImageTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReloadCategoryRedisImageTagReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).ReloadCategoryRedisImageTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_ReloadCategoryRedisImageTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).ReloadCategoryRedisImageTag(ctx, req.(*ReloadCategoryRedisImageTagReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WaffleInterface_ServiceDesc is the grpc.ServiceDesc for WaffleInterface service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -346,6 +450,18 @@ var WaffleInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyImagesUpload",
 			Handler:    _WaffleInterface_VerifyImagesUpload_Handler,
+		},
+		{
+			MethodName: "AddImageTag",
+			Handler:    _WaffleInterface_AddImageTag_Handler,
+		},
+		{
+			MethodName: "SearchImageTagByNameLike",
+			Handler:    _WaffleInterface_SearchImageTagByNameLike_Handler,
+		},
+		{
+			MethodName: "ReloadCategoryRedisImageTag",
+			Handler:    _WaffleInterface_ReloadCategoryRedisImageTag_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

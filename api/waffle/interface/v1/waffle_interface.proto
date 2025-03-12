@@ -59,6 +59,26 @@ service WaffleInterface {
       body: "*"
     };
   }
+
+  // image - tag
+  rpc AddImageTag(AddImageTagReq)returns(AddImageTagReply){
+    option (google.api.http) = {
+      post: "/v1/AddImageTag"
+      body: "*"
+    };
+  }
+  rpc SearchImageTagByNameLike(SearchImageTagByNameLikeReq)returns(SearchImageTagByNameLikeReply){
+    option (google.api.http) = {
+      post: "/v1/SearchImageTagByNameLike"
+      body: "*"
+    };
+  }
+  rpc ReloadCategoryRedisImageTag(ReloadCategoryRedisImageTagReq)returns(ReloadCategoryRedisImageTagReply){
+    option (google.api.http) = {
+      post: "/v1/ReloadCategoryRedisImageTag"
+      body: "*"
+    };
+  }
 }
 
 message RegisterReq {
@@ -130,3 +150,28 @@ message VerifyImagesUploadReq {
 message VerifyImagesUploadReply {
   string message = 1;
 }
+
+// image -tag
+message AddImageTagReq{
+  string name = 1;
+  string parentName = 2;
+}
+
+message AddImageTagReply{
+}
+
+message SearchImageTagByNameLikeReq{
+  string name = 1;
+}
+
+message SearchImageTagByNameLikeReply{
+  message Tags {
+    string name = 1;
+    int64 id =2;
+  }
+  repeated Tags tags = 1;
+}
+
+message ReloadCategoryRedisImageTagReq{}
+
+message ReloadCategoryRedisImageTagReply{}

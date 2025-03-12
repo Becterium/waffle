@@ -1,20 +1,20 @@
 server:
   http:
     addr: 0.0.0.0:8000
-    timeout: 1s
+    timeout: 5s
   grpc:
     addr: 0.0.0.0:9000
-    timeout: 1s
+    timeout: 5s
   kafka:
-    broker:
-      addr: 192.168.37.134:9094
-    topic: "image"
+    addrs:
+      - 192.168.37.134:9094
+
 
 minio:
     client:
       endpoint : "192.168.37.100:30000"
-      key_id : "Ecr5leJ27JhQTPgsXFV1"
-      access_key : "OuScJDks4d16FYUjBg5NzsM0UCCnwtsjrNAeUjxc"
+      key_id : "9kvM1l0d0R7xhZMcfb9K"
+      access_key : "4ji0Be6Jptu7PoWeV8to1HTUP9zVbpFZTsSrMKd4"
 data:
   database:
     driver: mysql

@@ -27,6 +27,18 @@ func (m *MediaService) GetImage(ctx context.Context, req *v1.GetImageReq) (*v1.G
 	return m.ic.Get(ctx, req)
 }
 
+func (m *MediaService) AddImageTag(ctx context.Context, in *v1.AddImageTagReq) (*v1.AddImageTagReply, error) {
+	return m.ic.AddImageTag(ctx, in)
+}
+
+func (m *MediaService) SearchImageTagByNameLike(ctx context.Context, in *v1.SearchImageTagByNameLikeReq) (*v1.SearchImageTagByNameLikeReply, error) {
+	return m.ic.SearchImageTagByNameLike(ctx, in)
+}
+
+func (m *MediaService) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
+	return m.ic.ReloadCategoryRedisImageTag(ctx, req)
+}
+
 func (m *MediaService) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
 	return m.ic.HandleKafkaImageSaveToElasticsearch(ctx, topic, headers, msg)
 }

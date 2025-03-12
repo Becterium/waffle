@@ -19,24 +19,33 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Media_UploadImages_FullMethodName          = "/waffle.media.v1.Media/UploadImages"
-	Media_UploadUserImage_FullMethodName       = "/waffle.media.v1.Media/UploadUserImage"
-	Media_VerifyUserImageUpload_FullMethodName = "/waffle.media.v1.Media/VerifyUserImageUpload"
-	Media_VerifyImagesUpload_FullMethodName    = "/waffle.media.v1.Media/VerifyImagesUpload"
-	Media_GetImage_FullMethodName              = "/waffle.media.v1.Media/GetImage"
-	Media_UploadVideo_FullMethodName           = "/waffle.media.v1.Media/UploadVideo"
-	Media_GetVideo_FullMethodName              = "/waffle.media.v1.Media/GetVideo"
+	Media_UploadImages_FullMethodName                = "/waffle.media.v1.Media/UploadImages"
+	Media_UploadUserImage_FullMethodName             = "/waffle.media.v1.Media/UploadUserImage"
+	Media_VerifyUserImageUpload_FullMethodName       = "/waffle.media.v1.Media/VerifyUserImageUpload"
+	Media_VerifyImagesUpload_FullMethodName          = "/waffle.media.v1.Media/VerifyImagesUpload"
+	Media_GetImage_FullMethodName                    = "/waffle.media.v1.Media/GetImage"
+	Media_AddImageTag_FullMethodName                 = "/waffle.media.v1.Media/AddImageTag"
+	Media_SearchImageTagByNameLike_FullMethodName    = "/waffle.media.v1.Media/SearchImageTagByNameLike"
+	Media_ReloadCategoryRedisImageTag_FullMethodName = "/waffle.media.v1.Media/ReloadCategoryRedisImageTag"
+	Media_UploadVideo_FullMethodName                 = "/waffle.media.v1.Media/UploadVideo"
+	Media_GetVideo_FullMethodName                    = "/waffle.media.v1.Media/GetVideo"
 )
 
 // MediaClient is the client API for Media service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MediaClient interface {
+	// image
 	UploadImages(ctx context.Context, in *UploadImagesReq, opts ...grpc.CallOption) (*UploadImagesReply, error)
 	UploadUserImage(ctx context.Context, in *UploadUserImageReq, opts ...grpc.CallOption) (*UploadUserImageReply, error)
 	VerifyUserImageUpload(ctx context.Context, in *VerifyUserImageUploadReq, opts ...grpc.CallOption) (*VerifyUserImageUploadReply, error)
 	VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error)
 	GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error)
+	// image - tag
+	AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error)
+	SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error)
+	ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...grpc.CallOption) (*ReloadCategoryRedisImageTagReply, error)
+	// video
 	UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error)
 	GetVideo(ctx context.Context, in *GetVideoReq, opts ...grpc.CallOption) (*GetVideoReply, error)
 }
@@ -99,6 +108,36 @@ func (c *mediaClient) GetImage(ctx context.Context, in *GetImageReq, opts ...grp
 	return out, nil
 }
 
+func (c *mediaClient) AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddImageTagReply)
+	err := c.cc.Invoke(ctx, Media_AddImageTag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchImageTagByNameLikeReply)
+	err := c.cc.Invoke(ctx, Media_SearchImageTagByNameLike_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...grpc.CallOption) (*ReloadCategoryRedisImageTagReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReloadCategoryRedisImageTagReply)
+	err := c.cc.Invoke(ctx, Media_ReloadCategoryRedisImageTag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mediaClient) UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpLoadVideoReply)
@@ -123,11 +162,17 @@ func (c *mediaClient) GetVideo(ctx context.Context, in *GetVideoReq, opts ...grp
 // All implementations must embed UnimplementedMediaServer
 // for forward compatibility.
 type MediaServer interface {
+	// image
 	UploadImages(context.Context, *UploadImagesReq) (*UploadImagesReply, error)
 	UploadUserImage(context.Context, *UploadUserImageReq) (*UploadUserImageReply, error)
 	VerifyUserImageUpload(context.Context, *VerifyUserImageUploadReq) (*VerifyUserImageUploadReply, error)
 	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 	GetImage(context.Context, *GetImageReq) (*GetImageReply, error)
+	// image - tag
+	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
+	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
+	ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error)
+	// video
 	UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error)
 	GetVideo(context.Context, *GetVideoReq) (*GetVideoReply, error)
 	mustEmbedUnimplementedMediaServer()
@@ -154,6 +199,15 @@ func (UnimplementedMediaServer) VerifyImagesUpload(context.Context, *VerifyImage
 }
 func (UnimplementedMediaServer) GetImage(context.Context, *GetImageReq) (*GetImageReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
+}
+func (UnimplementedMediaServer) AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddImageTag not implemented")
+}
+func (UnimplementedMediaServer) SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchImageTagByNameLike not implemented")
+}
+func (UnimplementedMediaServer) ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReloadCategoryRedisImageTag not implemented")
 }
 func (UnimplementedMediaServer) UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadVideo not implemented")
@@ -272,6 +326,60 @@ func _Media_GetImage_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Media_AddImageTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddImageTagReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).AddImageTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_AddImageTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).AddImageTag(ctx, req.(*AddImageTagReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_SearchImageTagByNameLike_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchImageTagByNameLikeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).SearchImageTagByNameLike(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_SearchImageTagByNameLike_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).SearchImageTagByNameLike(ctx, req.(*SearchImageTagByNameLikeReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_ReloadCategoryRedisImageTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReloadCategoryRedisImageTagReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).ReloadCategoryRedisImageTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_ReloadCategoryRedisImageTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).ReloadCategoryRedisImageTag(ctx, req.(*ReloadCategoryRedisImageTagReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Media_UploadVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpLoadVideoReq)
 	if err := dec(in); err != nil {
@@ -334,6 +442,18 @@ var Media_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetImage",
 			Handler:    _Media_GetImage_Handler,
+		},
+		{
+			MethodName: "AddImageTag",
+			Handler:    _Media_AddImageTag_Handler,
+		},
+		{
+			MethodName: "SearchImageTagByNameLike",
+			Handler:    _Media_SearchImageTagByNameLike_Handler,
+		},
+		{
+			MethodName: "ReloadCategoryRedisImageTag",
+			Handler:    _Media_ReloadCategoryRedisImageTag_Handler,
 		},
 		{
 			MethodName: "UploadVideo",

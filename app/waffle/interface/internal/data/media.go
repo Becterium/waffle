@@ -23,6 +23,8 @@ func NewMediaRepo(data *Data, logger log.Logger) biz.MediaRepo {
 	}
 }
 
+// image
+
 func (r *mediaRepo) GenerateUploadImgUrl(ctx context.Context, imgNames []string) (*v1.GenerateUploadImgUrlReply, error) {
 	images, err := r.data.mc.UploadImages(ctx, &v1Media.UploadImagesReq{ImageName: imgNames})
 	if err != nil {
@@ -43,7 +45,6 @@ func (r *mediaRepo) GenerateUploadImgUrl(ctx context.Context, imgNames []string)
 }
 
 func (r *mediaRepo) VerifyImagesUpload(ctx context.Context, req *v1.VerifyImagesUploadReq) (*v1.VerifyImagesUploadReply, error) {
-
 	infos := make([]*v1Media.VerifyImagesUploadReq_Info, 0)
 	for _, value := range req.ImageInfo {
 		info := v1Media.VerifyImagesUploadReq_Info{
@@ -63,4 +64,41 @@ func (r *mediaRepo) VerifyImagesUpload(ctx context.Context, req *v1.VerifyImages
 	}
 
 	return &v1.VerifyImagesUploadReply{Message: result.Message}, nil
+}
+
+// image - tag
+
+func (r *mediaRepo) AddImageTag(ctx context.Context, req *v1.AddImageTagReq) (*v1.AddImageTagReply, error) {
+	_, err := r.data.mc.AddImageTag(ctx, &v1Media.AddImageTagReq{
+		Name:       req.Name,
+		ParentName: req.ParentName,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.AddImageTagReply{}, nil
+}
+
+func (r *mediaRepo) SearchImageTagByNameLike(ctx context.Context, req *v1.SearchImageTagByNameLikeReq) (*v1.SearchImageTagByNameLikeReply, error) {
+	reply, err := r.data.mc.SearchImageTagByNameLike(ctx, &v1Media.SearchImageTagByNameLikeReq{Name: req.Name})
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*v1.SearchImageTagByNameLikeReply_Tags, 0)
+	for _, val := range reply.Tags {
+		tag := v1.SearchImageTagByNameLikeReply_Tags{
+			Name: val.Name,
+			Id:   val.Id,
+		}
+		result = append(result, &tag)
+	}
+	return &v1.SearchImageTagByNameLikeReply{Tags: result}, nil
+}
+
+func (r *mediaRepo) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
+	_, err := r.data.mc.ReloadCategoryRedisImageTag(ctx, &v1Media.ReloadCategoryRedisImageTagReq{})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ReloadCategoryRedisImageTagReply{}, nil
 }

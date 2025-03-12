@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/tx7do/kratos-transport/transport/kafka"
 	"os"
 	"waffle/app/media/service/internal/conf"
 )
@@ -29,7 +30,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar, ks *kafka.Server) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -38,6 +39,7 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 		kratos.Logger(logger),
 		kratos.Server(
 			gs,
+			ks,
 		),
 		kratos.Registrar(rr),
 	)

@@ -24,7 +24,8 @@ func initApp(confServer *conf.Server, minio *conf.Minio, auth *conf.Auth, confDa
 	db := data.NewMysqlClient(confData, logger)
 	redisClient := data.NewRedisClient(confData, logger)
 	writer := data.NewKafkaWriter(confServer, logger)
-	dataData, cleanup, err := data.NewData(client, logger, db, redisClient, writer)
+	elasticsearchClient := data.NewElasticsearchClient(confData, logger)
+	dataData, cleanup, err := data.NewData(client, logger, db, redisClient, writer, elasticsearchClient)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -35,7 +36,8 @@ func initApp(confServer *conf.Server, minio *conf.Minio, auth *conf.Auth, confDa
 	mediaService := service.NewMediaService(mediaUseCase, imageUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, auth, logger, mediaService)
 	registrar := server.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, registrar)
+	kafkaServer := server.NewKafkaServer(confServer, logger, mediaService)
+	app := newApp(logger, grpcServer, registrar, kafkaServer)
 	return app, func() {
 		cleanup()
 	}, nil

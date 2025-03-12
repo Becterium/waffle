@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"waffle/api/media/service/v1"
@@ -17,6 +18,7 @@ func NewGRPCServer(c *conf.Server, ac *conf.Auth, logger log.Logger, s *service.
 		grpc.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
+			metadata.Server(),
 			//jwt.Server(func(token *jwt5.Token) (interface{}, error) {
 			//	return []byte(ac.Key), nil
 			//}, jwt.WithSigningMethod(jwt5.SigningMethodHS256)),

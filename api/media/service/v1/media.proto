@@ -10,6 +10,7 @@ option java_package = "dev.waffle.api.media.v1";
 option java_outer_classname = "MediaProtoV1";
 
 service Media{
+  // image
   rpc UploadImages(UploadImagesReq)returns(UploadImagesReply){
   }
   rpc UploadUserImage(UploadUserImageReq)returns(UploadUserImageReply){
@@ -20,12 +21,21 @@ service Media{
   }
   rpc GetImage(GetImageReq)returns(GetImageReply){
   }
+  // image - tag
+  rpc AddImageTag(AddImageTagReq)returns(AddImageTagReply){
+  }
+  rpc SearchImageTagByNameLike(SearchImageTagByNameLikeReq)returns(SearchImageTagByNameLikeReply){
+  }
+  rpc ReloadCategoryRedisImageTag(ReloadCategoryRedisImageTagReq)returns(ReloadCategoryRedisImageTagReply){
+  }
+  // video
   rpc UploadVideo(UpLoadVideoReq)returns(UpLoadVideoReply){
   }
   rpc GetVideo(GetVideoReq)returns(GetVideoReply){
   }
 }
 
+// image
 message UploadImagesReq {
   repeated string image_name = 1;
 }
@@ -91,6 +101,32 @@ message GetImageReply{
   string Thumbnail = 9;//image_UUID
 }
 
+// image -tag
+message AddImageTagReq{
+  string name = 1;
+  string parentName = 2;
+}
+
+message AddImageTagReply{
+}
+
+message SearchImageTagByNameLikeReq{
+  string name = 1;
+}
+
+message SearchImageTagByNameLikeReply{
+  message Tags {
+    string name = 1;
+    int64 id =2;
+  }
+  repeated Tags tags = 1;
+}
+
+message ReloadCategoryRedisImageTagReq{}
+
+message ReloadCategoryRedisImageTagReply{}
+
+// video
 message UpLoadVideoReq{
   string video_name = 1;
   bytes video_data = 2;
@@ -106,3 +142,4 @@ message UpLoadVideoReply{
 message GetVideoReq{}
 
 message GetVideoReply{}
+

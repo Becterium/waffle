@@ -13,9 +13,8 @@ import (
 // NewKafkaServer create a kafka server.
 func NewKafkaServer(c *conf.Server, _ log.Logger, svc *service.MediaService) *kafka.Server {
 	ctx := context.Background()
-	addrs := make([]string, 0)
 	srv := kafka.NewServer(
-		kafka.WithAddress(append(addrs, c.Kafka.Broker.Addr)),
+		kafka.WithAddress(c.Kafka.Addrs),
 		kafka.WithCodec("json"),
 	)
 
@@ -26,11 +25,15 @@ func NewKafkaServer(c *conf.Server, _ log.Logger, svc *service.MediaService) *ka
 
 // @param queue 订阅的分组
 func registerKafkaSubscribers(ctx context.Context, srv *kafka.Server, svc *service.MediaService) {
-	_ = srv.RegisterSubscriber(ctx,
+	err := srv.RegisterSubscriber(ctx,
 		"image",
 		"test",
 		false,
-		registerSensorHandler(svc.HandleKafkaImageSaveToElasticsearch),
+		registerImageHandler(svc.HandleKafkaImageSaveToElasticsearch),
 		imageCreator,
 	)
+
+	if err != nil {
+		panic(err)
+	}
 }

@@ -17,7 +17,7 @@ require (
 	github.com/tx7do/kratos-transport/transport/kafka v1.2.18
 	go.uber.org/automaxprocs v1.5.1
 	golang.org/x/crypto v0.29.0
-	golang.org/x/sync v0.9.0
+	golang.org/x/sync v0.11.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20241113202542-65e8d215514f
 	google.golang.org/grpc v1.68.0
 	google.golang.org/protobuf v1.35.2
@@ -83,7 +83,7 @@ require (
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241104194629-dd2ea8efbc28 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

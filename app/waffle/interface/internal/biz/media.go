@@ -19,6 +19,9 @@ type ImageInfo struct {
 type MediaRepo interface {
 	GenerateUploadImgUrl(ctx context.Context, imgNames []string) (*v1.GenerateUploadImgUrlReply, error)
 	VerifyImagesUpload(ctx context.Context, req *v1.VerifyImagesUploadReq) (*v1.VerifyImagesUploadReply, error)
+	AddImageTag(ctx context.Context, req *v1.AddImageTagReq) (*v1.AddImageTagReply, error)
+	SearchImageTagByNameLike(ctx context.Context, req *v1.SearchImageTagByNameLikeReq) (*v1.SearchImageTagByNameLikeReply, error)
+	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
 }
 
 type MediaUseCase struct {
@@ -53,4 +56,16 @@ func (m MediaUseCase) VerifyImagesUpload(ctx context.Context, req *v1.VerifyImag
 	}
 
 	return m.repo.VerifyImagesUpload(ctx, req)
+}
+
+func (m MediaUseCase) AddImageTag(ctx context.Context, req *v1.AddImageTagReq) (*v1.AddImageTagReply, error) {
+	return m.repo.AddImageTag(ctx, req)
+}
+
+func (m MediaUseCase) SearchImageTagByNameLike(ctx context.Context, req *v1.SearchImageTagByNameLikeReq) (*v1.SearchImageTagByNameLikeReply, error) {
+	return m.repo.SearchImageTagByNameLike(ctx, req)
+}
+
+func (m MediaUseCase) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
+	return m.repo.ReloadCategoryRedisImageTag(ctx, req)
 }

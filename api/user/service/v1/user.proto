@@ -38,7 +38,6 @@ service User {
   }
 
   rpc Ping(PingReq) returns (PingReply) {
-
   }
 }
 

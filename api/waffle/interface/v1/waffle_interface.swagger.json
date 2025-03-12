@@ -16,6 +16,39 @@
     "application/json"
   ],
   "paths": {
+    "/v1/AddImageTag": {
+      "post": {
+        "summary": "image - tag",
+        "operationId": "WaffleInterface_AddImageTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AddImageTagReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AddImageTagReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
     "/v1/GenerateUploadImgUrl": {
       "post": {
         "summary": "media",
@@ -105,6 +138,70 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/v1PingRPCReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
+    "/v1/ReloadCategoryRedisImageTag": {
+      "post": {
+        "operationId": "WaffleInterface_ReloadCategoryRedisImageTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ReloadCategoryRedisImageTagReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ReloadCategoryRedisImageTagReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
+    "/v1/SearchImageTagByNameLike": {
+      "post": {
+        "operationId": "WaffleInterface_SearchImageTagByNameLike",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SearchImageTagByNameLikeReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SearchImageTagByNameLikeReq"
             }
           }
         ],
@@ -258,6 +355,18 @@
         }
       }
     },
+    "SearchImageTagByNameLikeReplyTags": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "VerifyImagesUploadReqInfo": {
       "type": "object",
       "properties": {
@@ -309,6 +418,21 @@
           }
         }
       }
+    },
+    "v1AddImageTagReply": {
+      "type": "object"
+    },
+    "v1AddImageTagReq": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "parentName": {
+          "type": "string"
+        }
+      },
+      "title": "image -tag"
     },
     "v1GenerateUploadImgUrlReply": {
       "type": "object",
@@ -396,6 +520,32 @@
           "type": "string"
         },
         "password": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ReloadCategoryRedisImageTagReply": {
+      "type": "object"
+    },
+    "v1ReloadCategoryRedisImageTagReq": {
+      "type": "object"
+    },
+    "v1SearchImageTagByNameLikeReply": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SearchImageTagByNameLikeReplyTags"
+          }
+        }
+      }
+    },
+    "v1SearchImageTagByNameLikeReq": {
+      "type": "object",
+      "properties": {
+        "name": {
           "type": "string"
         }
       }

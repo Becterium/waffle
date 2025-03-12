@@ -6,7 +6,7 @@ type Image struct {
 	ImageUrl  string   `json:"imageUrl"`
 	Category  string   `json:"category"`
 	Purity    string   `json:"purity"`
-	Uploader  int64    `json:"uploader"`
+	Uploader  uint     `json:"uploader"`
 	Size      int64    `json:"size"`
 	Views     int64    `json:"views"`
 	Tags      []uint64 `json:"tags"`

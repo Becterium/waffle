@@ -24,11 +24,7 @@ message Server {
     google.protobuf.Duration timeout = 3;
   }
   message KAFKA {
-    message Broker {
-      string addr = 1;
-    }
-    Broker broker = 1;
-    string topic = 2;
+    repeated string addrs = 1;
   }
   HTTP http = 1;
   GRPC grpc = 2;

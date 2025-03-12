@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/log"
@@ -14,13 +15,13 @@ import (
 )
 
 const (
-	UuidLength         = 7
-	ClusterNode        = 1
-	LibImageRedisKey   = "LibImage"
-	AvatarRedisKey     = "Avatar"
-	LibImageBucketName = "images"
-	AvatarBucketName   = "avatar"
-	TimeToPresignedPut = time.Minute * 10
+	UuidLength              = 7
+	ClusterNode             = 1
+	RedisLibImageKey        = "LibImage"
+	RedisAvatarKey          = "Avatar"
+	MinioBucketLibImageName = "images"
+	MinioBucketAvatarName   = "avatar"
+	MinioTimeToPreSignedPut = time.Minute * 10
 )
 
 type Image struct {
@@ -43,6 +44,9 @@ type ImageRepo interface {
 	SaveImagesInfo(ctx context.Context, images *Images) error
 	SaveAvatarInfo(ctx context.Context, avatarName string) error
 	KafkaSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
+	AddImageTag(ctx context.Context, name, parentName string) (*v1.AddImageTagReply, error)
+	SearchImageTagByNameLike(ctx context.Context, name string) (*v1.SearchImageTagByNameLikeReply, error)
+	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
 }
 
 type ImageUseCase struct {
@@ -74,7 +78,7 @@ func generateShortUUID() (string, error) {
 	return string(b), nil
 }
 
-// Upload 承担预签名URL的作用
+// ImagesUpload 承担预签名URL的作用
 func (c *ImageUseCase) ImagesUpload(ctx context.Context, req *v1.UploadImagesReq) (*v1.UploadImagesReply, error) {
 	var result v1.UploadImagesReply
 	for _, name := range req.ImageName {
@@ -83,16 +87,16 @@ func (c *ImageUseCase) ImagesUpload(ctx context.Context, req *v1.UploadImagesReq
 		var uid string
 		for exist {
 			uid, _ = generateShortUUID()
-			exist, err = c.ip.ImageExist(ctx, LibImageRedisKey, uid)
+			exist, err = c.ip.ImageExist(ctx, RedisLibImageKey, uid)
 			if err != nil {
-				return nil, err
+				return nil, errors.New(fmt.Sprintf("function: ImagesUpload, check image exist from redis error: %s", err))
 			}
 		}
 		split := strings.Split(name, ".")
 		imageName := "wallpaper-" + uid + "." + split[len(split)-1]
-		url, err := c.ip.GeneratePutImageURL(ctx, LibImageBucketName, imageName, TimeToPresignedPut)
+		url, err := c.ip.GeneratePutImageURL(ctx, MinioBucketLibImageName, imageName, MinioTimeToPreSignedPut)
 		if err != nil {
-			return nil, err
+			return nil, errors.New(fmt.Sprintf("function: ImagesUpload, generate pre-signed imageURL error: %s", err))
 		}
 		reply := v1.UploadImagesReply_Image{
 			UploadUrl: url,
@@ -110,16 +114,16 @@ func (c *ImageUseCase) UserImageUpload(ctx context.Context, req *v1.UploadUserIm
 	var uid string
 	for exist {
 		uid, _ = generateShortUUID()
-		exist, err = c.ip.ImageExist(ctx, AvatarRedisKey, uid)
+		exist, err = c.ip.ImageExist(ctx, RedisAvatarKey, uid)
 		if err != nil {
-			return nil, err
+			return nil, errors.New(fmt.Sprintf("function: ImagesUpload, check avatar exist from redis error: %s", err))
 		}
 	}
 	split := strings.Split(req.ImageName, ".")
 	name := "avatar-" + uid + "." + split[len(split)-1]
-	url, err := c.ip.GeneratePutImageURL(ctx, AvatarBucketName, name, TimeToPresignedPut)
+	url, err := c.ip.GeneratePutImageURL(ctx, MinioBucketAvatarName, name, MinioTimeToPreSignedPut)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(fmt.Sprintf("function: ImagesUpload, generate pre-signed avatarURL error: %s", err))
 	}
 	return &v1.UploadUserImageReply{
 		AvatarUrl:  url,
@@ -130,7 +134,7 @@ func (c *ImageUseCase) UserImageUpload(ctx context.Context, req *v1.UploadUserIm
 
 func (c *ImageUseCase) VerifyImagesUpload(ctx context.Context, req *v1.VerifyImagesUploadReq) (*v1.VerifyImagesUploadReply, error) {
 	for _, image := range req.ImageInfo {
-		exist, err := c.ip.VerifyImageUpload(ctx, LibImageBucketName, image.ImageName)
+		exist, err := c.ip.VerifyImageUpload(ctx, MinioBucketLibImageName, image.ImageName)
 		if err != nil {
 			return &v1.VerifyImagesUploadReply{
 				Success: false,
@@ -165,7 +169,7 @@ func (c *ImageUseCase) VerifyImagesUpload(ctx context.Context, req *v1.VerifyIma
 }
 
 func (c *ImageUseCase) VerifyUserImageUpload(ctx context.Context, req *v1.VerifyUserImageUploadReq) (*v1.VerifyUserImageUploadReply, error) {
-	exist, err := c.ip.VerifyImageUpload(ctx, AvatarBucketName, req.ImageName)
+	exist, err := c.ip.VerifyImageUpload(ctx, MinioBucketAvatarName, req.ImageName)
 	if err != nil {
 		return &v1.VerifyUserImageUploadReply{
 			Success: false,
@@ -198,4 +202,16 @@ func (c *ImageUseCase) Get(ctx context.Context, req *v1.GetImageReq) (*v1.GetIma
 
 func (c *ImageUseCase) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
 	return c.ip.KafkaSaveToElasticsearch(ctx, topic, headers, msg)
+}
+
+func (c *ImageUseCase) AddImageTag(ctx context.Context, in *v1.AddImageTagReq) (*v1.AddImageTagReply, error) {
+	return c.ip.AddImageTag(ctx, in.GetName(), in.GetParentName())
+}
+
+func (c *ImageUseCase) SearchImageTagByNameLike(ctx context.Context, in *v1.SearchImageTagByNameLikeReq) (*v1.SearchImageTagByNameLikeReply, error) {
+	return c.ip.SearchImageTagByNameLike(ctx, in.GetName())
+}
+
+func (c *ImageUseCase) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
+	return c.ip.ReloadCategoryRedisImageTag(ctx, req)
 }

@@ -12,7 +12,7 @@ func imageCreator() broker.Any { return &mq_kafka.Image{} }
 
 type imageHandler func(_ context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
 
-func registerSensorHandler(fnc imageHandler) broker.Handler {
+func registerImageHandler(fnc imageHandler) broker.Handler {
 	return func(ctx context.Context, event broker.Event) error {
 		switch t := event.Message().Body.(type) {
 		case *mq_kafka.Image:

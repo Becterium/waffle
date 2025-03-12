@@ -19,15 +19,20 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationWaffleInterfaceAddImageTag = "/waffle.interface.v1.WaffleInterface/AddImageTag"
 const OperationWaffleInterfaceGenerateUploadImgUrl = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
 const OperationWaffleInterfaceLogin = "/waffle.interface.v1.WaffleInterface/Login"
 const OperationWaffleInterfaceLogout = "/waffle.interface.v1.WaffleInterface/Logout"
 const OperationWaffleInterfacePing = "/waffle.interface.v1.WaffleInterface/Ping"
 const OperationWaffleInterfacePingRPC = "/waffle.interface.v1.WaffleInterface/PingRPC"
 const OperationWaffleInterfaceRegister = "/waffle.interface.v1.WaffleInterface/Register"
+const OperationWaffleInterfaceReloadCategoryRedisImageTag = "/waffle.interface.v1.WaffleInterface/ReloadCategoryRedisImageTag"
+const OperationWaffleInterfaceSearchImageTagByNameLike = "/waffle.interface.v1.WaffleInterface/SearchImageTagByNameLike"
 const OperationWaffleInterfaceVerifyImagesUpload = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
 
 type WaffleInterfaceHTTPServer interface {
+	// AddImageTag image - tag
+	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
 	// GenerateUploadImgUrl media
 	GenerateUploadImgUrl(context.Context, *GenerateUploadImgUrlReq) (*GenerateUploadImgUrlReply, error)
 	Login(context.Context, *LoginReq) (*LoginReply, error)
@@ -36,6 +41,8 @@ type WaffleInterfaceHTTPServer interface {
 	PingRPC(context.Context, *PingRPCReq) (*PingRPCReply, error)
 	// Registeruser
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
+	ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error)
+	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
 	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 }
 
@@ -48,6 +55,9 @@ func RegisterWaffleInterfaceHTTPServer(s *http.Server, srv WaffleInterfaceHTTPSe
 	r.POST("/v1/PingRPC", _WaffleInterface_PingRPC0_HTTP_Handler(srv))
 	r.POST("/v1/GenerateUploadImgUrl", _WaffleInterface_GenerateUploadImgUrl0_HTTP_Handler(srv))
 	r.POST("/v1/VerifyImagesUpload", _WaffleInterface_VerifyImagesUpload0_HTTP_Handler(srv))
+	r.POST("/v1/AddImageTag", _WaffleInterface_AddImageTag0_HTTP_Handler(srv))
+	r.POST("/v1/SearchImageTagByNameLike", _WaffleInterface_SearchImageTagByNameLike0_HTTP_Handler(srv))
+	r.POST("/v1/ReloadCategoryRedisImageTag", _WaffleInterface_ReloadCategoryRedisImageTag0_HTTP_Handler(srv))
 }
 
 func _WaffleInterface_Register0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
@@ -204,13 +214,82 @@ func _WaffleInterface_VerifyImagesUpload0_HTTP_Handler(srv WaffleInterfaceHTTPSe
 	}
 }
 
+func _WaffleInterface_AddImageTag0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AddImageTagReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfaceAddImageTag)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AddImageTag(ctx, req.(*AddImageTagReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AddImageTagReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WaffleInterface_SearchImageTagByNameLike0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SearchImageTagByNameLikeReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfaceSearchImageTagByNameLike)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SearchImageTagByNameLike(ctx, req.(*SearchImageTagByNameLikeReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*SearchImageTagByNameLikeReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _WaffleInterface_ReloadCategoryRedisImageTag0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ReloadCategoryRedisImageTagReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfaceReloadCategoryRedisImageTag)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ReloadCategoryRedisImageTag(ctx, req.(*ReloadCategoryRedisImageTagReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ReloadCategoryRedisImageTagReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type WaffleInterfaceHTTPClient interface {
+	AddImageTag(ctx context.Context, req *AddImageTagReq, opts ...http.CallOption) (rsp *AddImageTagReply, err error)
 	GenerateUploadImgUrl(ctx context.Context, req *GenerateUploadImgUrlReq, opts ...http.CallOption) (rsp *GenerateUploadImgUrlReply, err error)
 	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *LoginReply, err error)
 	Logout(ctx context.Context, req *LogoutReq, opts ...http.CallOption) (rsp *LogoutReply, err error)
 	Ping(ctx context.Context, req *PingReq, opts ...http.CallOption) (rsp *PingReply, err error)
 	PingRPC(ctx context.Context, req *PingRPCReq, opts ...http.CallOption) (rsp *PingRPCReply, err error)
 	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+	ReloadCategoryRedisImageTag(ctx context.Context, req *ReloadCategoryRedisImageTagReq, opts ...http.CallOption) (rsp *ReloadCategoryRedisImageTagReply, err error)
+	SearchImageTagByNameLike(ctx context.Context, req *SearchImageTagByNameLikeReq, opts ...http.CallOption) (rsp *SearchImageTagByNameLikeReply, err error)
 	VerifyImagesUpload(ctx context.Context, req *VerifyImagesUploadReq, opts ...http.CallOption) (rsp *VerifyImagesUploadReply, err error)
 }
 
@@ -220,6 +299,19 @@ type WaffleInterfaceHTTPClientImpl struct {
 
 func NewWaffleInterfaceHTTPClient(client *http.Client) WaffleInterfaceHTTPClient {
 	return &WaffleInterfaceHTTPClientImpl{client}
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...http.CallOption) (*AddImageTagReply, error) {
+	var out AddImageTagReply
+	pattern := "/v1/AddImageTag"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfaceAddImageTag))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *WaffleInterfaceHTTPClientImpl) GenerateUploadImgUrl(ctx context.Context, in *GenerateUploadImgUrlReq, opts ...http.CallOption) (*GenerateUploadImgUrlReply, error) {
@@ -292,6 +384,32 @@ func (c *WaffleInterfaceHTTPClientImpl) Register(ctx context.Context, in *Regist
 	pattern := "/v1/register"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationWaffleInterfaceRegister))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...http.CallOption) (*ReloadCategoryRedisImageTagReply, error) {
+	var out ReloadCategoryRedisImageTagReply
+	pattern := "/v1/ReloadCategoryRedisImageTag"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfaceReloadCategoryRedisImageTag))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...http.CallOption) (*SearchImageTagByNameLikeReply, error) {
+	var out SearchImageTagByNameLikeReply
+	pattern := "/v1/SearchImageTagByNameLike"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfaceSearchImageTagByNameLike))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

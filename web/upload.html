@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传文件到预签名URL</title>
+</head>
+<body>
+<input type="file" id="fileInput">
+<button onclick="uploadFile()">上传</button>
+
+<script>
+    async function uploadFile() {
+        const fileInput = document.getElementById("fileInput");
+        if (!fileInput.files.length) {
+            alert("请选择文件！");
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const presignedUrl = "http://192.168.37.100:30000/images/wallpaper-Q0MczgE.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=9kvM1l0d0R7xhZMcfb9K%2F20250309%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250309T142254Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=6f2d1c9695a3413b956c8ca264f13fdbabaf2f11b61d99fd505b49c1967d959d";  // 预签名 URL
+
+        try {
+            const response = await fetch(presignedUrl, {
+                method: "PUT",
+                body: file,
+                headers: {
+                    "Content-Type": file.type
+                }
+            });
+
+            if (response.ok) {
+                alert("上传成功！");
+            } else {
+                alert("上传失败：" + response.statusText);
+            }
+        } catch (error) {
+            console.error("上传错误:", error);
+            alert("上传出错：" + error.message);
+        }
+    }
+</script>
+</body>
+</html>

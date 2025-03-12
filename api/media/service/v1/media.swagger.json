@@ -17,6 +17,18 @@
   ],
   "paths": {},
   "definitions": {
+    "SearchImageTagByNameLikeReplyTags": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "UploadImagesReplyImage": {
       "type": "object",
       "properties": {
@@ -83,6 +95,9 @@
         }
       }
     },
+    "v1AddImageTagReply": {
+      "type": "object"
+    },
     "v1GetImageReply": {
       "type": "object",
       "properties": {
@@ -126,6 +141,21 @@
     },
     "v1GetVideoReply": {
       "type": "object"
+    },
+    "v1ReloadCategoryRedisImageTagReply": {
+      "type": "object"
+    },
+    "v1SearchImageTagByNameLikeReply": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SearchImageTagByNameLikeReplyTags"
+          }
+        }
+      }
     },
     "v1UpLoadVideoReply": {
       "type": "object",
