@@ -42,3 +42,7 @@ func (m *MediaService) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.
 func (m *MediaService) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
 	return m.ic.HandleKafkaImageSaveToElasticsearch(ctx, topic, headers, msg)
 }
+
+func (m *MediaService) HandleKafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error {
+	return m.ic.HandleKafkaAvatarSaveToElasticsearch(ctx, topic, headers, msg)
+}

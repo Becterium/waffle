@@ -106,7 +106,6 @@ func NewMinioClient(conf *conf.Minio, logger log.Logger) *minio.Client {
 func NewKafkaWriter(conf *conf.Server, logger log.Logger) *kafka.Writer {
 	writer := kafka.Writer{
 		Addr:                   kafka.TCP(conf.Kafka.Addrs...),
-		Topic:                  "image",
 		Balancer:               &kafka.Hash{},
 		MaxAttempts:            3,
 		WriteBackoffMin:        0,

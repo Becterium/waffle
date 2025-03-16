@@ -186,7 +186,7 @@
     "v1UploadUserImageReply": {
       "type": "object",
       "properties": {
-        "avatarUrl": {
+        "uploadUrl": {
           "type": "string"
         },
         "avatarName": {

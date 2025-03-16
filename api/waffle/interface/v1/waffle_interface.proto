@@ -53,9 +53,23 @@ service WaffleInterface {
     };
   }
 
+  rpc GenerateUploadAvatarUrl(GenerateUploadAvatarUrlReq)returns(GenerateUploadAvatarUrlReply){
+    option (google.api.http) = {
+      post: "/v1/GenerateUploadAvatarUrl"
+      body: "*"
+    };
+  }
+
   rpc VerifyImagesUpload(VerifyImagesUploadReq)returns(VerifyImagesUploadReply){
     option (google.api.http) = {
       post: "/v1/VerifyImagesUpload"
+      body: "*"
+    };
+  }
+
+  rpc VerifyAvatarUpload(VerifyAvatarUploadReq)returns(VerifyAvatarUploadReply){
+    option (google.api.http) = {
+      post: "/v1/VerifyAvatarUpload"
       body: "*"
     };
   }
@@ -136,6 +150,16 @@ message GenerateUploadImgUrlReply {
   repeated Image result = 1;
 }
 
+message GenerateUploadAvatarUrlReq {
+  string image_name = 1;
+}
+
+message GenerateUploadAvatarUrlReply {
+  string upload_url = 1;
+  string avatar_name = 2;
+  string avatar_uuid = 3;
+}
+
 message VerifyImagesUploadReq {
   message Info {
     string image_name = 1;
@@ -149,6 +173,15 @@ message VerifyImagesUploadReq {
 
 message VerifyImagesUploadReply {
   string message = 1;
+}
+
+message VerifyAvatarUploadReq {
+  string avatar_name = 1;
+  string avatar_uuid = 2;
+}
+
+message VerifyAvatarUploadReply {
+  string upload_url = 1;
 }
 
 // image -tag

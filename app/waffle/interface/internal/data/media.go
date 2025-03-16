@@ -102,3 +102,28 @@ func (r *mediaRepo) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.Rel
 	}
 	return &v1.ReloadCategoryRedisImageTagReply{}, nil
 }
+
+func (r *mediaRepo) GenerateUploadAvatarUrl(ctx context.Context, req *v1.GenerateUploadAvatarUrlReq) (*v1.GenerateUploadAvatarUrlReply, error) {
+	reply, err := r.data.mc.UploadUserImage(ctx, &v1Media.UploadUserImageReq{ImageName: req.ImageName})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.GenerateUploadAvatarUrlReply{
+		UploadUrl:  reply.UploadUrl,
+		AvatarName: reply.AvatarName,
+		AvatarUuid: reply.AvatarUuid,
+	}, nil
+}
+
+func (r *mediaRepo) VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatarUploadReq) (*v1.VerifyAvatarUploadReply, error) {
+	reply, err := r.data.mc.VerifyUserImageUpload(ctx, &v1Media.VerifyUserImageUploadReq{
+		AvatarName: req.AvatarName,
+		AvatarUuid: req.AvatarUuid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.VerifyAvatarUploadReply{
+		UploadUrl: reply.AvatarUrl,
+	}, nil
+}

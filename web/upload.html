@@ -18,7 +18,7 @@
         }
 
         const file = fileInput.files[0];
-        const presignedUrl = "http://192.168.37.100:30000/images/wallpaper-Q0MczgE.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=9kvM1l0d0R7xhZMcfb9K%2F20250309%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250309T142254Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=6f2d1c9695a3413b956c8ca264f13fdbabaf2f11b61d99fd505b49c1967d959d";  // 预签名 URL
+        const presignedUrl = "http://192.168.37.100:30000/avatar/avatar-TNzzNMM.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=9kvM1l0d0R7xhZMcfb9K%2F20250316%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250316T075154Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=449d27b52a9ff530e689cc310736800368e665b1cb3053d27d62fe8a3195d9ee";  // 预签名 URL
 
         try {
             const response = await fetch(presignedUrl, {

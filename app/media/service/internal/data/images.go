@@ -23,11 +23,12 @@ import (
 )
 
 const (
-	RedisCashEmpty           = "null"
-	RedisHashTagNameId       = "tag"
-	RedisHashTagIdLevel      = "tag:level"
-	RedisHashTagCategoryTree = "tag:category"
-	ElasticsearchTagsIndex   = "tags"
+	RedisCashEmpty              = "null"
+	RedisHashTagNameId          = "tag"
+	RedisHashTagIdLevel         = "tag:level"
+	RedisHashTagCategoryTree    = "tag:category"
+	RedisHashUserIdThumbnailUrl = "tag:thumbnail_url"
+	ElasticsearchTagsIndex      = "tags"
 )
 
 //	img := image{
@@ -76,10 +77,11 @@ type imageTag struct {
 
 type avatar struct {
 	gorm.Model
-	UserID     uint
-	AvatarName string
-	AvatarUuid string
-	AvatarUrl  string
+	UserID        uint
+	AvatarName    string
+	AvatarUuid    string
+	AvatarUrl     string
+	ThumbnailsUrl string
 }
 
 type imageRepo struct {
@@ -179,6 +181,11 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 			}
 		}
 
+		_, errSAdd := m.data.rc.SAdd(ctx, "image", storeImps[index].ImageUuid).Result()
+		if errSAdd != nil {
+			return errors.New(fmt.Sprintf("redis set add imgUuid error: %s", errSAdd))
+		}
+
 		//向异步处理服务发送消息:向 elasticsearch 存储image信息，要求根据tag可以查到image
 		ImageData := mq_kafka.Image{
 			ImageUuid: storeImps[index].ImageUuid,
@@ -199,6 +206,7 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 			Key:   []byte(val.ImageUuid),
 			Value: msgContent,
 			Time:  time.Now(),
+			Topic: "image",
 		}
 		errKafkaSaveMessage := kafkaSaveMessage(m.data.kw, context.Background(), msg)
 		if errKafkaSaveMessage != nil {
@@ -218,37 +226,53 @@ func kafkaSaveMessage(writer *kafka.Writer, ctx context.Context, msg kafka.Messa
 	return nil
 }
 
-func (m *imageRepo) KafkaSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
-	data, _ := json.Marshal(msg)
-
-	res, err := m.data.es.Index(
-		"images",
-		bytes.NewReader(data),
-		m.data.es.Index.WithDocumentID(msg.ImageUuid),
-		m.data.es.Index.WithRefresh("true"),
-	)
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("media/data/KafkaSaveToElasticsearch fail to save image to ES, error: %v", err))
+func (m *imageRepo) SaveAvatarInfo(ctx context.Context, avatarName string, avatarUuid string) (string, error) {
+	userId, errGetUserID := util2.MetadataGetUserIdFromMetaData(ctx)
+	if errGetUserID != nil {
+		return "", errGetUserID
 	}
 
-	defer res.Body.Close()
-
-	if res.IsError() {
-		return errors.New(fmt.Sprintf("KafkaSaveToElasticsearch Error response: %s", res.String()))
-	} else {
-		var r map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			fmt.Printf("Document indexed with ID: %s\n", r["_id"])
-		}
+	// 存入MySQL
+	info := avatar{
+		UserID:     userId,
+		AvatarName: avatarName,
+		AvatarUuid: avatarUuid,
+		AvatarUrl:  "http://192.168.37.100:30000/avatar/" + avatarName,
 	}
-	return nil
-}
+	result := m.data.db.Create(&info)
+	if result.Error != nil {
+		return "", errors.New(fmt.Sprintf("SaveAvatarInfo fail, save to mysql error: %s", result.Error))
+	}
 
-func (m *imageRepo) SaveAvatarInfo(ctx context.Context, avatarName string) error {
-	return nil
+	// 缓存avatar的UUID
+	_, errSAdd := m.data.rc.SAdd(ctx, "avatar", avatarUuid).Result()
+	if errSAdd != nil {
+		return "", errors.New(fmt.Sprintf("SaveAvatarInfo fail, save to redis error: %s", errSAdd))
+	}
+
+	avatarData := mq_kafka.Avatar{
+		Id:         info.ID,
+		UserID:     info.UserID,
+		AvatarName: info.AvatarName,
+		AvatarUuid: info.AvatarUuid,
+		AvatarUrl:  info.AvatarUrl,
+	}
+
+	msgContent, marshalErr := json.Marshal(avatarData)
+	if marshalErr != nil {
+		return "", errors.New(fmt.Sprintf("SaveAvatarInfo json marshal avatar err :%s", marshalErr))
+	}
+	msg := kafka.Message{
+		Key:   []byte(avatarData.AvatarUuid),
+		Value: msgContent,
+		Time:  time.Now(),
+		Topic: "avatar",
+	}
+	errKafkaSaveMessage := kafkaSaveMessage(m.data.kw, context.Background(), msg)
+	if errKafkaSaveMessage != nil {
+		return "", errKafkaSaveMessage
+	}
+	return info.AvatarUrl, nil
 }
 
 func (m *imageRepo) AddImageTag(ctx context.Context, name, parentName string) (*v1.AddImageTagReply, error) {
@@ -367,4 +391,71 @@ func (m *imageRepo) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.Rel
 		}
 	}
 	return &v1.ReloadCategoryRedisImageTagReply{}, nil
+}
+
+func (m *imageRepo) KafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
+	data, _ := json.Marshal(msg)
+
+	res, err := m.data.es.Index(
+		"images",
+		bytes.NewReader(data),
+		m.data.es.Index.WithDocumentID(msg.ImageUuid),
+		m.data.es.Index.WithRefresh("true"),
+	)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("media/data/KafkaSaveToElasticsearch fail to save image to ES, error: %v", err))
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		return errors.New(fmt.Sprintf("KafkaSaveToElasticsearch Error response: %s", res.String()))
+	} else {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			log.Fatalf("Error parsing the response body: %s", err)
+		} else {
+			fmt.Printf("Document indexed with ID: %s\n", r["_id"])
+		}
+	}
+	return nil
+}
+
+func (m *imageRepo) KafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error {
+	object, err := m.data.mc.GetObject(context.Background(), "avatar", msg.AvatarName, minio.GetObjectOptions{})
+	if err != nil {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch GetObject error: %s", err))
+	}
+	thumbnail, err := util2.Thumbnail(object)
+	if err != nil {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch Thumbnail error: %s", err))
+	}
+	// 上传缩略图到 MinIO
+	thumbObjectName := "thumb_avatar-" + msg.AvatarUuid + ".png"
+
+	_, err = m.data.mc.PutObject(context.Background(), "thumbnails", thumbObjectName, thumbnail, int64(thumbnail.Len()), minio.PutObjectOptions{
+		ContentType: "image/png",
+	})
+	if err != nil {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch PutObject error: %s", err))
+	}
+
+	ava := avatar{
+		Model: gorm.Model{ID: msg.Id},
+	}
+
+	ThumbnailsUrl := "http://192.168.37.100:30000/thumbnails/" + thumbObjectName
+	//更新avatar的ThumbnailsUrl
+	result := m.data.db.Model(&ava).Update("thumbnails_url", ThumbnailsUrl)
+	if result.Error != nil {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch Update thumbnails_url error: %s", result.Error))
+	}
+
+	// 更新map[userId]ThumbnailsUrl到Redis
+	_, err = m.data.rc.HMSet(ctx, RedisHashUserIdThumbnailUrl, msg.UserID, ThumbnailsUrl).Result()
+	if err != nil {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch redis HMSet thumbnails_url error: %s", err))
+	}
+	return nil
 }

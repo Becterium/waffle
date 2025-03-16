@@ -36,4 +36,16 @@ func registerKafkaSubscribers(ctx context.Context, srv *kafka.Server, svc *servi
 	if err != nil {
 		panic(err)
 	}
+
+	err = srv.RegisterSubscriber(ctx,
+		"avatar",
+		"test",
+		false,
+		registerAvatarHandler(svc.HandleKafkaAvatarSaveToElasticsearch),
+		avatarCreator,
+	)
+
+	if err != nil {
+		panic(err)
+	}
 }

@@ -71,12 +71,31 @@ spec:
               }
           }
       }
-      stage('Build'){
+      stage('BuildUser'){
         steps{
           script{
+            sh "docker login 192.168.37.130:8009 -u admin -p Harbor12345"
             sh "cd /home/jenkins/agent/workspace/waffle"
             sh "docker build --build-arg APP_RELATIVE_PATH=user/service -t 192.168.37.130:8009/library/waffle/user-kartos:latest ."
             sh "docker push 192.168.37.130:8009/library/waffle/user-kartos:latest"
+          }
+        }
+      }
+      stage('BuildWaffle'){
+        steps{
+          script{
+            sh "cd /home/jenkins/agent/workspace/waffle"
+            sh "docker build --build-arg APP_RELATIVE_PATH=waffle/interface -t 192.168.37.130:8009/library/waffle/waffle-kartos:latest ."
+            sh "docker push 192.168.37.130:8009/library/waffle/waffle-kartos:latest"
+          }
+        }
+      }
+      stage('BuildMedia'){
+        steps{
+          script{
+            sh "cd /home/jenkins/agent/workspace/waffle"
+            sh "docker build --build-arg APP_RELATIVE_PATH=media/service -t 192.168.37.130:8009/library/waffle/media-kartos:latest ."
+            sh "docker push 192.168.37.130:8009/library/waffle/media-kartos:latest"
           }
         }
       }

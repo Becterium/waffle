@@ -49,6 +49,38 @@
         ]
       }
     },
+    "/v1/GenerateUploadAvatarUrl": {
+      "post": {
+        "operationId": "WaffleInterface_GenerateUploadAvatarUrl",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GenerateUploadAvatarUrlReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1GenerateUploadAvatarUrlReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
     "/v1/GenerateUploadImgUrl": {
       "post": {
         "summary": "media",
@@ -202,6 +234,38 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/v1SearchImageTagByNameLikeReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
+    "/v1/VerifyAvatarUpload": {
+      "post": {
+        "operationId": "WaffleInterface_VerifyAvatarUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1VerifyAvatarUploadReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1VerifyAvatarUploadReq"
             }
           }
         ],
@@ -434,6 +498,28 @@
       },
       "title": "image -tag"
     },
+    "v1GenerateUploadAvatarUrlReply": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "string"
+        },
+        "avatarName": {
+          "type": "string"
+        },
+        "avatarUuid": {
+          "type": "string"
+        }
+      }
+    },
+    "v1GenerateUploadAvatarUrlReq": {
+      "type": "object",
+      "properties": {
+        "imageName": {
+          "type": "string"
+        }
+      }
+    },
     "v1GenerateUploadImgUrlReply": {
       "type": "object",
       "properties": {
@@ -546,6 +632,25 @@
       "type": "object",
       "properties": {
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1VerifyAvatarUploadReply": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1VerifyAvatarUploadReq": {
+      "type": "object",
+      "properties": {
+        "avatarName": {
+          "type": "string"
+        },
+        "avatarUuid": {
           "type": "string"
         }
       }

@@ -25,3 +25,11 @@ func (w *WaffleInterface) SearchImageTagByNameLike(ctx context.Context, req *v1.
 func (w *WaffleInterface) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
 	return w.mc.ReloadCategoryRedisImageTag(ctx, req)
 }
+
+func (w *WaffleInterface) GenerateUploadAvatarUrl(ctx context.Context, req *v1.GenerateUploadAvatarUrlReq) (*v1.GenerateUploadAvatarUrlReply, error) {
+	return w.mc.GenerateUploadAvatarUrl(ctx, req)
+}
+
+func (w *WaffleInterface) VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatarUploadReq) (*v1.VerifyAvatarUploadReply, error) {
+	return w.mc.VerifyAvatarUpload(ctx, req)
+}

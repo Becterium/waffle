@@ -22,6 +22,8 @@ type MediaRepo interface {
 	AddImageTag(ctx context.Context, req *v1.AddImageTagReq) (*v1.AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, req *v1.SearchImageTagByNameLikeReq) (*v1.SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
+	GenerateUploadAvatarUrl(ctx context.Context, req *v1.GenerateUploadAvatarUrlReq) (*v1.GenerateUploadAvatarUrlReply, error)
+	VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatarUploadReq) (*v1.VerifyAvatarUploadReply, error)
 }
 
 type MediaUseCase struct {
@@ -68,4 +70,16 @@ func (m MediaUseCase) SearchImageTagByNameLike(ctx context.Context, req *v1.Sear
 
 func (m MediaUseCase) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
 	return m.repo.ReloadCategoryRedisImageTag(ctx, req)
+}
+
+func (m MediaUseCase) GenerateUploadAvatarUrl(ctx context.Context, req *v1.GenerateUploadAvatarUrlReq) (*v1.GenerateUploadAvatarUrlReply, error) {
+	return m.repo.GenerateUploadAvatarUrl(ctx, req)
+}
+
+func (m MediaUseCase) VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatarUploadReq) (*v1.VerifyAvatarUploadReply, error) {
+	ctx, err := util.UnMarshalTokeToMetadata(ctx, util.PrefixLocalMetadata, util.MarshalUserId)
+	if err != nil {
+		return nil, err
+	}
+	return m.repo.VerifyAvatarUpload(ctx, req)
 }

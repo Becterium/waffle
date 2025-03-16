@@ -2,6 +2,10 @@ package data
 
 import (
 	"context"
+	"time"
+
+	"waffle/app/waffle/interface/internal/conf"
+
 	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
@@ -9,10 +13,11 @@ import (
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/google/wire"
+
 	consulAPI "github.com/hashicorp/consul/api"
+	grpcx "google.golang.org/grpc"
 	mediav1 "waffle/api/media/service/v1"
 	userv1 "waffle/api/user/service/v1"
-	"waffle/app/waffle/interface/internal/conf"
 )
 
 // ProviderSet is data providers.
@@ -67,6 +72,9 @@ func NewUserServiceClient(r registry.Discovery) userv1.UserClient {
 			recovery.Recovery(),
 			metadata.Client(),
 		),
+		grpc.WithTimeout(3*time.Second),
+		// 设置空闲连接超时时间
+		grpc.WithOptions(grpcx.WithIdleTimeout(0)),
 	)
 	if err != nil {
 		panic(err)
@@ -84,6 +92,9 @@ func NewMediaServiceClient(r registry.Discovery) mediav1.MediaClient {
 			recovery.Recovery(),
 			metadata.Client(),
 		),
+		grpc.WithTimeout(3*time.Second),
+		// 设置空闲连接超时时间
+		grpc.WithOptions(grpcx.WithIdleTimeout(0)),
 	)
 	if err != nil {
 		panic(err)

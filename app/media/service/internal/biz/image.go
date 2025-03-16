@@ -42,11 +42,13 @@ type ImageRepo interface {
 	ImageExist(ctx context.Context, redisKey string, imageUuid string) (bool, error)
 	GeneratePutImageURL(ctx context.Context, bucket string, imageName string, limitTime time.Duration) (string, error)
 	SaveImagesInfo(ctx context.Context, images *Images) error
-	SaveAvatarInfo(ctx context.Context, avatarName string) error
-	KafkaSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
+	SaveAvatarInfo(ctx context.Context, avatarName string, avatarUuid string) (string, error)
 	AddImageTag(ctx context.Context, name, parentName string) (*v1.AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, name string) (*v1.SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
+	// KafkaImageSaveToElasticsearch kafka consume message
+	KafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
+	KafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error
 }
 
 type ImageUseCase struct {
@@ -126,10 +128,10 @@ func (c *ImageUseCase) UserImageUpload(ctx context.Context, req *v1.UploadUserIm
 		return nil, errors.New(fmt.Sprintf("function: ImagesUpload, generate pre-signed avatarURL error: %s", err))
 	}
 	return &v1.UploadUserImageReply{
-		AvatarUrl:  url,
+		UploadUrl:  url,
 		AvatarName: name,
 		AvatarUuid: uid,
-	}, err
+	}, nil
 }
 
 func (c *ImageUseCase) VerifyImagesUpload(ctx context.Context, req *v1.VerifyImagesUploadReq) (*v1.VerifyImagesUploadReply, error) {
@@ -169,7 +171,7 @@ func (c *ImageUseCase) VerifyImagesUpload(ctx context.Context, req *v1.VerifyIma
 }
 
 func (c *ImageUseCase) VerifyUserImageUpload(ctx context.Context, req *v1.VerifyUserImageUploadReq) (*v1.VerifyUserImageUploadReply, error) {
-	exist, err := c.ip.VerifyImageUpload(ctx, MinioBucketAvatarName, req.ImageName)
+	exist, err := c.ip.VerifyImageUpload(ctx, MinioBucketAvatarName, req.AvatarName)
 	if err != nil {
 		return &v1.VerifyUserImageUploadReply{
 			Success: false,
@@ -182,7 +184,7 @@ func (c *ImageUseCase) VerifyUserImageUpload(ctx context.Context, req *v1.Verify
 			Message: "Avatar did`t exist",
 		}, err
 	}
-	err = c.ip.SaveAvatarInfo(ctx, req.ImageName)
+	url, err := c.ip.SaveAvatarInfo(ctx, req.AvatarName, req.AvatarUuid)
 	if err != nil {
 		return &v1.VerifyUserImageUploadReply{
 			Success: false,
@@ -191,17 +193,14 @@ func (c *ImageUseCase) VerifyUserImageUpload(ctx context.Context, req *v1.Verify
 	}
 
 	return &v1.VerifyUserImageUploadReply{
-		Success: true,
-		Message: "success upload user Avatar",
+		Success:   true,
+		Message:   "success upload user Avatar",
+		AvatarUrl: url,
 	}, nil
 }
 
 func (c *ImageUseCase) Get(ctx context.Context, req *v1.GetImageReq) (*v1.GetImageReply, error) {
 	return c.ip.GetImage(ctx, req.ImageUrl)
-}
-
-func (c *ImageUseCase) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
-	return c.ip.KafkaSaveToElasticsearch(ctx, topic, headers, msg)
 }
 
 func (c *ImageUseCase) AddImageTag(ctx context.Context, in *v1.AddImageTagReq) (*v1.AddImageTagReply, error) {
@@ -214,4 +213,14 @@ func (c *ImageUseCase) SearchImageTagByNameLike(ctx context.Context, in *v1.Sear
 
 func (c *ImageUseCase) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
 	return c.ip.ReloadCategoryRedisImageTag(ctx, req)
+}
+
+// kafka consume message
+
+func (c *ImageUseCase) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
+	return c.ip.KafkaImageSaveToElasticsearch(ctx, topic, headers, msg)
+}
+
+func (c *ImageUseCase) HandleKafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error {
+	return c.ip.KafkaAvatarSaveToElasticsearch(ctx, topic, headers, msg)
 }
