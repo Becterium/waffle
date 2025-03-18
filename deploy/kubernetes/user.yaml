@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: waffle
+  labels:
+    name: waffle
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: user-waffle
+  name: user-waffle
+  namespace: waffle
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-waffle
+  template:
+    metadata:
+      labels:
+        app: user-waffle
+    spec:
+      containers:
+        - name: user-waffle
+          image: 192.168.37.130:8009/library/waffle/user-kratos:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: user-waffle-config
+              mountPath: /data/conf
+      restartPolicy: Always
+      volumes:
+        - name: user-waffle-config
+          hostPath:
+            path: /home/jenkins/agent/workspace/waffle/app/user/service/configs

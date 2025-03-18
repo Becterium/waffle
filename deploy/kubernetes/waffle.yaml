@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: waffle
+  labels:
+    name: waffle
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gateway-waffle
+  name: gateway-waffle
+  namespace: waffle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-waffle
+  template:
+    metadata:
+      labels:
+        app: gateway-waffle
+    spec:
+      containers:
+        - name: user-waffle
+          image: 192.168.37.130:8009/library/waffle/waffle-kratos:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+            - containerPort: 8000
+          volumeMounts:
+            - name: gateway-waffle-config
+              mountPath: /data/conf
+      restartPolicy: Always
+      volumes:
+        - name: gateway-waffle-config
+          hostPath:
+            path: /home/jenkins/agent/workspace/waffle/app/waffle/interface/configs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gateway-waffle
+  name: gateway-waffle
+  namespace: waffle
+spec:
+  type: NodePort
+  ports:
+    - name: waffle
+      port: 8000
+      targetPort: 8000
+      nodePort: 30010
+  selector:
+    app: gateway-waffle
