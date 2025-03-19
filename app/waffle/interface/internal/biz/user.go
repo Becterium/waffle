@@ -70,9 +70,12 @@ func NewUserUseCase(conf *conf.Auth, repo UserRepo, logger log.Logger) *UserUseC
 
 func (c UserUseCase) Register(ctx context.Context, req *v1.RegisterReq) (*v1.RegisterReply, error) {
 	//todo:是否要考虑幂等性问题呢
-	_, err := c.repo.FindByName(ctx, req.Username)
-	if err == nil {
-		return nil, v1.ErrorRegisterFailed("this username has exist")
+	u, err := c.repo.FindByName(ctx, req.Username)
+	if err != nil {
+		return nil, err
+	}
+	if u.Id != 0 {
+		return nil, errors.New("username has been register")
 	}
 	user, err := NewUser(req.Username, req.Password)
 	if err != nil {

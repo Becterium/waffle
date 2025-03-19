@@ -103,7 +103,7 @@ func (u *userRepo) FindByUsername(ctx context.Context, username string) (*biz.Us
 	user := &User{
 		Username: username,
 	}
-	result := u.data.db.Last(user)
+	result := u.data.db.Where("username = ?", username).Find(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -34,6 +34,8 @@ spec:
       env:
         - name: KUBECONFIG
           value: /home/jenkins/.kube/admin.conf
+      imagePullSecrets:
+        - name: harbor-key
   volumes:
     - name: kube-config
 #k8s集群的kubeconfig,需要你手动复制到各个节点,如有更好的解决方法,希望指出
@@ -50,55 +52,54 @@ spec:
         }
     }
     stages {
-      // stage('Kubernetes') {
-      //     steps{
-      //         script{
-      //           sh "kubectl get node"
-      //         }
-      //     }
-      // }
-      // stage('Docker') {
-      //     steps{
-      //         script{
-      //           sh "docker images"
-      //         }
-      //     }
-      // }
-      // stage('Code') {
-      //     steps{
-      //         script{
-      //           sh "cat /home/jenkins/agent/workspace/waffle/deploy/kubernetes/minio.yaml"
-      //         }
-      //     }
-      // }
-      // stage('BuildUser'){
-      //   steps{
-      //     script{
-      //       sh "docker login 192.168.37.130:8009 -u admin -p Harbor12345"
-      //       sh "cd /home/jenkins/agent/workspace/waffle"
-      //       sh "docker build --build-arg APP_RELATIVE_PATH=user/service -t 192.168.37.130:8009/library/waffle/user-kratos:latest ."
-      //       sh "docker push 192.168.37.130:8009/library/waffle/user-kratos:latest"
-      //     }
-      //   }
-      // }
-      // stage('BuildWaffle'){
-      //   steps{
-      //     script{
-      //       sh "cd /home/jenkins/agent/workspace/waffle"
-      //       sh "docker build --build-arg APP_RELATIVE_PATH=waffle/interface -t 192.168.37.130:8009/library/waffle/waffle-kratos:latest ."
-      //       sh "docker push 192.168.37.130:8009/library/waffle/waffle-kratos:latest"
-      //     }
-      //   }
-      // }
-      // stage('BuildMedia'){
-      //   steps{
-      //     script{
-      //       sh "cd /home/jenkins/agent/workspace/waffle"
-      //       sh "docker build --build-arg APP_RELATIVE_PATH=media/service -t 192.168.37.130:8009/library/waffle/media-kratos:latest ."
-      //       sh "docker push 192.168.37.130:8009/library/waffle/media-kratos:latest"
-      //     }
-      //   }
-      // }
+      stage('Kubernetes') {
+          steps{
+              script{
+                sh "kubectl get node"
+              }
+          }
+      }
+      stage('Docker') {
+          steps{
+              script{
+                sh "docker images"
+              }
+          }
+      }
+      stage('Code') {
+          steps{
+              script{
+                sh "cat /home/jenkins/agent/workspace/waffle/deploy/kubernetes/minio.yaml"
+              }
+          }
+      }
+      stage('BuildUser'){
+        steps{
+          script{
+            sh "cd /home/jenkins/agent/workspace/waffle"
+            sh "docker build --build-arg APP_RELATIVE_PATH=user/service -t 192.168.37.130:8009/library/waffle/user-kratos:latest ."
+            sh "docker push 192.168.37.130:8009/library/waffle/user-kratos:latest"
+          }
+        }
+      }
+      stage('BuildWaffle'){
+        steps{
+          script{
+            sh "cd /home/jenkins/agent/workspace/waffle"
+            sh "docker build --build-arg APP_RELATIVE_PATH=waffle/interface -t 192.168.37.130:8009/library/waffle/waffle-kratos:latest ."
+            sh "docker push 192.168.37.130:8009/library/waffle/waffle-kratos:latest"
+          }
+        }
+      }
+      stage('BuildMedia'){
+        steps{
+          script{
+            sh "cd /home/jenkins/agent/workspace/waffle"
+            sh "docker build --build-arg APP_RELATIVE_PATH=media/service -t 192.168.37.130:8009/library/waffle/media-kratos:latest ."
+            sh "docker push 192.168.37.130:8009/library/waffle/media-kratos:latest"
+          }
+        }
+      }
       stage("run"){
         steps{
           script{
