@@ -31,6 +31,9 @@ spec:
           mountPath: /var/run/docker.sock
         - name: docker-bin
           mountPath: /usr/bin/docker
+        - name: docker-config
+          mountPath: /root/.docker
+          readOnly: true
       env:
         - name: KUBECONFIG
           value: /home/jenkins/.kube/admin.conf
@@ -48,6 +51,10 @@ spec:
     - name: docker-bin
       hostPath:
         path: /usr/bin/docker
+    - name: docker-config
+      hostPath:
+        path: /root/.docker
+        type: Directory
 '''
         }
     }
