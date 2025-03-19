@@ -29,10 +29,10 @@ spec:
           ports:
             - containerPort: 9000
           volumeMounts:
-            - name: user-waffle-config
+            - name: user-waffle-config-volume
               mountPath: /data/conf
       restartPolicy: Always
       volumes:
-        - name: user-waffle-config
-          hostPath:
-            path: /home/jenkins/agent/workspace/waffle/app/user/service/configs
+        - name: user-waffle-config-volume
+          configMap:
+            name: user-waffle-config

@@ -30,13 +30,13 @@ spec:
             - containerPort: 9000
             - containerPort: 8000
           volumeMounts:
-            - name: gateway-waffle-config
+            - name: gateway-waffle-config-volume
               mountPath: /data/conf
       restartPolicy: Always
       volumes:
-        - name: gateway-waffle-config
-          hostPath:
-            path: /home/jenkins/agent/workspace/waffle/app/waffle/interface/configs
+        - name: gateway-waffle-config-volume
+          configMap:
+            name: gateway-waffle-config
 ---
 apiVersion: v1
 kind: Service

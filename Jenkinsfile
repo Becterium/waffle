@@ -102,6 +102,9 @@ spec:
       stage("run"){
         steps{
           script{
+            sh "kubectl create configmap user-waffle-config --from-file=/home/jenkins/agent/workspace/waffle/app/user/service/configs"
+            sh "kubectl create configmap gateway-waffle-config --from-file=/home/jenkins/agent/workspace/waffle/app/waffle/interface/configs"
+            sh "kubectl create configmap media-waffle-config --from-file=/home/jenkins/agent/workspace/waffle/app/media/service/configs"
             sh "kubectl apply -f /home/jenkins/agent/workspace/waffle/deploy/kubernetes/user.yaml"
             sh "kubectl apply -f /home/jenkins/agent/workspace/waffle/deploy/kubernetes/waffle.yaml"
           }
