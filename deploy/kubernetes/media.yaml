@@ -9,30 +9,30 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: user-waffle
-  name: user-waffle
+    app: media-waffle
+  name: media-waffle
   namespace: waffle
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: user-waffle
+      app: media-waffle
   template:
     metadata:
       labels:
-        app: user-waffle
+        app: media-waffle
     spec:
       containers:
-        - name: user-waffle
-          image: 192.168.37.130:8009/library/waffle/user-kratos:latest
+        - name: media-waffle
+          image: 192.168.37.130:8009/library/waffle/media-kratos:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 9000
           volumeMounts:
-            - name: user-waffle-config-volume
+            - name: media-waffle-config-volume
               mountPath: /data/conf
       restartPolicy: Always
       volumes:
-        - name: user-waffle-config-volume
+        - name: media-waffle-config-volume
           configMap:
-            name: user-waffle-config
+            name: media-waffle-config

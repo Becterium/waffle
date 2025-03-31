@@ -28,6 +28,17 @@ service Media{
   }
   rpc ReloadCategoryRedisImageTag(ReloadCategoryRedisImageTagReq)returns(ReloadCategoryRedisImageTagReply){
   }
+  // collection
+  rpc CreateCollection(CreateCollectionReq)returns(CreateCollectionReply){
+  }
+  rpc StarImage(StarImageReq)returns(StarImageReply){
+  }
+  rpc UnStarImage(UnStarImageReq)returns(UnStarImageReply){
+  }
+  rpc FindCollectionByImageId(FindCollectionByImageIdReq)returns(FindCollectionByImageIdReply){
+  }
+  rpc FindCollectionByCollectionId(FindCollectionByCollectionIdReq)returns(FindCollectionByCollectionIdReply){
+  }
   // video
   rpc UploadVideo(UpLoadVideoReq)returns(UpLoadVideoReply){
   }
@@ -118,7 +129,7 @@ message SearchImageTagByNameLikeReq{
 message SearchImageTagByNameLikeReply{
   message Tags {
     string name = 1;
-    int64 id =2;
+    int64 id = 2;
   }
   repeated Tags tags = 1;
 }
@@ -127,6 +138,47 @@ message ReloadCategoryRedisImageTagReq{}
 
 message ReloadCategoryRedisImageTagReply{}
 
+// collection
+message CreateCollectionReq{
+  int64 user_id = 1;
+}
+
+message CreateCollectionReply{}
+
+message StarImageReq{
+  int64 image_id = 1;
+}
+
+message StarImageReply{}
+
+message UnStarImageReq{
+  int64 image_id = 1;
+}
+
+message UnStarImageReply{}
+
+message FindCollectionByImageIdReq{
+  int64 image_id = 1;
+}
+
+message FindCollectionByImageIdReply{
+  repeated int64 collection_id = 1;
+}
+
+message FindCollectionByCollectionIdReq{
+  int64 collection_id = 1;
+}
+
+message FindCollectionByCollectionIdReply{
+  message Info {
+    int64 image_id = 1;
+    string image_name = 2;
+    string image_url = 3;
+    string category = 4;
+  }
+  int64 collection_id = 1;
+  repeated Info info = 2;
+}
 // video
 message UpLoadVideoReq{
   string video_name = 1;

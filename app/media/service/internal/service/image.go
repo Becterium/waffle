@@ -39,6 +39,23 @@ func (m *MediaService) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.
 	return m.ic.ReloadCategoryRedisImageTag(ctx, req)
 }
 
+func (m *MediaService) CreateCollection(ctx context.Context, req *v1.CreateCollectionReq) (*v1.CreateCollectionReply, error) {
+	return m.ic.CreateCollection(ctx, req)
+}
+
+func (m *MediaService) StarImage(ctx context.Context, req *v1.StarImageReq) (*v1.StarImageReply, error) {
+	return m.ic.StarImage(ctx, req)
+}
+func (m *MediaService) UnStarImage(ctx context.Context, req *v1.UnStarImageReq) (*v1.UnStarImageReply, error) {
+	return m.ic.UnStarImage(ctx, req)
+}
+func (m *MediaService) FindCollectionByImageId(ctx context.Context, req *v1.FindCollectionByImageIdReq) (*v1.FindCollectionByImageIdReply, error) {
+	return m.ic.FindCollectionByImageId(ctx, req)
+}
+func (m *MediaService) FindCollectionByCollectionId(ctx context.Context, req *v1.FindCollectionByCollectionIdReq) (*v1.FindCollectionByCollectionIdReply, error) {
+	return m.ic.FindCollectionByCollectionId(ctx, req)
+}
+
 func (m *MediaService) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
 	return m.ic.HandleKafkaImageSaveToElasticsearch(ctx, topic, headers, msg)
 }

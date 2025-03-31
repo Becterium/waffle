@@ -19,16 +19,21 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Media_UploadImages_FullMethodName                = "/waffle.media.v1.Media/UploadImages"
-	Media_UploadUserImage_FullMethodName             = "/waffle.media.v1.Media/UploadUserImage"
-	Media_VerifyUserImageUpload_FullMethodName       = "/waffle.media.v1.Media/VerifyUserImageUpload"
-	Media_VerifyImagesUpload_FullMethodName          = "/waffle.media.v1.Media/VerifyImagesUpload"
-	Media_GetImage_FullMethodName                    = "/waffle.media.v1.Media/GetImage"
-	Media_AddImageTag_FullMethodName                 = "/waffle.media.v1.Media/AddImageTag"
-	Media_SearchImageTagByNameLike_FullMethodName    = "/waffle.media.v1.Media/SearchImageTagByNameLike"
-	Media_ReloadCategoryRedisImageTag_FullMethodName = "/waffle.media.v1.Media/ReloadCategoryRedisImageTag"
-	Media_UploadVideo_FullMethodName                 = "/waffle.media.v1.Media/UploadVideo"
-	Media_GetVideo_FullMethodName                    = "/waffle.media.v1.Media/GetVideo"
+	Media_UploadImages_FullMethodName                 = "/waffle.media.v1.Media/UploadImages"
+	Media_UploadUserImage_FullMethodName              = "/waffle.media.v1.Media/UploadUserImage"
+	Media_VerifyUserImageUpload_FullMethodName        = "/waffle.media.v1.Media/VerifyUserImageUpload"
+	Media_VerifyImagesUpload_FullMethodName           = "/waffle.media.v1.Media/VerifyImagesUpload"
+	Media_GetImage_FullMethodName                     = "/waffle.media.v1.Media/GetImage"
+	Media_AddImageTag_FullMethodName                  = "/waffle.media.v1.Media/AddImageTag"
+	Media_SearchImageTagByNameLike_FullMethodName     = "/waffle.media.v1.Media/SearchImageTagByNameLike"
+	Media_ReloadCategoryRedisImageTag_FullMethodName  = "/waffle.media.v1.Media/ReloadCategoryRedisImageTag"
+	Media_CreateCollection_FullMethodName             = "/waffle.media.v1.Media/CreateCollection"
+	Media_StarImage_FullMethodName                    = "/waffle.media.v1.Media/StarImage"
+	Media_UnStarImage_FullMethodName                  = "/waffle.media.v1.Media/UnStarImage"
+	Media_FindCollectionByImageId_FullMethodName      = "/waffle.media.v1.Media/FindCollectionByImageId"
+	Media_FindCollectionByCollectionId_FullMethodName = "/waffle.media.v1.Media/FindCollectionByCollectionId"
+	Media_UploadVideo_FullMethodName                  = "/waffle.media.v1.Media/UploadVideo"
+	Media_GetVideo_FullMethodName                     = "/waffle.media.v1.Media/GetVideo"
 )
 
 // MediaClient is the client API for Media service.
@@ -45,6 +50,12 @@ type MediaClient interface {
 	AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...grpc.CallOption) (*ReloadCategoryRedisImageTagReply, error)
+	// collection
+	CreateCollection(ctx context.Context, in *CreateCollectionReq, opts ...grpc.CallOption) (*CreateCollectionReply, error)
+	StarImage(ctx context.Context, in *StarImageReq, opts ...grpc.CallOption) (*StarImageReply, error)
+	UnStarImage(ctx context.Context, in *UnStarImageReq, opts ...grpc.CallOption) (*UnStarImageReply, error)
+	FindCollectionByImageId(ctx context.Context, in *FindCollectionByImageIdReq, opts ...grpc.CallOption) (*FindCollectionByImageIdReply, error)
+	FindCollectionByCollectionId(ctx context.Context, in *FindCollectionByCollectionIdReq, opts ...grpc.CallOption) (*FindCollectionByCollectionIdReply, error)
 	// video
 	UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error)
 	GetVideo(ctx context.Context, in *GetVideoReq, opts ...grpc.CallOption) (*GetVideoReply, error)
@@ -138,6 +149,56 @@ func (c *mediaClient) ReloadCategoryRedisImageTag(ctx context.Context, in *Reloa
 	return out, nil
 }
 
+func (c *mediaClient) CreateCollection(ctx context.Context, in *CreateCollectionReq, opts ...grpc.CallOption) (*CreateCollectionReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCollectionReply)
+	err := c.cc.Invoke(ctx, Media_CreateCollection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) StarImage(ctx context.Context, in *StarImageReq, opts ...grpc.CallOption) (*StarImageReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StarImageReply)
+	err := c.cc.Invoke(ctx, Media_StarImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) UnStarImage(ctx context.Context, in *UnStarImageReq, opts ...grpc.CallOption) (*UnStarImageReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UnStarImageReply)
+	err := c.cc.Invoke(ctx, Media_UnStarImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) FindCollectionByImageId(ctx context.Context, in *FindCollectionByImageIdReq, opts ...grpc.CallOption) (*FindCollectionByImageIdReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindCollectionByImageIdReply)
+	err := c.cc.Invoke(ctx, Media_FindCollectionByImageId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) FindCollectionByCollectionId(ctx context.Context, in *FindCollectionByCollectionIdReq, opts ...grpc.CallOption) (*FindCollectionByCollectionIdReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindCollectionByCollectionIdReply)
+	err := c.cc.Invoke(ctx, Media_FindCollectionByCollectionId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mediaClient) UploadVideo(ctx context.Context, in *UpLoadVideoReq, opts ...grpc.CallOption) (*UpLoadVideoReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpLoadVideoReply)
@@ -172,6 +233,12 @@ type MediaServer interface {
 	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error)
+	// collection
+	CreateCollection(context.Context, *CreateCollectionReq) (*CreateCollectionReply, error)
+	StarImage(context.Context, *StarImageReq) (*StarImageReply, error)
+	UnStarImage(context.Context, *UnStarImageReq) (*UnStarImageReply, error)
+	FindCollectionByImageId(context.Context, *FindCollectionByImageIdReq) (*FindCollectionByImageIdReply, error)
+	FindCollectionByCollectionId(context.Context, *FindCollectionByCollectionIdReq) (*FindCollectionByCollectionIdReply, error)
 	// video
 	UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error)
 	GetVideo(context.Context, *GetVideoReq) (*GetVideoReply, error)
@@ -208,6 +275,21 @@ func (UnimplementedMediaServer) SearchImageTagByNameLike(context.Context, *Searc
 }
 func (UnimplementedMediaServer) ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReloadCategoryRedisImageTag not implemented")
+}
+func (UnimplementedMediaServer) CreateCollection(context.Context, *CreateCollectionReq) (*CreateCollectionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCollection not implemented")
+}
+func (UnimplementedMediaServer) StarImage(context.Context, *StarImageReq) (*StarImageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StarImage not implemented")
+}
+func (UnimplementedMediaServer) UnStarImage(context.Context, *UnStarImageReq) (*UnStarImageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnStarImage not implemented")
+}
+func (UnimplementedMediaServer) FindCollectionByImageId(context.Context, *FindCollectionByImageIdReq) (*FindCollectionByImageIdReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindCollectionByImageId not implemented")
+}
+func (UnimplementedMediaServer) FindCollectionByCollectionId(context.Context, *FindCollectionByCollectionIdReq) (*FindCollectionByCollectionIdReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindCollectionByCollectionId not implemented")
 }
 func (UnimplementedMediaServer) UploadVideo(context.Context, *UpLoadVideoReq) (*UpLoadVideoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadVideo not implemented")
@@ -380,6 +462,96 @@ func _Media_ReloadCategoryRedisImageTag_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Media_CreateCollection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCollectionReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).CreateCollection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_CreateCollection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).CreateCollection(ctx, req.(*CreateCollectionReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_StarImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StarImageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).StarImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_StarImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).StarImage(ctx, req.(*StarImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_UnStarImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnStarImageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).UnStarImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_UnStarImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).UnStarImage(ctx, req.(*UnStarImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_FindCollectionByImageId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindCollectionByImageIdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).FindCollectionByImageId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_FindCollectionByImageId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).FindCollectionByImageId(ctx, req.(*FindCollectionByImageIdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_FindCollectionByCollectionId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindCollectionByCollectionIdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).FindCollectionByCollectionId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_FindCollectionByCollectionId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).FindCollectionByCollectionId(ctx, req.(*FindCollectionByCollectionIdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Media_UploadVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpLoadVideoReq)
 	if err := dec(in); err != nil {
@@ -454,6 +626,26 @@ var Media_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReloadCategoryRedisImageTag",
 			Handler:    _Media_ReloadCategoryRedisImageTag_Handler,
+		},
+		{
+			MethodName: "CreateCollection",
+			Handler:    _Media_CreateCollection_Handler,
+		},
+		{
+			MethodName: "StarImage",
+			Handler:    _Media_StarImage_Handler,
+		},
+		{
+			MethodName: "UnStarImage",
+			Handler:    _Media_UnStarImage_Handler,
+		},
+		{
+			MethodName: "FindCollectionByImageId",
+			Handler:    _Media_FindCollectionByImageId_Handler,
+		},
+		{
+			MethodName: "FindCollectionByCollectionId",
+			Handler:    _Media_FindCollectionByCollectionId_Handler,
 		},
 		{
 			MethodName: "UploadVideo",

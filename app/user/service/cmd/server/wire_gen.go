@@ -26,7 +26,9 @@ import (
 func initApp(confServer *conf.Server, auth *conf.Auth, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewMysqlClient(confData, logger)
 	client := data.NewRedisClient(confData, logger)
-	dataData, cleanup, err := data.NewData(db, client, logger)
+	discovery := data.NewDiscovery(registry)
+	mediaClient := data.NewMediaServiceClient(discovery)
+	dataData, cleanup, err := data.NewData(db, client, logger, mediaClient)
 	if err != nil {
 		return nil, nil, err
 	}

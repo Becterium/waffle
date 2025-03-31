@@ -84,6 +84,16 @@ type avatar struct {
 	ThumbnailsUrl string
 }
 
+type collection struct {
+	gorm.Model
+	UserId uint
+}
+
+type collectionImage struct {
+	CollectionId uint
+	ImageId      uint
+}
+
 type imageRepo struct {
 	data *Data
 	log  *log.Helper
@@ -391,6 +401,17 @@ func (m *imageRepo) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.Rel
 		}
 	}
 	return &v1.ReloadCategoryRedisImageTagReply{}, nil
+}
+
+func (m *imageRepo) CreateCollection(ctx context.Context, userId uint) (*v1.CreateCollectionReply, error) {
+	clt := &collection{
+		UserId: userId,
+	}
+	result := m.data.db.Create(clt)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &v1.CreateCollectionReply{}, nil
 }
 
 func (m *imageRepo) KafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {

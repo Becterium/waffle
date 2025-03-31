@@ -25,7 +25,7 @@ spec:
       containers:
         - name: user-waffle
           image: 192.168.37.130:8009/library/waffle/waffle-kratos:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 9000
             - containerPort: 8000

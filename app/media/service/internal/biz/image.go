@@ -46,6 +46,8 @@ type ImageRepo interface {
 	AddImageTag(ctx context.Context, name, parentName string) (*v1.AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, name string) (*v1.SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
+	// collection
+	CreateCollection(ctx context.Context, userId uint) (*v1.CreateCollectionReply, error)
 	// KafkaImageSaveToElasticsearch kafka consume message
 	KafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
 	KafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error
@@ -213,6 +215,23 @@ func (c *ImageUseCase) SearchImageTagByNameLike(ctx context.Context, in *v1.Sear
 
 func (c *ImageUseCase) ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error) {
 	return c.ip.ReloadCategoryRedisImageTag(ctx, req)
+}
+
+func (c *ImageUseCase) CreateCollection(ctx context.Context, req *v1.CreateCollectionReq) (*v1.CreateCollectionReply, error) {
+	return c.ip.CreateCollection(ctx, uint(req.UserId))
+}
+
+func (c *ImageUseCase) StarImage(ctx context.Context, req *v1.StarImageReq) (*v1.StarImageReply, error) {
+	return nil, nil
+}
+func (c *ImageUseCase) UnStarImage(ctx context.Context, req *v1.UnStarImageReq) (*v1.UnStarImageReply, error) {
+	return nil, nil
+}
+func (c *ImageUseCase) FindCollectionByImageId(ctx context.Context, req *v1.FindCollectionByImageIdReq) (*v1.FindCollectionByImageIdReply, error) {
+	return nil, nil
+}
+func (c *ImageUseCase) FindCollectionByCollectionId(ctx context.Context, req *v1.FindCollectionByCollectionIdReq) (*v1.FindCollectionByCollectionIdReply, error) {
+	return nil, nil
 }
 
 // kafka consume message

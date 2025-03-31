@@ -43,30 +43,6 @@
         }
       }
     },
-    "VerifyImagesUploadReqInfo": {
-      "type": "object",
-      "properties": {
-        "imageName": {
-          "type": "string"
-        },
-        "imageUuid": {
-          "type": "string"
-        },
-        "category": {
-          "type": "string"
-        },
-        "purity": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "uint64"
-          }
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -97,6 +73,55 @@
     },
     "v1AddImageTagReply": {
       "type": "object"
+    },
+    "v1CreateCollectionReply": {
+      "type": "object"
+    },
+    "v1FindCollectionByCollectionIdReply": {
+      "type": "object",
+      "properties": {
+        "collectionId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "info": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1FindCollectionByCollectionIdReplyInfo"
+          }
+        }
+      }
+    },
+    "v1FindCollectionByCollectionIdReplyInfo": {
+      "type": "object",
+      "properties": {
+        "imageId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        }
+      }
+    },
+    "v1FindCollectionByImageIdReply": {
+      "type": "object",
+      "properties": {
+        "collectionId": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
     },
     "v1GetImageReply": {
       "type": "object",
@@ -157,6 +182,12 @@
         }
       }
     },
+    "v1StarImageReply": {
+      "type": "object"
+    },
+    "v1UnStarImageReply": {
+      "type": "object"
+    },
     "v1UpLoadVideoReply": {
       "type": "object",
       "properties": {
@@ -205,6 +236,30 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "v1VerifyImagesUploadReqInfo": {
+      "type": "object",
+      "properties": {
+        "imageName": {
+          "type": "string"
+        },
+        "imageUuid": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "purity": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          }
         }
       }
     },

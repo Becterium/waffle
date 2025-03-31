@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	mediav1 "waffle/api/media/service/v1"
 	"waffle/app/user/service/internal/biz"
 	"waffle/app/user/service/internal/pkg/util"
 )
@@ -53,6 +54,11 @@ func (u *userRepo) CreateUser(ctx context.Context, user *biz.User) (*biz.User, e
 	result := u.data.db.Create(po)
 	if result.Error != nil {
 		return nil, result.Error
+	}
+
+	_, err = u.data.mc.CreateCollection(ctx, &mediav1.CreateCollectionReq{UserId: int64(po.ID)})
+	if err != nil {
+		return nil, errors2.New(fmt.Sprintf("media rpc CreateCollection error: %s", err))
 	}
 
 	return &biz.User{Id: po.ID, Username: po.Username}, nil
