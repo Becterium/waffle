@@ -2,22 +2,20 @@ package main
 
 import (
 	"flag"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"os"
 
 	"waffle/app/waffle/interface/internal/conf"
 
-	"github.com/go-kratos/kratos/contrib/log/zap/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
 	_ "go.uber.org/automaxprocs"
-	zapLog "go.uber.org/zap"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -53,13 +51,21 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, rr registry.Reg
 
 func main() {
 	flag.Parse()
-	cfg := zapLog.NewProductionConfig()
-	cfg.OutputPaths = []string{"../../log/foo.log"}
-	zapLogger, err := cfg.Build()
-	if err != nil {
-		panic(err)
-	}
-	logger := log.With(zap.NewLogger(zapLogger),
+	//cfg := zapLog.NewProductionConfig()
+	//cfg.OutputPaths = []string{"../../log/foo.log"}
+	//zapLogger, err := cfg.Build()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//logger := log.With(zap.NewLogger(zapLogger),
+	//	"ts", log.DefaultTimestamp,
+	//	"caller", log.DefaultCaller,
+	//	"service.id", id,
+	//	"service.name", Name,
+	//	"service.version", Version,
+	//	"span.id", tracing.SpanID(),
+	//)
+	logger := log.With(log.NewStdLogger(os.Stdout),
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
 		"service.id", id,

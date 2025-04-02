@@ -8,8 +8,6 @@ server:
   kafka:
     addrs:
       - 192.168.37.134:9094
-
-
 minio:
     client:
       endpoint : "192.168.37.100:30000"
