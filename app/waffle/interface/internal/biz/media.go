@@ -11,9 +11,18 @@ import (
 type ImageInfo struct {
 	ImageName string
 	ImageUUID string
-	category  string
-	purity    string
-	tags      []uint64
+	Category  string
+	Purity    string
+	Size      int64
+	Views     int64
+	ImageUrl  string
+	Tags      []string
+}
+
+type UploaderInfo struct {
+	Id        uint64
+	Name      string
+	AvatarUrl string
 }
 
 type MediaRepo interface {
@@ -24,6 +33,7 @@ type MediaRepo interface {
 	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
 	GenerateUploadAvatarUrl(ctx context.Context, req *v1.GenerateUploadAvatarUrlReq) (*v1.GenerateUploadAvatarUrlReply, error)
 	VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatarUploadReq) (*v1.VerifyAvatarUploadReply, error)
+	GetImage(ctx context.Context, uid string) (*UploaderInfo, *ImageInfo, error)
 }
 
 type MediaUseCase struct {
@@ -82,4 +92,8 @@ func (m MediaUseCase) VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvat
 		return nil, err
 	}
 	return m.repo.VerifyAvatarUpload(ctx, req)
+}
+
+func (m MediaUseCase) GetImage(ctx context.Context, uid string) (*UploaderInfo, *ImageInfo, error) {
+	return m.repo.GetImage(ctx, uid)
 }

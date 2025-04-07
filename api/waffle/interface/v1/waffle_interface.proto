@@ -74,6 +74,12 @@ service WaffleInterface {
     };
   }
 
+  rpc GetImage(GetImageReq)returns(GetImageReply){
+    option (google.api.http) = {
+      get: "/v1/w/{uid}"
+    };
+  }
+
   // image - tag
   rpc AddImageTag(AddImageTagReq)returns(AddImageTagReply){
     option (google.api.http) = {
@@ -182,6 +188,29 @@ message VerifyAvatarUploadReq {
 
 message VerifyAvatarUploadReply {
   string upload_url = 1;
+}
+
+message GetImageReq {
+  string uid = 1;
+}
+
+message GetImageReply {
+  message Uploader {
+    uint64 id = 1;
+    string avatar_url = 2;
+  }
+  message Info {
+    string name = 1;
+    string category = 2;
+    string purity = 3;
+    int64 size = 4;
+    int64 views = 5;
+    string url = 6;
+    string uid = 7;
+    repeated string tags = 8;
+  }
+  Uploader uploader = 1;
+  Info info = 2;
 }
 
 // image -tag

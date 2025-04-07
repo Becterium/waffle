@@ -28,6 +28,7 @@ const (
 	WaffleInterface_GenerateUploadAvatarUrl_FullMethodName     = "/waffle.interface.v1.WaffleInterface/GenerateUploadAvatarUrl"
 	WaffleInterface_VerifyImagesUpload_FullMethodName          = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
 	WaffleInterface_VerifyAvatarUpload_FullMethodName          = "/waffle.interface.v1.WaffleInterface/VerifyAvatarUpload"
+	WaffleInterface_GetImage_FullMethodName                    = "/waffle.interface.v1.WaffleInterface/GetImage"
 	WaffleInterface_AddImageTag_FullMethodName                 = "/waffle.interface.v1.WaffleInterface/AddImageTag"
 	WaffleInterface_SearchImageTagByNameLike_FullMethodName    = "/waffle.interface.v1.WaffleInterface/SearchImageTagByNameLike"
 	WaffleInterface_ReloadCategoryRedisImageTag_FullMethodName = "/waffle.interface.v1.WaffleInterface/ReloadCategoryRedisImageTag"
@@ -48,6 +49,7 @@ type WaffleInterfaceClient interface {
 	GenerateUploadAvatarUrl(ctx context.Context, in *GenerateUploadAvatarUrlReq, opts ...grpc.CallOption) (*GenerateUploadAvatarUrlReply, error)
 	VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error)
 	VerifyAvatarUpload(ctx context.Context, in *VerifyAvatarUploadReq, opts ...grpc.CallOption) (*VerifyAvatarUploadReply, error)
+	GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error)
 	// image - tag
 	AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error)
@@ -152,6 +154,16 @@ func (c *waffleInterfaceClient) VerifyAvatarUpload(ctx context.Context, in *Veri
 	return out, nil
 }
 
+func (c *waffleInterfaceClient) GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetImageReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_GetImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *waffleInterfaceClient) AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AddImageTagReply)
@@ -197,6 +209,7 @@ type WaffleInterfaceServer interface {
 	GenerateUploadAvatarUrl(context.Context, *GenerateUploadAvatarUrlReq) (*GenerateUploadAvatarUrlReply, error)
 	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 	VerifyAvatarUpload(context.Context, *VerifyAvatarUploadReq) (*VerifyAvatarUploadReply, error)
+	GetImage(context.Context, *GetImageReq) (*GetImageReply, error)
 	// image - tag
 	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
@@ -237,6 +250,9 @@ func (UnimplementedWaffleInterfaceServer) VerifyImagesUpload(context.Context, *V
 }
 func (UnimplementedWaffleInterfaceServer) VerifyAvatarUpload(context.Context, *VerifyAvatarUploadReq) (*VerifyAvatarUploadReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyAvatarUpload not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) GetImage(context.Context, *GetImageReq) (*GetImageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
 }
 func (UnimplementedWaffleInterfaceServer) AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddImageTag not implemented")
@@ -430,6 +446,24 @@ func _WaffleInterface_VerifyAvatarUpload_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WaffleInterface_GetImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetImageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).GetImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_GetImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).GetImage(ctx, req.(*GetImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _WaffleInterface_AddImageTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddImageTagReq)
 	if err := dec(in); err != nil {
@@ -526,6 +560,10 @@ var WaffleInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyAvatarUpload",
 			Handler:    _WaffleInterface_VerifyAvatarUpload_Handler,
+		},
+		{
+			MethodName: "GetImage",
+			Handler:    _WaffleInterface_GetImage_Handler,
 		},
 		{
 			MethodName: "AddImageTag",

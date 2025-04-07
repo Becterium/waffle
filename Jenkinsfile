@@ -66,17 +66,10 @@ spec:
               }
           }
       }
-      stage('Docker') {
+      stage('Dirpath') {
           steps{
               script{
-                sh "docker images"
-              }
-          }
-      }
-      stage('Code') {
-          steps{
-              script{
-                sh "cat /home/jenkins/agent/workspace/waffle/deploy/kubernetes/minio.yaml"
+                sh "cat /home/jenkins/agent/workspace/waffle/README.md"
               }
           }
       }

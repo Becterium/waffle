@@ -132,7 +132,12 @@
             "type": "string"
           }
         },
-        "uploader": {
+        "uploaderId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "user id"
+        },
+        "uploaderUrl": {
           "type": "string",
           "title": "user URL"
         },
@@ -150,10 +155,6 @@
           "type": "string",
           "format": "int64"
         },
-        "favorites": {
-          "type": "string",
-          "format": "int64"
-        },
         "link": {
           "type": "string",
           "title": "image_URL"
@@ -161,6 +162,9 @@
         "Thumbnail": {
           "type": "string",
           "title": "image_UUID"
+        },
+        "ImageName": {
+          "type": "string"
         }
       }
     },

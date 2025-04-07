@@ -402,6 +402,36 @@
           "WaffleInterface"
         ]
       }
+    },
+    "/v1/w/{uid}": {
+      "get": {
+        "operationId": "WaffleInterface_GetImage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetImageReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
     }
   },
   "definitions": {
@@ -419,6 +449,18 @@
         }
       }
     },
+    "GetImageReplyUploader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "avatarUrl": {
+          "type": "string"
+        }
+      }
+    },
     "SearchImageTagByNameLikeReplyTags": {
       "type": "object",
       "properties": {
@@ -428,30 +470,6 @@
         "id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "VerifyImagesUploadReqInfo": {
-      "type": "object",
-      "properties": {
-        "imageName": {
-          "type": "string"
-        },
-        "imageUuid": {
-          "type": "string"
-        },
-        "category": {
-          "type": "string"
-        },
-        "purity": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "uint64"
-          }
         }
       }
     },
@@ -536,6 +554,51 @@
       "type": "object",
       "properties": {
         "imageName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1GetImageReply": {
+      "type": "object",
+      "properties": {
+        "uploader": {
+          "$ref": "#/definitions/GetImageReplyUploader"
+        },
+        "info": {
+          "$ref": "#/definitions/v1GetImageReplyInfo"
+        }
+      }
+    },
+    "v1GetImageReplyInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "purity": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "views": {
+          "type": "string",
+          "format": "int64"
+        },
+        "url": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        },
+        "tags": {
           "type": "array",
           "items": {
             "type": "string"
@@ -670,7 +733,31 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/VerifyImagesUploadReqInfo"
+            "$ref": "#/definitions/v1VerifyImagesUploadReqInfo"
+          }
+        }
+      }
+    },
+    "v1VerifyImagesUploadReqInfo": {
+      "type": "object",
+      "properties": {
+        "imageName": {
+          "type": "string"
+        },
+        "imageUuid": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "purity": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
           }
         }
       }

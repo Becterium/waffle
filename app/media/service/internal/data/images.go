@@ -125,7 +125,18 @@ func (m *imageRepo) VerifyImageUpload(ctx context.Context, bucket string, imageU
 	return true, nil
 }
 
-func (m *imageRepo) GetImage(ctx context.Context, imageUrl string) (*v1.GetImageReply, error) {
+func (m *imageRepo) GetImage(ctx context.Context, imageUid string) (*v1.GetImageReply, error) {
+	img := image{ImageUuid: imageUid}
+	result := m.data.db.Model(&image{}).Find(&img)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("GetImage db find image by uid error: %s", result.Error))
+	}
+	avt := avatar{UserID: img.Uploader}
+	result = m.data.db.Model(&avatar{}).Find(&avt)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("GetImage db find avatar by user_id error: %s", result.Error))
+	}
+
 	return &v1.GetImageReply{
 		Tags:      nil,
 		Uploader:  "2",

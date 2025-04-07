@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/sync/singleflight"
 	v1Media "waffle/api/media/service/v1"
@@ -126,4 +127,42 @@ func (r *mediaRepo) VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatar
 	return &v1.VerifyAvatarUploadReply{
 		UploadUrl: reply.AvatarUrl,
 	}, nil
+}
+
+func (r *mediaRepo) GetImage(ctx context.Context, uid string) (*biz.UploaderInfo, *biz.ImageInfo, error) {
+	res, err, _ := r.sg.Do(fmt.Sprintf("get_image_by_uid_%s", uid), func() (interface{}, error) {
+		info, err := r.data.mc.GetImage(ctx, &v1Media.GetImageReq{ImageUrl: uid})
+		if err != nil {
+			return nil, err
+		}
+		return struct {
+			uploader *biz.UploaderInfo
+			image    *biz.ImageInfo
+		}{
+			uploader: &biz.UploaderInfo{
+				Id:        info.UploaderId,
+				AvatarUrl: info.UploaderUrl,
+			},
+			image: &biz.ImageInfo{
+				ImageName: info.ImageName,
+				ImageUUID: info.Thumbnail,
+				Category:  info.Category,
+				Purity:    info.Purity,
+				Size:      info.Size,
+				Views:     info.Views,
+				ImageUrl:  info.Link,
+				Tags:      info.Tags,
+			},
+		}, nil
+	})
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := res.(struct {
+		uploader *biz.UploaderInfo
+		image    *biz.ImageInfo
+	})
+	return result.uploader, result.image, nil
 }

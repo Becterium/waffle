@@ -103,14 +103,15 @@ message GetImageReq{
 
 message GetImageReply{
   repeated string tags = 1;
-  string uploader = 2;//user URL
-  string category = 3;
-  string purity = 4;
-  int64 size = 5;
-  int64 views = 6;
-  int64 favorites = 7;
+  uint64 uploader_id = 2;//user id
+  string uploader_url = 3; //user URL
+  string category = 4;
+  string purity = 5;
+  int64 size = 6;
+  int64 views = 7;
   string link = 8;//image_URL
   string Thumbnail = 9;//image_UUID
+  string Image_name = 10;
 }
 
 // image -tag
