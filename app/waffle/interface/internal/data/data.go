@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/middleware/circuitbreaker"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"time"
 
@@ -83,6 +84,7 @@ func NewUserServiceClient(r registry.Discovery) userv1.UserClient {
 		grpc.WithMiddleware(
 			recovery.Recovery(),
 			tracing.Client(),
+			circuitbreaker.Client(),
 			metadata.Client(),
 		),
 		grpc.WithTimeout(3*time.Second),

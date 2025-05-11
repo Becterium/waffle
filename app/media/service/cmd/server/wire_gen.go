@@ -37,7 +37,8 @@ func initApp(confServer *conf.Server, minio *conf.Minio, auth *conf.Auth, confDa
 	grpcServer := server.NewGRPCServer(confServer, auth, logger, mediaService)
 	registrar := server.NewRegistrar(registry)
 	kafkaServer := server.NewKafkaServer(confServer, logger, mediaService)
-	app := newApp(logger, grpcServer, registrar, kafkaServer)
+	cronWorker := server.NewCronServer(imageRepo)
+	app := newApp(logger, grpcServer, registrar, kafkaServer, cronWorker)
 	return app, func() {
 		cleanup()
 	}, nil

@@ -46,11 +46,13 @@ type ImageRepo interface {
 	AddImageTag(ctx context.Context, name, parentName string) (*v1.AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, name string) (*v1.SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(ctx context.Context, req *v1.ReloadCategoryRedisImageTagReq) (*v1.ReloadCategoryRedisImageTagReply, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 	// collection
 	CreateCollection(ctx context.Context, userId uint) (*v1.CreateCollectionReply, error)
 	// KafkaImageSaveToElasticsearch kafka consume message
 	KafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error
 	KafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error
+	CronSynchronizeImageViewFromRedis() func()
 }
 
 type ImageUseCase struct {
@@ -242,4 +244,12 @@ func (c *ImageUseCase) HandleKafkaImageSaveToElasticsearch(ctx context.Context, 
 
 func (c *ImageUseCase) HandleKafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error {
 	return c.ip.KafkaAvatarSaveToElasticsearch(ctx, topic, headers, msg)
+}
+
+func (c *ImageUseCase) CronSynchronizeImageViewFromRedis() func() {
+	return c.ip.CronSynchronizeImageViewFromRedis()
+}
+
+func (c *ImageUseCase) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	return c.ip.GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req)
 }

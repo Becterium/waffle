@@ -242,6 +242,38 @@
         ]
       }
     },
+    "/v1/SortAndQueryImage": {
+      "post": {
+        "operationId": "WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetImageByQueryKVsAndPageAndOrderByDESCReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1GetImageByQueryKVsAndPageAndOrderByDESCReq"
+            }
+          }
+        ],
+        "tags": [
+          "WaffleInterface"
+        ]
+      }
+    },
     "/v1/VerifyAvatarUpload": {
       "post": {
         "operationId": "WaffleInterface_VerifyAvatarUpload",
@@ -449,6 +481,19 @@
         }
       }
     },
+    "GetImageByQueryKVsAndPageAndOrderByDESCReplyImages": {
+      "type": "object",
+      "properties": {
+        "imageId": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "link": {
+          "type": "string",
+          "title": "image_URL"
+        }
+      }
+    },
     "GetImageReplyUploader": {
       "type": "object",
       "properties": {
@@ -458,18 +503,6 @@
         },
         "avatarUrl": {
           "type": "string"
-        }
-      }
-    },
-    "SearchImageTagByNameLikeReplyTags": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -561,6 +594,37 @@
         }
       }
     },
+    "v1GetImageByQueryKVsAndPageAndOrderByDESCReply": {
+      "type": "object",
+      "properties": {
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/GetImageByQueryKVsAndPageAndOrderByDESCReplyImages"
+          }
+        }
+      }
+    },
+    "v1GetImageByQueryKVsAndPageAndOrderByDESCReq": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "string",
+          "format": "int64"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "queryKVs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "v1GetImageReply": {
       "type": "object",
       "properties": {
@@ -601,8 +665,25 @@
         "tags": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "#/definitions/v1GetImageReplyTags"
           }
+        },
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "v1GetImageReplyTags": {
+      "type": "object",
+      "properties": {
+        "tagId": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tagName": {
+          "type": "string"
         }
       }
     },
@@ -686,8 +767,20 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/SearchImageTagByNameLikeReplyTags"
+            "$ref": "#/definitions/v1SearchImageTagByNameLikeReplyTags"
           }
+        }
+      }
+    },
+    "v1SearchImageTagByNameLikeReplyTags": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

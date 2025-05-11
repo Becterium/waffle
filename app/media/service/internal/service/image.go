@@ -56,6 +56,10 @@ func (m *MediaService) FindCollectionByCollectionId(ctx context.Context, req *v1
 	return m.ic.FindCollectionByCollectionId(ctx, req)
 }
 
+func (m *MediaService) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	return m.ic.GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req)
+}
+
 func (m *MediaService) HandleKafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
 	return m.ic.HandleKafkaImageSaveToElasticsearch(ctx, topic, headers, msg)
 }

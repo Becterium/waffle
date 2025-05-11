@@ -19,21 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Media_UploadImages_FullMethodName                 = "/waffle.media.v1.Media/UploadImages"
-	Media_UploadUserImage_FullMethodName              = "/waffle.media.v1.Media/UploadUserImage"
-	Media_VerifyUserImageUpload_FullMethodName        = "/waffle.media.v1.Media/VerifyUserImageUpload"
-	Media_VerifyImagesUpload_FullMethodName           = "/waffle.media.v1.Media/VerifyImagesUpload"
-	Media_GetImage_FullMethodName                     = "/waffle.media.v1.Media/GetImage"
-	Media_AddImageTag_FullMethodName                  = "/waffle.media.v1.Media/AddImageTag"
-	Media_SearchImageTagByNameLike_FullMethodName     = "/waffle.media.v1.Media/SearchImageTagByNameLike"
-	Media_ReloadCategoryRedisImageTag_FullMethodName  = "/waffle.media.v1.Media/ReloadCategoryRedisImageTag"
-	Media_CreateCollection_FullMethodName             = "/waffle.media.v1.Media/CreateCollection"
-	Media_StarImage_FullMethodName                    = "/waffle.media.v1.Media/StarImage"
-	Media_UnStarImage_FullMethodName                  = "/waffle.media.v1.Media/UnStarImage"
-	Media_FindCollectionByImageId_FullMethodName      = "/waffle.media.v1.Media/FindCollectionByImageId"
-	Media_FindCollectionByCollectionId_FullMethodName = "/waffle.media.v1.Media/FindCollectionByCollectionId"
-	Media_UploadVideo_FullMethodName                  = "/waffle.media.v1.Media/UploadVideo"
-	Media_GetVideo_FullMethodName                     = "/waffle.media.v1.Media/GetVideo"
+	Media_UploadImages_FullMethodName                            = "/waffle.media.v1.Media/UploadImages"
+	Media_UploadUserImage_FullMethodName                         = "/waffle.media.v1.Media/UploadUserImage"
+	Media_VerifyUserImageUpload_FullMethodName                   = "/waffle.media.v1.Media/VerifyUserImageUpload"
+	Media_VerifyImagesUpload_FullMethodName                      = "/waffle.media.v1.Media/VerifyImagesUpload"
+	Media_GetImage_FullMethodName                                = "/waffle.media.v1.Media/GetImage"
+	Media_GetImageByQueryKVsAndPageAndOrderByDESC_FullMethodName = "/waffle.media.v1.Media/GetImageByQueryKVsAndPageAndOrderByDESC"
+	Media_AddImageTag_FullMethodName                             = "/waffle.media.v1.Media/AddImageTag"
+	Media_SearchImageTagByNameLike_FullMethodName                = "/waffle.media.v1.Media/SearchImageTagByNameLike"
+	Media_ReloadCategoryRedisImageTag_FullMethodName             = "/waffle.media.v1.Media/ReloadCategoryRedisImageTag"
+	Media_CreateCollection_FullMethodName                        = "/waffle.media.v1.Media/CreateCollection"
+	Media_StarImage_FullMethodName                               = "/waffle.media.v1.Media/StarImage"
+	Media_UnStarImage_FullMethodName                             = "/waffle.media.v1.Media/UnStarImage"
+	Media_FindCollectionByImageId_FullMethodName                 = "/waffle.media.v1.Media/FindCollectionByImageId"
+	Media_FindCollectionByCollectionId_FullMethodName            = "/waffle.media.v1.Media/FindCollectionByCollectionId"
+	Media_UploadVideo_FullMethodName                             = "/waffle.media.v1.Media/UploadVideo"
+	Media_GetVideo_FullMethodName                                = "/waffle.media.v1.Media/GetVideo"
 )
 
 // MediaClient is the client API for Media service.
@@ -46,6 +47,7 @@ type MediaClient interface {
 	VerifyUserImageUpload(ctx context.Context, in *VerifyUserImageUploadReq, opts ...grpc.CallOption) (*VerifyUserImageUploadReply, error)
 	VerifyImagesUpload(ctx context.Context, in *VerifyImagesUploadReq, opts ...grpc.CallOption) (*VerifyImagesUploadReply, error)
 	GetImage(ctx context.Context, in *GetImageReq, opts ...grpc.CallOption) (*GetImageReply, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, in *GetImageByQueryKVsAndPageAndOrderByDESCReq, opts ...grpc.CallOption) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 	// image - tag
 	AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error)
@@ -113,6 +115,16 @@ func (c *mediaClient) GetImage(ctx context.Context, in *GetImageReq, opts ...grp
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetImageReply)
 	err := c.cc.Invoke(ctx, Media_GetImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mediaClient) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, in *GetImageByQueryKVsAndPageAndOrderByDESCReq, opts ...grpc.CallOption) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetImageByQueryKVsAndPageAndOrderByDESCReply)
+	err := c.cc.Invoke(ctx, Media_GetImageByQueryKVsAndPageAndOrderByDESC_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -229,6 +241,7 @@ type MediaServer interface {
 	VerifyUserImageUpload(context.Context, *VerifyUserImageUploadReq) (*VerifyUserImageUploadReply, error)
 	VerifyImagesUpload(context.Context, *VerifyImagesUploadReq) (*VerifyImagesUploadReply, error)
 	GetImage(context.Context, *GetImageReq) (*GetImageReply, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(context.Context, *GetImageByQueryKVsAndPageAndOrderByDESCReq) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 	// image - tag
 	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
@@ -266,6 +279,9 @@ func (UnimplementedMediaServer) VerifyImagesUpload(context.Context, *VerifyImage
 }
 func (UnimplementedMediaServer) GetImage(context.Context, *GetImageReq) (*GetImageReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
+}
+func (UnimplementedMediaServer) GetImageByQueryKVsAndPageAndOrderByDESC(context.Context, *GetImageByQueryKVsAndPageAndOrderByDESCReq) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImageByQueryKVsAndPageAndOrderByDESC not implemented")
 }
 func (UnimplementedMediaServer) AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddImageTag not implemented")
@@ -404,6 +420,24 @@ func _Media_GetImage_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MediaServer).GetImage(ctx, req.(*GetImageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Media_GetImageByQueryKVsAndPageAndOrderByDESC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetImageByQueryKVsAndPageAndOrderByDESCReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MediaServer).GetImageByQueryKVsAndPageAndOrderByDESC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Media_GetImageByQueryKVsAndPageAndOrderByDESC_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MediaServer).GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req.(*GetImageByQueryKVsAndPageAndOrderByDESCReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -614,6 +648,10 @@ var Media_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetImage",
 			Handler:    _Media_GetImage_Handler,
+		},
+		{
+			MethodName: "GetImageByQueryKVsAndPageAndOrderByDESC",
+			Handler:    _Media_GetImageByQueryKVsAndPageAndOrderByDESC_Handler,
 		},
 		{
 			MethodName: "AddImageTag",

@@ -23,6 +23,7 @@ const OperationWaffleInterfaceAddImageTag = "/waffle.interface.v1.WaffleInterfac
 const OperationWaffleInterfaceGenerateUploadAvatarUrl = "/waffle.interface.v1.WaffleInterface/GenerateUploadAvatarUrl"
 const OperationWaffleInterfaceGenerateUploadImgUrl = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
 const OperationWaffleInterfaceGetImage = "/waffle.interface.v1.WaffleInterface/GetImage"
+const OperationWaffleInterfaceGetImageByQueryKVsAndPageAndOrderByDESC = "/waffle.interface.v1.WaffleInterface/GetImageByQueryKVsAndPageAndOrderByDESC"
 const OperationWaffleInterfaceLogin = "/waffle.interface.v1.WaffleInterface/Login"
 const OperationWaffleInterfaceLogout = "/waffle.interface.v1.WaffleInterface/Logout"
 const OperationWaffleInterfacePing = "/waffle.interface.v1.WaffleInterface/Ping"
@@ -40,6 +41,7 @@ type WaffleInterfaceHTTPServer interface {
 	// GenerateUploadImgUrl media
 	GenerateUploadImgUrl(context.Context, *GenerateUploadImgUrlReq) (*GenerateUploadImgUrlReply, error)
 	GetImage(context.Context, *GetImageReq) (*GetImageReply, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(context.Context, *GetImageByQueryKVsAndPageAndOrderByDESCReq) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 	Login(context.Context, *LoginReq) (*LoginReply, error)
 	Logout(context.Context, *LogoutReq) (*LogoutReply, error)
 	Ping(context.Context, *PingReq) (*PingReply, error)
@@ -67,6 +69,7 @@ func RegisterWaffleInterfaceHTTPServer(s *http.Server, srv WaffleInterfaceHTTPSe
 	r.POST("/v1/AddImageTag", _WaffleInterface_AddImageTag0_HTTP_Handler(srv))
 	r.POST("/v1/SearchImageTagByNameLike", _WaffleInterface_SearchImageTagByNameLike0_HTTP_Handler(srv))
 	r.POST("/v1/ReloadCategoryRedisImageTag", _WaffleInterface_ReloadCategoryRedisImageTag0_HTTP_Handler(srv))
+	r.POST("/v1/SortAndQueryImage", _WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC0_HTTP_Handler(srv))
 }
 
 func _WaffleInterface_Register0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
@@ -355,11 +358,34 @@ func _WaffleInterface_ReloadCategoryRedisImageTag0_HTTP_Handler(srv WaffleInterf
 	}
 }
 
+func _WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC0_HTTP_Handler(srv WaffleInterfaceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetImageByQueryKVsAndPageAndOrderByDESCReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationWaffleInterfaceGetImageByQueryKVsAndPageAndOrderByDESC)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req.(*GetImageByQueryKVsAndPageAndOrderByDESCReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetImageByQueryKVsAndPageAndOrderByDESCReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type WaffleInterfaceHTTPClient interface {
 	AddImageTag(ctx context.Context, req *AddImageTagReq, opts ...http.CallOption) (rsp *AddImageTagReply, err error)
 	GenerateUploadAvatarUrl(ctx context.Context, req *GenerateUploadAvatarUrlReq, opts ...http.CallOption) (rsp *GenerateUploadAvatarUrlReply, err error)
 	GenerateUploadImgUrl(ctx context.Context, req *GenerateUploadImgUrlReq, opts ...http.CallOption) (rsp *GenerateUploadImgUrlReply, err error)
 	GetImage(ctx context.Context, req *GetImageReq, opts ...http.CallOption) (rsp *GetImageReply, err error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *GetImageByQueryKVsAndPageAndOrderByDESCReq, opts ...http.CallOption) (rsp *GetImageByQueryKVsAndPageAndOrderByDESCReply, err error)
 	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *LoginReply, err error)
 	Logout(ctx context.Context, req *LogoutReq, opts ...http.CallOption) (rsp *LogoutReply, err error)
 	Ping(ctx context.Context, req *PingReq, opts ...http.CallOption) (rsp *PingReply, err error)
@@ -425,6 +451,19 @@ func (c *WaffleInterfaceHTTPClientImpl) GetImage(ctx context.Context, in *GetIma
 	opts = append(opts, http.Operation(OperationWaffleInterfaceGetImage))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *WaffleInterfaceHTTPClientImpl) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, in *GetImageByQueryKVsAndPageAndOrderByDESCReq, opts ...http.CallOption) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	var out GetImageByQueryKVsAndPageAndOrderByDESCReply
+	pattern := "/v1/SortAndQueryImage"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationWaffleInterfaceGetImageByQueryKVsAndPageAndOrderByDESC))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

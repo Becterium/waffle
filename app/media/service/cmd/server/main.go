@@ -12,6 +12,7 @@ import (
 	"github.com/tx7do/kratos-transport/transport/kafka"
 	"os"
 	"waffle/app/media/service/internal/conf"
+	"waffle/app/media/service/internal/server"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -30,7 +31,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar, ks *kafka.Server) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar, ks *kafka.Server, cron *server.CronWorker) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -40,6 +41,7 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar, ks *kafka
 		kratos.Server(
 			gs,
 			ks,
+			cron,
 		),
 		kratos.Registrar(rr),
 	)

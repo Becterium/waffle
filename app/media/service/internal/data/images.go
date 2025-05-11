@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
 
@@ -28,6 +29,7 @@ const (
 	RedisHashTagIdLevel         = "tag:level"
 	RedisHashTagCategoryTree    = "tag:category"
 	RedisHashUserIdThumbnailUrl = "tag:thumbnail_url"
+	RedisHashImageViews         = "img:views"
 	ElasticsearchTagsIndex      = "tags"
 )
 
@@ -51,7 +53,8 @@ type image struct {
 	Purity    string
 	Uploader  uint
 	Size      int64
-	Views     int64
+	Views     int64  `gorm:"index:idx_views"`
+	Tags      []*tag `gorm:"many2many:image_tags;"`
 }
 
 type tag struct {
@@ -59,20 +62,14 @@ type tag struct {
 	Name     string
 	ParentId uint
 	Level    int
+	Images   []*image `gorm:"many2many:image_tags;"`
 }
 
 type TagES struct {
-	Id       uint   `json:"id"`
-	Name     string `json:"name"`
-	ParentId uint   `json:"parent_id"`
-	Level    int    `json:"level"`
-}
-
-type imageTag struct {
-	ImageID   uint           `gorm:"primaryKey"`
-	TagID     uint           `gorm:"primaryKey"`
-	CreatedAt time.Time      `gorm:"autoCreateTime"`
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Id       uint   `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	ParentId uint   `json:"parent_id,omitempty"`
+	Level    int    `json:"level,omitempty"`
 }
 
 type avatar struct {
@@ -127,7 +124,7 @@ func (m *imageRepo) VerifyImageUpload(ctx context.Context, bucket string, imageU
 
 func (m *imageRepo) GetImage(ctx context.Context, imageUid string) (*v1.GetImageReply, error) {
 	img := image{ImageUuid: imageUid}
-	result := m.data.db.Model(&image{}).Find(&img)
+	result := m.data.db.Model(&image{}).Preload("tags").Find(&img)
 	if result.Error != nil {
 		return nil, errors.New(fmt.Sprintf("GetImage db find image by uid error: %s", result.Error))
 	}
@@ -137,17 +134,53 @@ func (m *imageRepo) GetImage(ctx context.Context, imageUid string) (*v1.GetImage
 		return nil, errors.New(fmt.Sprintf("GetImage db find avatar by user_id error: %s", result.Error))
 	}
 
+	tags := make([]*v1.GetImageReply_Tags, 0)
+
+	for _, val := range img.Tags {
+		t := &v1.GetImageReply_Tags{
+			TagId:   uint64(val.ID),
+			TagName: val.Name,
+		}
+		tags = append(tags, t)
+	}
+
+	// 增加图片的访问次数
+	if res, _ := m.data.rc.HExists(context.Background(), RedisHashImageViews, string(img.ID)).Result(); res == true {
+		m.data.rc.HIncrBy(context.Background(), RedisHashImageViews, string(img.ID), 1)
+	} else {
+		m.data.rc.HSet(context.Background(), RedisHashImageViews, string(img.ID), img.Views+1)
+	}
+
 	return &v1.GetImageReply{
-		Tags:      nil,
-		Uploader:  "2",
-		Category:  "2",
-		Purity:    "2",
-		Size:      0,
-		Views:     0,
-		Favorites: 0,
-		Link:      "2",
-		Thumbnail: "2",
+		Tags:        tags,
+		UploaderId:  uint64(img.Uploader),
+		UploaderUrl: avt.ThumbnailsUrl,
+		Category:    img.Category,
+		Purity:      img.Purity,
+		Size:        img.Size,
+		Views:       img.Views,
+		Link:        img.ImageUrl,
+		Thumbnail:   img.ImageUuid,
+		ImageName:   img.ImageName,
+		ImageId:     uint64(img.ID),
 	}, nil
+}
+
+func (m *imageRepo) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+
+	result, err := esDSL.QueryByCategoryMustViewsDESCLimit[mq_kafka.Image](m.data.es, "images", int(req.Page), int(req.Size), req.Query_KVs)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("QueryByCategoryMustViewsDESCLimit error: %s", err.Error()))
+	}
+	images := make([]*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply_Images, 0)
+	for _, val := range result {
+		images = append(images, &v1.GetImageByQueryKVsAndPageAndOrderByDESCReply_Images{
+			ImageId: uint64(val.Id),
+			Link:    val.ImageUrl,
+		})
+	}
+	reply := v1.GetImageByQueryKVsAndPageAndOrderByDESCReply{Images: images}
+	return &reply, nil
 }
 
 func (m *imageRepo) ImageExist(ctx context.Context, redisKey string, imageUuid string) (bool, error) {
@@ -192,12 +225,13 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 	}
 	for index, val := range *images {
 		for _, single := range val.Tags {
-			imgtag := imageTag{
-				ImageID: storeImps[index].ID,
-				TagID:   uint(single),
+			img := &image{
+				Model: gorm.Model{ID: storeImps[index].ID},
 			}
-			errF := m.data.db.Model(&imgtag).Create(&imgtag).Error
-			if errF != nil {
+			ta := &tag{
+				Model: gorm.Model{ID: uint(single)},
+			}
+			if errF := m.data.db.Model(&img).Association("tags").Append(&ta); errF != nil {
 				return errors.New(fmt.Sprintf("db create imgtag error: %s", errF))
 			}
 		}
@@ -207,8 +241,11 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 			return errors.New(fmt.Sprintf("redis set add imgUuid error: %s", errSAdd))
 		}
 
-		//向异步处理服务发送消息:向 elasticsearch 存储image信息，要求根据tag可以查到image
+		// 向Kafka发送消息前，由于消费者端利用Redis实现了幂等性，需要移除Redis中的值以允许消费
+		m.data.rc.SRem(context.Background(), "kafka:image_Idempotency", storeImps[index].ImageUuid)
+		// 向异步处理服务发送消息:向 elasticsearch 存储image信息，要求根据tag可以查到image
 		ImageData := mq_kafka.Image{
+			Id:        storeImps[index].Model.ID,
 			ImageUuid: storeImps[index].ImageUuid,
 			ImageName: storeImps[index].ImageName,
 			ImageUrl:  storeImps[index].ImageName,
@@ -230,7 +267,10 @@ func (m *imageRepo) SaveImagesInfo(ctx context.Context, images *biz.Images) erro
 			Topic: "image",
 		}
 		errKafkaSaveMessage := kafkaSaveMessage(m.data.kw, context.Background(), msg)
+		// 向死信队列发送消息
 		if errKafkaSaveMessage != nil {
+			msg.Topic = "image.DLQ"
+			kafkaSaveMessage(m.data.kw, context.Background(), msg)
 			return errKafkaSaveMessage
 		}
 	}
@@ -271,6 +311,9 @@ func (m *imageRepo) SaveAvatarInfo(ctx context.Context, avatarName string, avata
 		return "", errors.New(fmt.Sprintf("SaveAvatarInfo fail, save to redis error: %s", errSAdd))
 	}
 
+	// 向Kafka发送消息前，由于消费者端利用Redis实现了幂等性，需要移除Redis中的值以允许消费
+	m.data.rc.SRem(context.Background(), "kafka:avatar_Idempotency", info.AvatarUuid)
+
 	avatarData := mq_kafka.Avatar{
 		Id:         info.ID,
 		UserID:     info.UserID,
@@ -290,7 +333,10 @@ func (m *imageRepo) SaveAvatarInfo(ctx context.Context, avatarName string, avata
 		Topic: "avatar",
 	}
 	errKafkaSaveMessage := kafkaSaveMessage(m.data.kw, context.Background(), msg)
+	// 向死信队列发送消息
 	if errKafkaSaveMessage != nil {
+		msg.Topic = "avatar.DLQ"
+		kafkaSaveMessage(m.data.kw, context.Background(), msg)
 		return "", errKafkaSaveMessage
 	}
 	return info.AvatarUrl, nil
@@ -426,12 +472,18 @@ func (m *imageRepo) CreateCollection(ctx context.Context, userId uint) (*v1.Crea
 }
 
 func (m *imageRepo) KafkaImageSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Image) error {
+	// 用来保证幂等性，因为Kafka消费端有重复消费的可能性
+	result, err := m.data.rc.SIsMember(ctx, "kafka:image_Idempotency", msg.ImageUuid).Result()
+	if result == true {
+		return errors.New(fmt.Sprintf("media/data/KafkaSaveToElasticsearch has handle this message, Id: %s", msg.ImageUuid))
+	}
+
 	data, _ := json.Marshal(msg)
 
 	res, err := m.data.es.Index(
 		"images",
 		bytes.NewReader(data),
-		m.data.es.Index.WithDocumentID(msg.ImageUuid),
+		m.data.es.Index.WithDocumentID(strconv.Itoa(int(msg.Id))),
 		m.data.es.Index.WithRefresh("true"),
 	)
 
@@ -451,10 +503,22 @@ func (m *imageRepo) KafkaImageSaveToElasticsearch(ctx context.Context, topic str
 			fmt.Printf("Document indexed with ID: %s\n", r["_id"])
 		}
 	}
+
+	// 用来保证幂等性，因为Kafka消费端有重复消费的可能性
+	_, err = m.data.rc.SAdd(ctx, "kafka:image_Idempotency", msg.ImageUuid).Result()
+	if err != nil {
+		return errors.New(fmt.Sprintf("KafkaSaveToElasticsearch Error : %s", err))
+	}
 	return nil
 }
 
 func (m *imageRepo) KafkaAvatarSaveToElasticsearch(ctx context.Context, topic string, headers broker.Headers, msg *mq_kafka.Avatar) error {
+	// 用来保证幂等性，因为Kafka消费端有重复消费的可能性
+	exist, err := m.data.rc.SIsMember(ctx, "kafka:avatar_Idempotency", msg.AvatarUuid).Result()
+	if exist == true {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch has handle this message, Id: %s", msg.AvatarUuid))
+	}
+
 	object, err := m.data.mc.GetObject(context.Background(), "avatar", msg.AvatarName, minio.GetObjectOptions{})
 	if err != nil {
 		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch GetObject error: %s", err))
@@ -489,5 +553,82 @@ func (m *imageRepo) KafkaAvatarSaveToElasticsearch(ctx context.Context, topic st
 	if err != nil {
 		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch redis HMSet thumbnails_url error: %s", err))
 	}
+
+	// 上传到es
+	data, _ := json.Marshal(msg)
+
+	res, err := m.data.es.Index(
+		"avatar",
+		bytes.NewReader(data),
+		m.data.es.Index.WithDocumentID(strconv.Itoa(int(msg.Id))),
+		m.data.es.Index.WithRefresh("true"),
+	)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("media/data/KafkaAvatarSaveToElasticsearch fail to save image to ES, error: %v", err))
+	}
+
+	defer res.Body.Close()
+
+	if res.IsError() {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch Error response: %s", res.String()))
+	} else {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			log.Fatalf("Error parsing the response body: %s", err)
+		} else {
+			fmt.Printf("Document indexed with ID: %s\n", r["_id"])
+		}
+	}
+
+	// 用来保证幂等性，因为Kafka消费端有重复消费的可能性
+	_, err = m.data.rc.SAdd(ctx, "kafka:avatar_Idempotency", msg.AvatarUuid).Result()
+	if err != nil {
+		return errors.New(fmt.Sprintf("KafkaAvatarSaveToElasticsearch Error : %s", err))
+	}
 	return nil
+}
+
+func (m *imageRepo) CronSynchronizeImageViewFromRedis() func() {
+	return func() {
+		images := make([]image, 0)
+		m.log.Info(fmt.Sprintf("image synchronize views data start"))
+		result, err := m.data.rc.HGetAll(context.Background(), RedisHashImageViews).Result()
+		if err != nil {
+			m.log.Error(err)
+		}
+		for index, val := range result {
+			i, err := strconv.Atoi(index)
+			if err != nil {
+				continue
+			}
+			v, err := strconv.Atoi(val)
+			if err != nil {
+				continue
+			}
+			images = append(images, image{
+				Model: gorm.Model{ID: uint(i)},
+				Views: int64(v),
+			})
+		}
+		// 批量更新数据库的views
+		res := m.data.db.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"views"}),
+		}).Create(&images)
+		if res.Error != nil {
+			m.data.log.Error(res.Error)
+		}
+
+		//批量更新Elasticsearch中的image
+		imgs := make([]mq_kafka.Image, 0)
+		ids := make([]string, 0)
+		for _, val := range images {
+			imgs = append(imgs, mq_kafka.Image{
+				Views: val.Views,
+			})
+			ids = append(ids, strconv.Itoa(int(val.Model.ID)))
+		}
+		esDSL.BulkUpdate(m.data.es, imgs, "images", ids)
+	}
 }

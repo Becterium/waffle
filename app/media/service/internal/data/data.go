@@ -2,6 +2,13 @@ package data
 
 import (
 	"context"
+	"time"
+
+	"waffle/app/media/service/internal/conf"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
@@ -9,10 +16,6 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/redis/go-redis/v9"
 	"github.com/segmentio/kafka-go"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"time"
-	"waffle/app/media/service/internal/conf"
 )
 
 const (
@@ -58,7 +61,7 @@ func NewMysqlClient(c *conf.Data, logger log.Logger) *gorm.DB {
 		log.Fatal("failed to connect database")
 	}
 
-	if err = db.AutoMigrate(&image{}, &imageTag{}, &avatar{}, &tag{}, &collection{}, &collectionImage{}); err != nil {
+	if err = db.AutoMigrate(&image{}, &avatar{}, &tag{}, &collection{}, &collectionImage{}); err != nil {
 		log.Fatal("failed to Database AutoMigrate")
 	}
 	return db
@@ -107,7 +110,7 @@ func NewKafkaWriter(conf *conf.Server, logger log.Logger) *kafka.Writer {
 	writer := kafka.Writer{
 		Addr:                   kafka.TCP(conf.Kafka.Addrs...),
 		Balancer:               &kafka.Hash{},
-		MaxAttempts:            3,
+		MaxAttempts:            5,
 		WriteBackoffMin:        0,
 		WriteBackoffMax:        0,
 		BatchSize:              0,
@@ -115,7 +118,7 @@ func NewKafkaWriter(conf *conf.Server, logger log.Logger) *kafka.Writer {
 		BatchTimeout:           0,
 		ReadTimeout:            0,
 		WriteTimeout:           3 * time.Second,
-		RequiredAcks:           kafka.RequireNone,
+		RequiredAcks:           kafka.RequireOne,
 		Async:                  false,
 		Completion:             nil,
 		Compression:            0,

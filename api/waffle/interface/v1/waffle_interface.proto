@@ -99,6 +99,12 @@ service WaffleInterface {
       body: "*"
     };
   }
+  rpc GetImageByQueryKVsAndPageAndOrderByDESC(GetImageByQueryKVsAndPageAndOrderByDESCReq)returns(GetImageByQueryKVsAndPageAndOrderByDESCReply){
+    option (google.api.http) = {
+      post: "/v1/SortAndQueryImage"
+      body: "*"
+    };
+  }
 }
 
 message RegisterReq {
@@ -195,6 +201,10 @@ message GetImageReq {
 }
 
 message GetImageReply {
+  message Tags {
+    uint64 tag_id = 1;
+    string tag_name = 2;
+  }
   message Uploader {
     uint64 id = 1;
     string avatar_url = 2;
@@ -207,7 +217,8 @@ message GetImageReply {
     int64 views = 5;
     string url = 6;
     string uid = 7;
-    repeated string tags = 8;
+    repeated Tags tags = 8;
+    uint64 id = 9;
   }
   Uploader uploader = 1;
   Info info = 2;
@@ -237,3 +248,17 @@ message SearchImageTagByNameLikeReply{
 message ReloadCategoryRedisImageTagReq{}
 
 message ReloadCategoryRedisImageTagReply{}
+
+message GetImageByQueryKVsAndPageAndOrderByDESCReq{
+  int64 page = 1;
+  int64 size = 2;
+  repeated string query_KVs = 3;
+}
+
+message GetImageByQueryKVsAndPageAndOrderByDESCReply{
+  message Images {
+    uint64 image_id = 1;
+    string link = 2;//image_URL
+  }
+  repeated Images images = 1;
+}

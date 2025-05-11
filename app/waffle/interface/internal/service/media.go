@@ -48,6 +48,17 @@ func (w *WaffleInterface) GetImage(ctx context.Context, req *v1.GetImageReq) (*v
 		return nil, err
 	}
 
+	tags := make([]*v1.GetImageReply_Tags, 0)
+
+	for _, val := range imageInfo.Tags {
+		tag := &v1.GetImageReply_Tags{
+			TagId:   val.Id,
+			TagName: val.Name,
+		}
+
+		tags = append(tags, tag)
+	}
+
 	return &v1.GetImageReply{
 		Uploader: &v1.GetImageReply_Uploader{
 			Id:        upInfo.Id,
@@ -60,7 +71,12 @@ func (w *WaffleInterface) GetImage(ctx context.Context, req *v1.GetImageReq) (*v
 			Views:    imageInfo.Views,
 			Url:      imageInfo.ImageUrl,
 			Uid:      imageInfo.ImageUUID,
-			Tags:     imageInfo.Tags,
+			Tags:     tags,
+			Id:       imageInfo.Id,
 		},
 	}, nil
+}
+
+func (w *WaffleInterface) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	return w.mc.GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req)
 }

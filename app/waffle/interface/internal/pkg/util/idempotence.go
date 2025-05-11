@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/redis/go-redis/v9"
+	"sync"
 	"time"
 )
 
 const (
 	IdempotencyKey = "Idempotency-key"
 )
+
+var m = sync.Map{}
 
 func UnMarshalIdempotentKey(ctx context.Context) (string, error) {
 	if request, ok := http.RequestFromServerContext(ctx); ok {
@@ -30,4 +33,13 @@ func VerifyIdempotencyByRedis(ctx context.Context, rc *redis.Client, key string)
 	} else {
 		return false, errors.New(fmt.Sprintf("VerifyIdempotencyByRedis fail error: %s", err.Error()))
 	}
+}
+
+func VerifyIdempotencyBySyncMap(key string) (bool, error) {
+	_, ok := m.Load(key)
+	if ok == true {
+		return false, errors.New("VerifyIdempotencyBySyncMap verify fail error: key has exist")
+	}
+	m.Store(key, true)
+	return true, nil
 }

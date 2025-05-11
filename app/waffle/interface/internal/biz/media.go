@@ -8,6 +8,11 @@ import (
 	v1 "waffle/api/waffle/interface/v1"
 )
 
+type Tags struct {
+	Id   uint64
+	Name string
+}
+
 type ImageInfo struct {
 	ImageName string
 	ImageUUID string
@@ -16,7 +21,8 @@ type ImageInfo struct {
 	Size      int64
 	Views     int64
 	ImageUrl  string
-	Tags      []string
+	Tags      []Tags
+	Id        uint64
 }
 
 type UploaderInfo struct {
@@ -34,6 +40,7 @@ type MediaRepo interface {
 	GenerateUploadAvatarUrl(ctx context.Context, req *v1.GenerateUploadAvatarUrlReq) (*v1.GenerateUploadAvatarUrlReply, error)
 	VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvatarUploadReq) (*v1.VerifyAvatarUploadReply, error)
 	GetImage(ctx context.Context, uid string) (*UploaderInfo, *ImageInfo, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 }
 
 type MediaUseCase struct {
@@ -96,4 +103,8 @@ func (m MediaUseCase) VerifyAvatarUpload(ctx context.Context, req *v1.VerifyAvat
 
 func (m MediaUseCase) GetImage(ctx context.Context, uid string) (*UploaderInfo, *ImageInfo, error) {
 	return m.repo.GetImage(ctx, uid)
+}
+
+func (m MediaUseCase) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	return m.repo.GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req)
 }

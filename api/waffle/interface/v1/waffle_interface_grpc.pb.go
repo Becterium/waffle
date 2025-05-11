@@ -19,19 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WaffleInterface_Register_FullMethodName                    = "/waffle.interface.v1.WaffleInterface/Register"
-	WaffleInterface_Login_FullMethodName                       = "/waffle.interface.v1.WaffleInterface/Login"
-	WaffleInterface_Logout_FullMethodName                      = "/waffle.interface.v1.WaffleInterface/Logout"
-	WaffleInterface_Ping_FullMethodName                        = "/waffle.interface.v1.WaffleInterface/Ping"
-	WaffleInterface_PingRPC_FullMethodName                     = "/waffle.interface.v1.WaffleInterface/PingRPC"
-	WaffleInterface_GenerateUploadImgUrl_FullMethodName        = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
-	WaffleInterface_GenerateUploadAvatarUrl_FullMethodName     = "/waffle.interface.v1.WaffleInterface/GenerateUploadAvatarUrl"
-	WaffleInterface_VerifyImagesUpload_FullMethodName          = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
-	WaffleInterface_VerifyAvatarUpload_FullMethodName          = "/waffle.interface.v1.WaffleInterface/VerifyAvatarUpload"
-	WaffleInterface_GetImage_FullMethodName                    = "/waffle.interface.v1.WaffleInterface/GetImage"
-	WaffleInterface_AddImageTag_FullMethodName                 = "/waffle.interface.v1.WaffleInterface/AddImageTag"
-	WaffleInterface_SearchImageTagByNameLike_FullMethodName    = "/waffle.interface.v1.WaffleInterface/SearchImageTagByNameLike"
-	WaffleInterface_ReloadCategoryRedisImageTag_FullMethodName = "/waffle.interface.v1.WaffleInterface/ReloadCategoryRedisImageTag"
+	WaffleInterface_Register_FullMethodName                                = "/waffle.interface.v1.WaffleInterface/Register"
+	WaffleInterface_Login_FullMethodName                                   = "/waffle.interface.v1.WaffleInterface/Login"
+	WaffleInterface_Logout_FullMethodName                                  = "/waffle.interface.v1.WaffleInterface/Logout"
+	WaffleInterface_Ping_FullMethodName                                    = "/waffle.interface.v1.WaffleInterface/Ping"
+	WaffleInterface_PingRPC_FullMethodName                                 = "/waffle.interface.v1.WaffleInterface/PingRPC"
+	WaffleInterface_GenerateUploadImgUrl_FullMethodName                    = "/waffle.interface.v1.WaffleInterface/GenerateUploadImgUrl"
+	WaffleInterface_GenerateUploadAvatarUrl_FullMethodName                 = "/waffle.interface.v1.WaffleInterface/GenerateUploadAvatarUrl"
+	WaffleInterface_VerifyImagesUpload_FullMethodName                      = "/waffle.interface.v1.WaffleInterface/VerifyImagesUpload"
+	WaffleInterface_VerifyAvatarUpload_FullMethodName                      = "/waffle.interface.v1.WaffleInterface/VerifyAvatarUpload"
+	WaffleInterface_GetImage_FullMethodName                                = "/waffle.interface.v1.WaffleInterface/GetImage"
+	WaffleInterface_AddImageTag_FullMethodName                             = "/waffle.interface.v1.WaffleInterface/AddImageTag"
+	WaffleInterface_SearchImageTagByNameLike_FullMethodName                = "/waffle.interface.v1.WaffleInterface/SearchImageTagByNameLike"
+	WaffleInterface_ReloadCategoryRedisImageTag_FullMethodName             = "/waffle.interface.v1.WaffleInterface/ReloadCategoryRedisImageTag"
+	WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC_FullMethodName = "/waffle.interface.v1.WaffleInterface/GetImageByQueryKVsAndPageAndOrderByDESC"
 )
 
 // WaffleInterfaceClient is the client API for WaffleInterface service.
@@ -54,6 +55,7 @@ type WaffleInterfaceClient interface {
 	AddImageTag(ctx context.Context, in *AddImageTagReq, opts ...grpc.CallOption) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(ctx context.Context, in *SearchImageTagByNameLikeReq, opts ...grpc.CallOption) (*SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(ctx context.Context, in *ReloadCategoryRedisImageTagReq, opts ...grpc.CallOption) (*ReloadCategoryRedisImageTagReply, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, in *GetImageByQueryKVsAndPageAndOrderByDESCReq, opts ...grpc.CallOption) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 }
 
 type waffleInterfaceClient struct {
@@ -194,6 +196,16 @@ func (c *waffleInterfaceClient) ReloadCategoryRedisImageTag(ctx context.Context,
 	return out, nil
 }
 
+func (c *waffleInterfaceClient) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, in *GetImageByQueryKVsAndPageAndOrderByDESCReq, opts ...grpc.CallOption) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetImageByQueryKVsAndPageAndOrderByDESCReply)
+	err := c.cc.Invoke(ctx, WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WaffleInterfaceServer is the server API for WaffleInterface service.
 // All implementations must embed UnimplementedWaffleInterfaceServer
 // for forward compatibility.
@@ -214,6 +226,7 @@ type WaffleInterfaceServer interface {
 	AddImageTag(context.Context, *AddImageTagReq) (*AddImageTagReply, error)
 	SearchImageTagByNameLike(context.Context, *SearchImageTagByNameLikeReq) (*SearchImageTagByNameLikeReply, error)
 	ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error)
+	GetImageByQueryKVsAndPageAndOrderByDESC(context.Context, *GetImageByQueryKVsAndPageAndOrderByDESCReq) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error)
 	mustEmbedUnimplementedWaffleInterfaceServer()
 }
 
@@ -262,6 +275,9 @@ func (UnimplementedWaffleInterfaceServer) SearchImageTagByNameLike(context.Conte
 }
 func (UnimplementedWaffleInterfaceServer) ReloadCategoryRedisImageTag(context.Context, *ReloadCategoryRedisImageTagReq) (*ReloadCategoryRedisImageTagReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReloadCategoryRedisImageTag not implemented")
+}
+func (UnimplementedWaffleInterfaceServer) GetImageByQueryKVsAndPageAndOrderByDESC(context.Context, *GetImageByQueryKVsAndPageAndOrderByDESCReq) (*GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImageByQueryKVsAndPageAndOrderByDESC not implemented")
 }
 func (UnimplementedWaffleInterfaceServer) mustEmbedUnimplementedWaffleInterfaceServer() {}
 func (UnimplementedWaffleInterfaceServer) testEmbeddedByValue()                         {}
@@ -518,6 +534,24 @@ func _WaffleInterface_ReloadCategoryRedisImageTag_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetImageByQueryKVsAndPageAndOrderByDESCReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaffleInterfaceServer).GetImageByQueryKVsAndPageAndOrderByDESC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaffleInterfaceServer).GetImageByQueryKVsAndPageAndOrderByDESC(ctx, req.(*GetImageByQueryKVsAndPageAndOrderByDESCReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WaffleInterface_ServiceDesc is the grpc.ServiceDesc for WaffleInterface service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -576,6 +610,10 @@ var WaffleInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReloadCategoryRedisImageTag",
 			Handler:    _WaffleInterface_ReloadCategoryRedisImageTag_Handler,
+		},
+		{
+			MethodName: "GetImageByQueryKVsAndPageAndOrderByDESC",
+			Handler:    _WaffleInterface_GetImageByQueryKVsAndPageAndOrderByDESC_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

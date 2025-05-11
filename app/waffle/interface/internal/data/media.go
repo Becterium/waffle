@@ -135,6 +135,14 @@ func (r *mediaRepo) GetImage(ctx context.Context, uid string) (*biz.UploaderInfo
 		if err != nil {
 			return nil, err
 		}
+		tags := make([]biz.Tags, 0)
+		for _, val := range info.Tags {
+			tag := biz.Tags{
+				Id:   val.TagId,
+				Name: val.TagName,
+			}
+			tags = append(tags, tag)
+		}
 		return struct {
 			uploader *biz.UploaderInfo
 			image    *biz.ImageInfo
@@ -151,7 +159,8 @@ func (r *mediaRepo) GetImage(ctx context.Context, uid string) (*biz.UploaderInfo
 				Size:      info.Size,
 				Views:     info.Views,
 				ImageUrl:  info.Link,
-				Tags:      info.Tags,
+				Tags:      tags,
+				Id:        info.ImageId,
 			},
 		}, nil
 	})
@@ -165,4 +174,31 @@ func (r *mediaRepo) GetImage(ctx context.Context, uid string) (*biz.UploaderInfo
 		image    *biz.ImageInfo
 	})
 	return result.uploader, result.image, nil
+}
+
+func (r *mediaRepo) GetImageByQueryKVsAndPageAndOrderByDESC(ctx context.Context, req *v1.GetImageByQueryKVsAndPageAndOrderByDESCReq) (*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply, error) {
+	res, err, _ := r.sg.Do(fmt.Sprintf("get_sort_image_by_kv_%s", req.Query_KVs), func() (interface{}, error) {
+		info, err := r.data.mc.GetImageByQueryKVsAndPageAndOrderByDESC(ctx, &v1Media.GetImageByQueryKVsAndPageAndOrderByDESCReq{
+			Page:      req.Page,
+			Size:      req.Size,
+			Query_KVs: req.Query_KVs,
+		})
+		if err != nil {
+			return nil, err
+		}
+		images := make([]*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply_Images, 0)
+		for _, val := range info.GetImages() {
+			images = append(images, &v1.GetImageByQueryKVsAndPageAndOrderByDESCReply_Images{
+				ImageId: val.GetImageId(),
+				Link:    val.GetLink(),
+			})
+		}
+		return &v1.GetImageByQueryKVsAndPageAndOrderByDESCReply{Images: images}, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res.(*v1.GetImageByQueryKVsAndPageAndOrderByDESCReply), nil
 }

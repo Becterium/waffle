@@ -17,15 +17,16 @@
   ],
   "paths": {},
   "definitions": {
-    "SearchImageTagByNameLikeReplyTags": {
+    "GetImageByQueryKVsAndPageAndOrderByDESCReplyImages": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
-        "id": {
+        "imageId": {
           "type": "string",
-          "format": "int64"
+          "format": "uint64"
+        },
+        "link": {
+          "type": "string",
+          "title": "image_URL"
         }
       }
     },
@@ -123,13 +124,26 @@
         }
       }
     },
+    "v1GetImageByQueryKVsAndPageAndOrderByDESCReply": {
+      "type": "object",
+      "properties": {
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/GetImageByQueryKVsAndPageAndOrderByDESCReplyImages"
+          }
+        }
+      }
+    },
     "v1GetImageReply": {
       "type": "object",
       "properties": {
         "tags": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "#/definitions/v1GetImageReplyTags"
           }
         },
         "uploaderId": {
@@ -165,6 +179,22 @@
         },
         "ImageName": {
           "type": "string"
+        },
+        "imageId": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "v1GetImageReplyTags": {
+      "type": "object",
+      "properties": {
+        "tagId": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tagName": {
+          "type": "string"
         }
       }
     },
@@ -181,8 +211,20 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/SearchImageTagByNameLikeReplyTags"
+            "$ref": "#/definitions/v1SearchImageTagByNameLikeReplyTags"
           }
+        }
+      }
+    },
+    "v1SearchImageTagByNameLikeReplyTags": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
