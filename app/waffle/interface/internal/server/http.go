@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/middleware/ratelimit"
 	v1 "waffle/api/waffle/interface/v1"
 	"waffle/app/waffle/interface/internal/conf"
 	"waffle/app/waffle/interface/internal/service"
@@ -33,7 +32,6 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, waffle *service.WaffleInterfac
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
-			ratelimit.Server(),
 			logging.Server(logger),
 			selector.Server(
 				jwt.Server(func(token *jwtv5.Token) (interface{}, error) {

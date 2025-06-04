@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/middleware/ratelimit"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 
 	"waffle/app/user/service/internal/conf"
@@ -31,6 +32,7 @@ func NewGRPCServer(c *conf.Server, ac *conf.Auth, userService *service.UserServi
 	}
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
+			ratelimit.Server(),
 			tracing.Server(),
 			recovery.Recovery(),
 			logging.Server(logger),

@@ -353,6 +353,7 @@ func (m *imageRepo) AddImageTag(ctx context.Context, name, parentName string) (*
 			if result == RedisCashEmpty {
 				return nil, errors.New("parent Name don't exist")
 			}
+			// todo: 使用Redis分布式锁（set nx） + Redis subscribe预防Redis穿透
 			res := m.data.db.Model(&tag{}).Find(&parent)
 			if res.Error != nil {
 				// 此处证明Redis和数据库中都没有此数据，需要短时间缓存空值
